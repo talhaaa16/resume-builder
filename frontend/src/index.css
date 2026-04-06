@@ -1,0 +1,126 @@
+/* :root {
+    .nav-link {
+        color: rgb(211, 60, 60);
+        text-decoration: none;
+        opacity: 0.95;
+    }
+
+    .nav-link:hover {
+        text-decoration: underline;
+    }
+
+
+    .footer {
+        border-top: 1px solid var(--border);
+        background: #fff;
+        color: var(--muted);
+        padding: 16px 24px;
+    }
+
+    .footer-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+
+    .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 14px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .btn-outline {
+        background: #fff;
+        border: 1px solid var(--border);
+        color: var(--text);
+    }
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+    }
+
+    .label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        display: inline-block;
+    }
+
+    .grid {
+        display: grid;
+        gap: 16px;
+    }
+
+    .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    @media (max-width: 768px) {
+        .grid-2 {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    .jobs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 16px;
+    }
+
+    .badge {
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #eef2ff;
+        color: #3730a3;
+        border: 1px solid #e2e8f0;
+    }
+
+
+    .toast-wrap {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 9999;
+    }
+
+    .toast {
+        background: #111827;
+        color: white;
+        padding: 12px 14px;
+        border-radius: 10px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, .16);
+    }
+} */
