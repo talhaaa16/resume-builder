@@ -8,11 +8,15 @@ const db = require("./db/db");
 
 const app = express();
 
-app.use(cors({
-  origin: "http://localhost:3000",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
+// Request Logger for debugging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
+
+app.use(cors()); // Permissive CORS for troubleshooting
+app.options("*", cors()); // Handle preflight for all routes
+
 app.use(bodyParser.json());
 
 app.use("/api/auth", authrouters);
