@@ -8,7 +8,11 @@ const db = require("./db/db");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 app.use(bodyParser.json());
 
 app.use("/api/auth", authrouters);
