@@ -42,7 +42,7 @@ const Navbar = () => {
   const fetchResumes = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/resume/my-resumes`, {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL || ""}/api/resume/my-resumes`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data.sts === 0) {
@@ -57,7 +57,7 @@ const Navbar = () => {
     if (!window.confirm("Are you sure you want to delete this resume?")) return;
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/resume/${id}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL || ""}/api/resume/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchResumes(); // Refresh after deletion

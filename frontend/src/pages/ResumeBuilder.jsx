@@ -90,7 +90,7 @@ export default function ResumeBuilder() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/resume/save`,
+        `${process.env.REACT_APP_API_URL || ""}/api/resume/save`,
         form,
         { headers: { Authorization: `Bearer ${token}` } }
       );
