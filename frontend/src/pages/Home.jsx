@@ -11,37 +11,8 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isLoggedIn) {
-      fetchResumes();
-    }
+    // Other home page init logic if any
   }, [isLoggedIn]);
-
-  const fetchResumes = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/resume/my-resumes`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.data.sts === 0) {
-        setResumes(res.data.resumes);
-      }
-    } catch (error) {
-      console.error("Error fetching resumes:", error);
-    }
-  };
-
-  const deleteResume = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this resume?")) return;
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/resume/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      fetchResumes();
-    } catch (error) {
-      alert("Failed to delete resume");
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-[#0076BC] to-[#00A86B] text-white">
@@ -74,34 +45,7 @@ export default function Home() {
         </div>
       </section>
 
-      {isLoggedIn && resumes.length > 0 && (
-        <section className="bg-white py-12 px-12 text-slate-900 rounded-t-[3rem]">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold">Your Saved Resumes</h2>
-            <button onClick={() => navigate("/resume-builder")} className="bg-[#0076BC] text-white px-4 py-2 rounded-lg flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Create New
-            </button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {resumes.map((resume) => (
-              <div key={resume._id} className="bg-slate-50 border border-slate-200 rounded-2xl p-6 hover:shadow-lg transition">
-                <div className="flex justify-between mb-4">
-                   <FileText className="w-8 h-8 text-[#0076BC]" />
-                   <button onClick={() => deleteResume(resume._id)} className="text-red-400 hover:text-red-600"><Trash2 className="w-5 h-5" /></button>
-                </div>
-                <h3 className="font-bold text-lg line-clamp-1">{resume.personalInfo?.fullName || "Resume"}</h3>
-                <p className="text-sm text-slate-500 mb-4">{resume.personalInfo?.designation}</p>
-                <button 
-                  onClick={() => navigate("/resume-builder", { state: { resumeData: resume } })}
-                  className="w-full bg-slate-200 hover:bg-slate-300 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-1"
-                >
-                  Edit <ExternalLink className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-8 px-12 py-20 text-center">
         <div>

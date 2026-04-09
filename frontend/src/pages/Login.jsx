@@ -32,6 +32,7 @@ const Login = () => {
       if (res.data.sts === 0) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("uname", res.data.user.user_name);
+        localStorage.setItem("uemail", res.data.user.user_email);
 
         setToast("✅ Login successful! Redirecting...");
         setTimeout(() => {

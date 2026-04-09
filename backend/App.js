@@ -8,16 +8,16 @@ const db = require("./db/db");
 
 const app = express();
 
-// Request Logger for debugging
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
 
-app.use(cors()); // Permissive CORS for troubleshooting
-app.options("*", cors()); // Handle preflight for all routes
+app.use(cors());
+app.options("*", cors());
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 const resumeRouters = require("./routes/resume");
 
