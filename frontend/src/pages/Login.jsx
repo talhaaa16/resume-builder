@@ -23,9 +23,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const finalApiUrl = (apiUrl && apiUrl !== "undefined") ? apiUrl : "";
+
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_API_URL || ""}/api/auth/userlogin`,
+        `${finalApiUrl}/api/auth/userlogin`,
         userlogin
       );
 
