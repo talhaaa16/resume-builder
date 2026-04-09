@@ -1,14 +1,53 @@
-import React from "react";
-import { Users, TrendingUp, FileText, Briefcase, GraduationCap, Sparkles } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Users, TrendingUp, FileText, Briefcase, GraduationCap, Sparkles, Plus, Trash2, ExternalLink } from "lucide-react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+  const [resumes, setResumes] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchResumes();
+    }
+  }, [isLoggedIn]);
+
+  const fetchResumes = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/resume/my-resumes`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data.sts === 0) {
+        setResumes(res.data.resumes);
+      }
+    } catch (error) {
+      console.error("Error fetching resumes:", error);
+    }
+  };
+
+  const deleteResume = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this resume?")) return;
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/resume/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchResumes();
+    } catch (error) {
+      alert("Failed to delete resume");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-[#0076BC] to-[#00A86B] text-white">
       <Navbar />
 
-=      <section className="flex flex-col md:flex-row items-center justify-between px-12 py-20">
+      <section className="flex flex-col md:flex-row items-center justify-between px-12 py-20">
         <div className="max-w-xl">
           <h2 className="text-5xl font-extrabold leading-tight">
             Empower Your <span className="text-orange-500">Career Journey</span>
@@ -17,12 +56,12 @@ export default function Home() {
             Build professional resumes, discover opportunities, and get career guidance - all designed for India's ambitious youth.
           </p>
           <div className="mt-8 flex space-x-4">
-           <a href="/resume-builder"> <button className="bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-md font-semibold text-white">
+            <button onClick={() => navigate("/resume-builder")} className="bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-md font-semibold text-white">
               Start Building Resume →
-            </button> </a>
-            <a href="/jobs"> <button className="border border-white px-6 py-3 rounded-md font-semibold text-white hover:bg-white hover:text-[#0076BC] transition">
+            </button>
+            <button onClick={() => navigate("/jobs")} className="border border-white px-6 py-3 rounded-md font-semibold text-white hover:bg-white hover:text-[#0076BC] transition">
               Explore Jobs
-            </button> </a>
+            </button>
           </div>
         </div>
 
@@ -35,7 +74,36 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-8 px-12 pb-20 text-center">
+      {isLoggedIn && resumes.length > 0 && (
+        <section className="bg-white py-12 px-12 text-slate-900 rounded-t-[3rem]">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold">Your Saved Resumes</h2>
+            <button onClick={() => navigate("/resume-builder")} className="bg-[#0076BC] text-white px-4 py-2 rounded-lg flex items-center gap-2">
+              <Plus className="w-4 h-4" /> Create New
+            </button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {resumes.map((resume) => (
+              <div key={resume._id} className="bg-slate-50 border border-slate-200 rounded-2xl p-6 hover:shadow-lg transition">
+                <div className="flex justify-between mb-4">
+                   <FileText className="w-8 h-8 text-[#0076BC]" />
+                   <button onClick={() => deleteResume(resume._id)} className="text-red-400 hover:text-red-600"><Trash2 className="w-5 h-5" /></button>
+                </div>
+                <h3 className="font-bold text-lg line-clamp-1">{resume.personalInfo?.fullName || "Resume"}</h3>
+                <p className="text-sm text-slate-500 mb-4">{resume.personalInfo?.designation}</p>
+                <button 
+                  onClick={() => navigate("/resume-builder", { state: { resumeData: resume } })}
+                  className="w-full bg-slate-200 hover:bg-slate-300 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-1"
+                >
+                  Edit <ExternalLink className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-8 px-12 py-20 text-center">
         <div>
           <Users className="mx-auto h-10 w-10 text-orange-400" />
           <h3 className="mt-2 text-2xl font-bold">50K+</h3>
@@ -53,8 +121,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-gray-50 py-20 px-6 md:px-20 text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+      <section className="bg-gray-50 py-20 px-6 md:px-20 text-center text-slate-900">
+        <h2 className="text-3xl font-bold mb-4">
           Everything You Need to Succeed
         </h2>
         <p className="text-gray-600 text-lg mb-12">
@@ -66,49 +134,48 @@ export default function Home() {
             <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
               <FileText className="w-8 h-8 text-blue-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            <h3 className="text-xl font-semibold mb-4">
               Professional Resume Builder
             </h3>
             <p className="text-gray-600 mb-6">
               Create stunning resumes with our easy-to-use templates designed for Indian job market.
             </p>
-            <a href="/resume-builder" className="font-semibold text-gray-900 hover:underline flex items-center space-x-1">
+            <button onClick={() => navigate("/resume-builder")} className="font-semibold text-gray-900 hover:underline flex items-center justify-center space-x-1 mx-auto">
               <span>Build Resume</span>
               <span>→</span>
-            </a>
+            </button>
           </div>
 
           <div className="bg-white p-8 rounded-2xl shadow hover:shadow-lg transition">
             <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mb-6">
               <Briefcase className="w-8 h-8 text-green-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            <h3 className="text-xl font-semibold mb-4">
               Entry-Level Job Listings
             </h3>
             <p className="text-gray-600 mb-6">
               Discover thousands of opportunities perfect for fresh graduates and career starters.
             </p>
-            <a href="/jobs" className="font-semibold text-gray-900 hover:underline flex items-center space-x-1">
+            <button onClick={() => navigate("/jobs")} className="font-semibold text-gray-900 hover:underline flex items-center justify-center space-x-1 mx-auto">
               <span>Browse Jobs</span>
               <span>→</span>
-            </a>
+            </button>
           </div>
 
-          {/* Card 3 */}
           <div className="bg-white p-8 rounded-2xl shadow hover:shadow-lg transition">
             <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mb-6">
               <GraduationCap className="w-8 h-8 text-orange-600" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            <h3 className="text-xl font-semibold mb-4">
               Career Guidance
             </h3>
             <p className="text-gray-600 mb-6">
               Get expert advice, skill development tips, and interview preparation guidance.
             </p>
-            <a href="/carrier" className="font-semibold text-gray-900 hover:underline flex items-center space-x-1">
+            <button onClick={() => navigate("/carrier")} className="font-semibold text-gray-900 hover:underline flex items-center justify-center space-x-1 mx-auto">
               <span>Get Guidance</span>
               <span>→</span>
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -144,36 +211,24 @@ export default function Home() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white border rounded-2xl p-6 shadow hover:shadow-lg transition">
-            <p className="text-orange-500 text-3xl mb-2">❝</p>
-            <p className="text-gray-700 mb-4">
-              "YuvaNaukri helped me create my first professional resume. Within a month, I landed my dream job!"
-            </p>
-            <h4 className="font-bold">Priya Sharma</h4>
-            <p className="text-sm text-gray-500">Software Developer at Tech Corp</p>
-          </div>
-
-          <div className="bg-white border rounded-2xl p-6 shadow hover:shadow-lg transition">
-            <p className="text-orange-500 text-3xl mb-2">❝</p>
-            <p className="text-gray-700 mb-4">
-              "The career guidance section was invaluable. I learned interview skills that changed my confidence completely."
-            </p>
-            <h4 className="font-bold">Rahul Kumar</h4>
-            <p className="text-sm text-gray-500">Marketing Assistant at Digital Agency</p>
-          </div>
-
-          <div className="bg-white border rounded-2xl p-6 shadow hover:shadow-lg transition">
-            <p className="text-orange-500 text-3xl mb-2">❝</p>
-            <p className="text-gray-700 mb-4">
-              "Found my current job through YuvaNaukri's job portal. The platform truly understands what youth need."
-            </p>
-            <h4 className="font-bold">Anita Desai</h4>
-            <p className="text-sm text-gray-500">Data Analyst at Analytics Inc</p>
-          </div>
+          <StoryCard 
+            name="Priya Sharma"
+            role="Software Developer at Tech Corp"
+            text="YuvaNaukri helped me create my first professional resume. Within a month, I landed my dream job!"
+          />
+          <StoryCard 
+            name="Rahul Kumar"
+            role="Marketing Assistant at Digital Agency"
+            text="The career guidance section was invaluable. I learned interview skills that changed my confidence completely."
+          />
+          <StoryCard 
+            name="Anita Desai"
+            role="Data Analyst at Analytics Inc"
+            text="Found my current job through YuvaNaukri's job portal. The platform truly understands what youth need."
+          />
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="bg-gradient-to-r from-[#0076BC] to-[#00A86B] py-20 px-6 md:px-20 text-center">
         <Sparkles className="mx-auto h-8 w-8 text-orange-400 mb-4" />
         <h2 className="text-4xl font-bold mb-6">
@@ -185,32 +240,27 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <a  href="/reusme-builder"><button className="bg-orange-500 hover:bg-orange-600 px-8 py-3 rounded-md font-semibold text-white">
+          <button onClick={() => navigate("/resume-builder")} className="bg-orange-500 hover:bg-orange-600 px-8 py-3 rounded-md font-semibold text-white">
             Create Your Resume Now →
-          </button></a>
-
-          <a href="/jobs"><button className="border border-white px-8 py-3 rounded-md font-semibold text-white hover:bg-white hover:text-[#0076BC] transition">
+          </button>
+          <button onClick={() => navigate("/jobs")} className="border border-white px-8 py-3 rounded-md font-semibold text-white hover:bg-white hover:text-[#0076BC] transition">
             Explore Job Opportunities
-          </button></a>
-        </div>
-
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mt-10 text-sm text-gray-100">
-          <span className="flex items-center space-x-2">
-            <Sparkles className="w-4 h-4 text-yellow-300" />
-            <span>Free forever</span>
-          </span>
-          <span className="flex items-center space-x-2">
-            <span role="img" aria-label="rocket">🚀</span>
-            <span>No hidden charges</span>
-          </span>
-          <span className="flex items-center space-x-2">
-            <span role="img" aria-label="briefcase">💼</span>
-            <span>Trusted by 50,000+ users</span>
-          </span>
+          </button>
         </div>
       </section>
 
       <Footer />
+    </div>
+  );
+}
+
+function StoryCard({ name, role, text }) {
+  return (
+    <div className="bg-white border text-left rounded-2xl p-6 shadow hover:shadow-lg transition">
+      <p className="text-orange-500 text-3xl mb-2">❝</p>
+      <p className="text-gray-700 mb-4 italic">"{text}"</p>
+      <h4 className="font-bold">{name}</h4>
+      <p className="text-sm text-gray-500">{role}</p>
     </div>
   );
 }

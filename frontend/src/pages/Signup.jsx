@@ -22,7 +22,7 @@ const Regi = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "https://test-2-09s8.onrender.com/api/auth/adduser",
+        `${process.env.REACT_APP_API_URL}/api/auth/adduser`,
         userregi
       );
       console.log(res);

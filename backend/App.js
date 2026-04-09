@@ -19,7 +19,10 @@ app.options("*", cors()); // Handle preflight for all routes
 
 app.use(bodyParser.json());
 
+const resumeRouters = require("./routes/resume");
+
 app.use("/api/auth", authrouters);
+app.use("/api/resume", resumeRouters);
 
 app.get("/", (req, res) => {
   res.send("Hello World from Backend ");
