@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin } from "lucide-react";
 
 export default function Footer() {
@@ -21,19 +22,19 @@ export default function Footer() {
         <div>
           <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
           <ul className="space-y-2">
-            <li><a href="/" className="hover:text-white">Home</a></li>
-            <li><a href="/resume-builder" className="hover:text-white">Resume Builder</a></li>
-            <li><a href="/jobs" className="hover:text-white">Job Listings</a></li>
-            <li><a href="/carrier" className="hover:text-white">Career Guidance</a></li>
+            <li><Link to="/" className="hover:text-white">Home</Link></li>
+            <li><Link to="/resume-builder" className="hover:text-white">Resume Builder</Link></li>
+            <li><Link to="/jobs" className="hover:text-white">Job Listings</Link></li>
+            <li><Link to="/carrier" className="hover:text-white">Career Guidance</Link></li>
           </ul>
         </div>
 
         <div>
           <h3 className="text-lg font-semibold text-white mb-4">Support</h3>
           <ul className="space-y-2">
-            <li><a href="/contact" className="hover:text-white">Contact Us</a></li>
-            <li><a href="/privacy" className="hover:text-white">Privacy Policy</a></li>
-            <li><a href="/terms" className="hover:text-white">Terms of Service</a></li>
+            <li><Link to="/contact" className="hover:text-white">Contact Us</Link></li>
+            <li><Link to="/privacy" className="hover:text-white">Privacy Policy</Link></li>
+            <li><Link to="/terms" className="hover:text-white">Terms of Service</Link></li>
           </ul>
         </div>
 

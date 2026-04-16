@@ -43,6 +43,10 @@ const ResumeSchema = new mongoose.Schema({
         type: String,
         default: 'professional'
     },
+    themeColor: {
+        type: String,
+        default: '#0076BC'
+    },
     createdAt: {
         type: Date,
         default: Date.now

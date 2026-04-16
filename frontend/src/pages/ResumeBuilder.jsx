@@ -6,11 +6,42 @@ import jsPDF from "jspdf";
 import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import ProfessionalTemplate from "../components/templates/ProfessionalTemplate";
+import ModernTemplate from "../components/templates/ModernTemplate";
+import Creative1Template from "../components/templates/Creative1Template";
+import Creative2Template from "../components/templates/Creative2Template";
+
+const MOCK_DATA = {
+  personalInfo: {
+    fullName: "Alex Carter",
+    designation: "Full Stack Developer",
+    summary: "Dedicated software engineer with 4+ years of experience building scalable web applications. Passionate about UI/UX and backend performance optimization.",
+    email: "alex@example.com",
+    phone: "+1 234 567 890",
+    address: "New York, USA",
+    linkedin: "linkedin.com/in/alexcarter",
+    github: "github.com/alexcarter",
+    profilePhoto: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80"
+  },
+  experience: [
+    { company: "Tech Innovations", role: "Software Engineer", startDate: "2021", endDate: "Present", description: "Led frontend development using React and Tailwind. Improved load times by 40%." },
+    { company: "Web Solutions Inc.", role: "Web Developer", startDate: "2019", endDate: "2021", description: "Built and maintained multiple client websites using Node.js and MongoDB." }
+  ],
+  education: [
+    { school: "State University", degree: "B.Sc. in Computer Science", startDate: "2015", endDate: "2019", description: "" }
+  ],
+  skills: ["JavaScript", "React", "Node.js", "Express", "MongoDB", "Tailwind CSS"],
+  projects: [
+    { title: "E-Commerce Dashboard", link: "github.com/alex/dashboard", description: "A comprehensive admin dashboard with real-time data visualization." }
+  ],
+  template: "professional",
+  languages: ["English", "Spanish"]
+};
 
 export default function ResumeBuilder() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const resumeRef = useRef();
 
@@ -33,6 +64,7 @@ export default function ResumeBuilder() {
     projects: [{ title: "", link: "", description: "" }],
     languages: [""],
     template: "professional",
+    themeColor: "#0076BC",
     resumeId: null
   });
 
@@ -43,6 +75,7 @@ export default function ResumeBuilder() {
         ...data,
         resumeId: data._id
       });
+      setStep(1);
     }
   }, [location]);
 
@@ -128,9 +161,81 @@ export default function ResumeBuilder() {
     <div className="min-h-screen bg-gradient-to-r from-[#0076BC] to-[#00A86B] pb-10">
       <Navbar />
       
-      <div className="max-w-7xl mx-auto px-4 pt-10 flex flex-col lg:flex-row gap-8">
+      {step === 0 ? (
+        <div className="max-w-[1400px] mx-auto px-4 pt-10">
+          <h2 className="text-3xl font-black text-white text-center mb-8 uppercase tracking-widest">Select a Template</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mx-auto pb-10">
+             
+             {/* Professional Template Selection Tile */}
+             <div 
+               onClick={() => { setForm({...form, template: "professional", themeColor: "#0076BC"}); setStep(1); }}
+               className="bg-white p-4 rounded-2xl cursor-pointer hover:ring-4 ring-orange-500 transition-all transform hover:-translate-y-2 shadow-2xl flex flex-col group"
+             >
+                <div className="h-[320px] bg-slate-50 rounded-xl mb-4 overflow-hidden border border-slate-200 flex justify-center relative pointer-events-none">
+                  <div className="absolute top-4 left-1/2 transform -translate-x-1/2 scale-[0.28] origin-top transition-transform duration-300 group-hover:scale-[0.30] shadow-xl">
+                    <div className="w-[210mm] bg-white ring-1 ring-slate-200">
+                      <ProfessionalTemplate form={{...MOCK_DATA, themeColor: "#0076BC"}} resumeRef={null} />
+                    </div>
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-center text-slate-800">Professional</h3>
+                <p className="text-xs text-center text-slate-500 mt-1">Clean, corporate standard</p>
+             </div>
+
+             {/* Modern Template Selection Tile */}
+             <div 
+               onClick={() => { setForm({...form, template: "modern", themeColor: "#10B981"}); setStep(1); }}
+               className="bg-white p-4 rounded-2xl cursor-pointer hover:ring-4 ring-orange-500 transition-all transform hover:-translate-y-2 shadow-2xl flex flex-col group"
+             >
+                <div className="h-[320px] bg-slate-50 rounded-xl mb-4 overflow-hidden border border-slate-200 flex justify-center relative pointer-events-none">
+                  <div className="absolute top-4 left-1/2 transform -translate-x-1/2 scale-[0.28] origin-top transition-transform duration-300 group-hover:scale-[0.30] shadow-xl">
+                     <div className="w-[210mm] bg-white ring-1 ring-slate-200">
+                       <ModernTemplate form={{...MOCK_DATA, themeColor: "#10B981"}} resumeRef={null} />
+                     </div>
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-center text-slate-800">Modern</h3>
+                <p className="text-xs text-center text-slate-500 mt-1">Stylish two-column dark sidebar</p>
+             </div>
+
+             {/* Creative 1 Template Selection Tile */}
+             <div 
+               onClick={() => { setForm({...form, template: "creative1", themeColor: "#FFB000"}); setStep(1); }}
+               className="bg-white p-4 rounded-2xl cursor-pointer hover:ring-4 ring-orange-500 transition-all transform hover:-translate-y-2 shadow-2xl flex flex-col group"
+             >
+                <div className="h-[320px] bg-slate-50 rounded-xl mb-4 overflow-hidden border border-slate-200 flex justify-center relative pointer-events-none">
+                  <div className="absolute top-4 left-1/2 transform -translate-x-1/2 scale-[0.28] origin-top transition-transform duration-300 group-hover:scale-[0.30] shadow-xl">
+                     <div className="w-[210mm] bg-white ring-1 ring-slate-200">
+                       <Creative1Template form={{...MOCK_DATA, themeColor: "#FFB000"}} resumeRef={null} />
+                     </div>
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-center text-slate-800">Creative Top</h3>
+                <p className="text-xs text-center text-slate-500 mt-1">Bold header with centered avatar</p>
+             </div>
+
+             {/* Creative 2 Template Selection Tile */}
+             <div 
+               onClick={() => { setForm({...form, template: "creative2", themeColor: "#F59E0B"}); setStep(1); }}
+               className="bg-white p-4 rounded-2xl cursor-pointer hover:ring-4 ring-orange-500 transition-all transform hover:-translate-y-2 shadow-2xl flex flex-col group"
+             >
+                <div className="h-[320px] bg-slate-50 rounded-xl mb-4 overflow-hidden border border-slate-200 flex justify-center relative pointer-events-none">
+                  <div className="absolute top-4 left-1/2 transform -translate-x-1/2 scale-[0.28] origin-top transition-transform duration-300 group-hover:scale-[0.30] shadow-xl">
+                     <div className="w-[210mm] bg-white ring-1 ring-slate-200">
+                       <Creative2Template form={{...MOCK_DATA, themeColor: "#F59E0B"}} resumeRef={null} />
+                     </div>
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-center text-slate-800">Creative Split</h3>
+                <p className="text-xs text-center text-slate-500 mt-1">Bold sidebars with progress bars</p>
+             </div>
+
+          </div>
+        </div>
+      ) : (
+      <div className="w-full px-4 lg:px-8 xl:px-12 pt-8 pb-20 flex flex-col xl:flex-row gap-10 items-start">
         {/* Left Column: Form Controls */}
-        <div className="lg:w-[45%] flex flex-col gap-6">
+        <div className="w-full xl:w-[40%] flex flex-col gap-6">
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -280,9 +385,7 @@ export default function ResumeBuilder() {
             <div className="flex justify-between mt-8">
               <button
                 onClick={prevStep}
-                disabled={step === 1}
-                className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition ${step === 1 ? "text-white/30 cursor-not-allowed" : "text-white hover:bg-white/10"
-                  }`}
+                className="flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition text-white hover:bg-white/10"
               >
                 <FaArrowLeft /> Back
               </button>
@@ -299,97 +402,37 @@ export default function ResumeBuilder() {
         </div>
 
         {/* Right Column: Live Preview */}
-        <div className="flex-1 flex flex-col items-center">
-          <div className="sticky top-10 w-full max-w-[210mm]">
-            <h4 className="text-white/70 text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+        <div className="w-full xl:w-[60%] sticky top-6 h-[calc(100vh-3rem)] flex flex-col hide-scrollbar-on-print">
+          
+          <div className="w-full flex justify-between items-center mb-4 bg-slate-900/60 backdrop-blur-md p-3 px-6 rounded-2xl shadow-xl border border-white/20 z-10">
+            <h4 className="text-white text-sm font-bold uppercase tracking-wider flex items-center gap-3">
+              <span className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(74,222,128,0.8)]"></span>
               Live Preview
             </h4>
-            <div className="bg-slate-300 p-8 rounded-2xl shadow-2xl overflow-y-auto max-h-[80vh] custom-scrollbar">
-               <div ref={resumeRef} className="bg-white w-full min-h-[297mm] p-12 flex flex-col gap-8 text-black shadow-lg mx-auto" style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px" }}>
-                  {/* Preview Header */}
-                  <div className="flex justify-between border-b-2 border-slate-800 pb-8">
-                    <div className="flex-1">
-                      <h1 className="text-4xl font-black uppercase tracking-tight text-slate-900 mb-1">{form.personalInfo.fullName || "NAME HERE"}</h1>
-                      <p className="text-lg font-bold text-[#0076BC] uppercase tracking-widest leading-none mb-3">{form.personalInfo.designation || "YOUR TITLE"}</p>
-                      <p className="text-slate-600 leading-tight pr-10">{form.personalInfo.summary}</p>
-                    </div>
-                    <div className="flex flex-col text-right gap-1 font-medium text-slate-500 whitespace-nowrap">
-                       <p>{form.personalInfo.email}</p>
-                       <p>{form.personalInfo.phone}</p>
-                       <p>{form.personalInfo.address}</p>
-                       {form.personalInfo.linkedin && <p>LinkedIn: {form.personalInfo.linkedin}</p>}
-                       {form.personalInfo.github && <p>GitHub: {form.personalInfo.github}</p>}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-12 gap-8">
-                    {/* Main Content */}
-                    <div className="col-span-8 flex flex-col gap-8">
-                       {form.experience.some(e => e.company) && (
-                         <section>
-                            <h3 className="text-sm font-black border-b border-slate-200 mb-3 pb-1 uppercase text-slate-800 tracking-wider">Experience</h3>
-                            {form.experience.map((exp, i) => exp.company && (
-                              <div key={i} className="mb-4 last:mb-0">
-                                <div className="flex justify-between font-bold text-slate-900 text-sm">
-                                  <span>{exp.company}</span>
-                                  <span className="text-[10px] text-slate-400 uppercase font-light">{exp.startDate} - {exp.endDate}</span>
-                                </div>
-                                <div className="text-[#0076BC] font-medium text-xs mb-1 italic">{exp.role}</div>
-                                <p className="text-slate-600 leading-relaxed text-[11px]">{exp.description}</p>
-                              </div>
-                            ))}
-                         </section>
-                       )}
-
-                       {form.projects.some(p => p.title) && (
-                         <section>
-                            <h3 className="text-sm font-black border-b border-slate-200 mb-3 pb-1 uppercase text-slate-800 tracking-wider">Major Projects</h3>
-                            {form.projects.map((proj, i) => proj.title && (
-                              <div key={i} className="mb-4 last:mb-0">
-                                <div className="flex justify-between font-bold text-slate-900 text-sm">
-                                   <span>{proj.title}</span>
-                                   <span className="text-[10px] text-blue-500 italic lowercase font-normal">{proj.link}</span>
-                                </div>
-                                <p className="text-slate-600 leading-relaxed mt-1 text-[11px]">{proj.description}</p>
-                              </div>
-                            ))}
-                         </section>
-                       )}
-                    </div>
-
-                    {/* Meta Content */}
-                    <div className="col-span-4 flex flex-col gap-8 bg-slate-50/50 p-4 rounded-xl">
-                       {form.skills.some(s => s) && (
-                         <section>
-                            <h3 className="text-xs font-black mb-3 uppercase text-slate-800 tracking-widest border-b border-slate-200 pb-1">Expertise</h3>
-                            <div className="flex flex-wrap gap-1">
-                              {form.skills.map((skill, i) => skill && (
-                                <span key={i} className="bg-slate-200 text-slate-800 px-2 py-0.5 rounded text-[9px] font-bold uppercase">{skill}</span>
-                              ))}
-                            </div>
-                         </section>
-                       )}
-
-                       {form.education.some(e => e.school) && (
-                         <section>
-                            <h3 className="text-xs font-black mb-3 uppercase text-slate-800 tracking-widest border-b border-slate-200 pb-1">Education</h3>
-                            {form.education.map((edu, i) => edu.school && (
-                              <div key={i} className="mb-3 last:mb-0">
-                                 <p className="font-bold text-slate-900 text-[11px]">{edu.school}</p>
-                                 <p className="text-[10px] text-[#0076BC] font-medium italic">{edu.degree}</p>
-                                 <p className="text-[9px] text-slate-400 mt-0.5 uppercase tracking-tighter">{edu.startDate} - {edu.endDate}</p>
-                              </div>
-                            ))}
-                         </section>
-                       )}
-                    </div>
-                  </div>
-               </div>
+            {/* Theme Color Picker */}
+            <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-lg border border-white/10">
+               <label className="text-white text-xs font-bold uppercase tracking-wider">Theme Color</label>
+               <input 
+                  type="color" 
+                  value={form.themeColor || "#0076BC"} 
+                  onChange={(e) => setForm({...form, themeColor: e.target.value})} 
+                  className="w-8 h-6 p-0 border-0 rounded cursor-pointer shrink-0" 
+                  title="Choose template theme color"
+               />
             </div>
+          </div>
+
+          <div className="w-full flex-1 overflow-auto custom-scrollbar rounded-2xl bg-[#0F172A] shadow-inner border border-slate-700 flex justify-center items-start pt-8 pb-16">
+             <div className="shrink-0 transition-transform transform origin-top w-[210mm] shadow-2xl" style={{ zoom: "0.8" }}>
+                  {form.template === 'modern' && <ModernTemplate form={form} resumeRef={resumeRef} />}
+                  {form.template === 'professional' && <ProfessionalTemplate form={form} resumeRef={resumeRef} />}
+                  {form.template === 'creative1' && <Creative1Template form={form} resumeRef={resumeRef} />}
+                  {form.template === 'creative2' && <Creative2Template form={form} resumeRef={resumeRef} />}
+             </div>
           </div>
         </div>
       </div>
+      )}
       <Footer />
     </div>
   );
