@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink } from "lucide-react";
+import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image, BriefcaseBusiness, Sparkles } from "lucide-react";
 import axios from "axios";
 
 const Navbar = () => {
@@ -76,20 +76,30 @@ const Navbar = () => {
     <>
       <nav className="bg-white shadow-sm relative z-40">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <img
-              src="https://img.icons8.com/fluency/48/briefcase.png"
-              alt="YuvaNaukri Logo"
-              className="w-8 h-8"
-            />
-            <span className="text-xl font-bold text-gray-800">YuvaNaukri</span>
+          <div className="flex items-center space-x-2 cursor-pointer transition hover:opacity-80" onClick={() => navigate("/")}>
+            <div className="bg-gradient-to-tr from-blue-600 to-green-400 p-1.5 rounded-lg text-white shadow-md">
+              <BriefcaseBusiness className="w-6 h-6" />
+            </div>
+            <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-[#00A86B]">YuvaNaukri</span>
           </div>
 
           <div className="hidden md:flex space-x-8 text-gray-700 font-medium">
-            <a href="/" className="hover:text-blue-600">Home</a>
-            <a href="/resume-builder" className="hover:text-blue-600">Resume Builder</a>
-            <a href="/jobs" className="hover:text-blue-600">Jobs</a>
-            <a href="/carrier" className="hover:text-blue-600">Career Guidance</a>
+            <a href="/" className="relative group transition-colors duration-300 hover:text-blue-600">
+              Home
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+            </a>
+            <a href="/resume-builder" className="relative group transition-colors duration-300 hover:text-blue-600">
+              Resume Builder
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+            </a>
+            <a href="/jobs" className="relative group transition-colors duration-300 hover:text-blue-600">
+              Jobs
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+            </a>
+            <a href="/carrier" className="relative group transition-colors duration-300 hover:text-blue-600">
+              Career Guidance
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+            </a>
           </div>
 
           <div className="flex items-center space-x-4 relative" ref={dropdownRef}>
@@ -97,31 +107,48 @@ const Navbar = () => {
               <>
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
-                  className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition"
+                  className="flex items-center justify-center rounded-full overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm w-10 h-10 bg-slate-100"
                 >
-                  {/* Just use the first letter of their name as the avatar if no image, or an icon */}
-                  <UserCircle className="w-8 h-8 text-blue-600" />
+                  <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${username || 'dev'}`} alt="profile" className="w-10 h-10 object-cover" />
                 </button>
 
                 {/* Profile Dropdown Menu */}
                 {showDropdown && (
-                  <div className="absolute right-0 top-12 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="text-sm font-semibold text-gray-800">{username}</p>
-                      <p className="text-xs text-gray-500 truncate">{useremail || 'user@example.com'}</p>
+                  <div className="absolute right-0 top-12 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50 transform origin-top-right transition-all">
+                    <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 rounded-t-xl mb-1">
+                      <p className="text-sm font-bold text-gray-800">{username}</p>
+                      <p className="text-xs text-gray-500 truncate mt-0.5">{useremail || 'user@example.com'}</p>
                     </div>
                     
                     <button
                       onClick={openResumesModal}
-                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 flex items-center transition"
+                      className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 flex items-center transition"
                     >
                       <FileText className="w-4 h-4 mr-3" />
                       My Resumes
                     </button>
+
+                    <button
+                      onClick={() => { setShowDropdown(false); alert("Password Change feature coming soon!"); }}
+                      className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 flex items-center transition"
+                    >
+                      <Key className="w-4 h-4 mr-3" />
+                      Change Password
+                    </button>
+
+                    <button
+                      onClick={() => { setShowDropdown(false); alert("Update Profile Picture feature coming soon!"); }}
+                      className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 flex items-center transition"
+                    >
+                      <Image className="w-4 h-4 mr-3" />
+                      Update Profile Pic
+                    </button>
                     
+                    <div className="h-px bg-gray-100 my-1"></div>
+
                     <button
                       onClick={handleLogout}
-                      className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 flex items-center transition"
+                      className="w-full text-left px-5 py-3 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 flex items-center transition"
                     >
                       <LogOut className="w-4 h-4 mr-3" />
                       Logout
