@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Users, TrendingUp, FileText, Briefcase, GraduationCap, Sparkles, Plus, Trash2, ExternalLink } from "lucide-react";
+import { Users, TrendingUp, FileText, Briefcase, GraduationCap, Sparkles } from "lucide-react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 export default function Home() {
@@ -11,7 +10,6 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Other home page init logic if any
   }, [isLoggedIn]);
 
   return (
@@ -36,11 +34,12 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-10 md:mt-0 md:w-1/2 flex justify-center">
+        <div className="mt-10 md:mt-0 md:w-1/2 flex justify-center relative">
+          <div className="absolute inset-0 bg-blue-400 blur-[80px] opacity-30 rounded-full"></div>
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTT09sf1HZJkLFcRdQH5Xq97eY4c0DvimDNqhYNQo4AuOKgyEsPmtVes1F05irbo2X9tjY&usqp=CAU"
-            alt="Career Team"
-            className="rounded-lg shadow-lg"
+            src="/hero-illustration.png"
+            alt="Career Team Illustration"
+            className="rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] z-10 w-full max-w-md transform hover:scale-105 transition duration-500"
           />
         </div>
       </section>
@@ -155,17 +154,17 @@ export default function Home() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <StoryCard 
+          <StoryCard
             name="Priya Sharma"
             role="Software Developer at Tech Corp"
             text="YuvaNaukri helped me create my first professional resume. Within a month, I landed my dream job!"
           />
-          <StoryCard 
+          <StoryCard
             name="Rahul Kumar"
             role="Marketing Assistant at Digital Agency"
             text="The career guidance section was invaluable. I learned interview skills that changed my confidence completely."
           />
-          <StoryCard 
+          <StoryCard
             name="Anita Desai"
             role="Data Analyst at Analytics Inc"
             text="Found my current job through YuvaNaukri's job portal. The platform truly understands what youth need."
@@ -179,7 +178,7 @@ export default function Home() {
           Ready to Transform Your Career?
         </h2>
         <p className="text-lg text-gray-100 max-w-2xl mx-auto mb-10">
-          Join thousands of successful youth who have built their careers with YuvaNaukri. 
+          Join thousands of successful youth who have built their careers with YuvaNaukri.
           Start your journey today – it’s completely free!
         </p>
 

@@ -58,7 +58,7 @@ export default function Footer() {
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-center mt-6 text-sm text-gray-400">
-        <p>© 2025 YuvaNaukri. All rights reserved.</p>
+        <p>© 2026 YuvaNaukri. All rights reserved.</p>
         <p>Contributing to SDG 4 & SDG 8 • Viksit Bharat @2047</p>
       </div>
     </footer>
