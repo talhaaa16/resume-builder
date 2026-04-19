@@ -345,11 +345,11 @@ const Navbar = () => {
                {passwordMsg && <p className="text-red-500 text-sm font-medium text-center bg-red-50 rounded p-2">{passwordMsg}</p>}
                <div>
                  <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                 <input type="password" required value={passwordData.currentPassword} onChange={e => setPasswordData({...passwordData, currentPassword: e.target.value})} className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                 <input type="password" required value={passwordData.currentPassword} onChange={e => setPasswordData({...passwordData, currentPassword: e.target.value})} className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900" />
                </div>
                <div>
                  <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                 <input type="password" required value={passwordData.newPassword} onChange={e => setPasswordData({...passwordData, newPassword: e.target.value})} className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                 <input type="password" required value={passwordData.newPassword} onChange={e => setPasswordData({...passwordData, newPassword: e.target.value})} className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900" />
                </div>
                <button type="submit" className="w-full bg-[#0076BC] text-white py-3 rounded-lg font-semibold mt-2 hover:bg-blue-700 transition">
                  Update Password
