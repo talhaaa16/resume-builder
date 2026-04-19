@@ -6,18 +6,25 @@ import axios from "axios";
 const Navbar = () => {
   const [username, setUsername] = useState(null);
   const [useremail, setUseremail] = useState(null);
+  const [profilePic, setProfilePic] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [showResumesModal, setShowResumesModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "" });
+  const [passwordMsg, setPasswordMsg] = useState("");
   const [resumes, setResumes] = useState([]);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const uname = localStorage.getItem("uname");
     const uemail = localStorage.getItem("uemail");
+    const upic = localStorage.getItem("uprofilepic");
     if (uname) {
       setUsername(uname);
       setUseremail(uemail);
+      if (upic) setProfilePic(upic);
     }
 
     const handleClickOutside = (event) => {
@@ -33,8 +40,10 @@ const Navbar = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("uname");
     localStorage.removeItem("uemail");
+    localStorage.removeItem("uprofilepic");
     setUsername(null);
     setUseremail(null);
+    setProfilePic("");
     setShowDropdown(false);
     navigate("/"); 
   };
@@ -70,6 +79,58 @@ const Navbar = () => {
     setShowDropdown(false);
     setShowResumesModal(true);
     fetchResumes();
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(`${process.env.REACT_APP_API_URL || ""}/api/auth/change-password`, passwordData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data.sts === 0) {
+        alert("Password changed successfully!");
+        setShowPasswordModal(false);
+        setPasswordData({ currentPassword: "", newPassword: "" });
+        setPasswordMsg("");
+      } else {
+        setPasswordMsg(res.data.msg);
+      }
+    } catch (err) {
+      setPasswordMsg("Error updating password.");
+    }
+  };
+
+  const handleProfileImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+       alert("File size must be less than 2MB");
+       return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+       const base64String = reader.result;
+       try {
+          const token = localStorage.getItem("token");
+          const res = await axios.post(`${process.env.REACT_APP_API_URL || ""}/api/auth/update-profile-pic`, { profile_pic: base64String }, {
+             headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.data.sts === 0) {
+             setProfilePic(base64String);
+             localStorage.setItem("uprofilepic", base64String);
+             alert("Profile picture updated!");
+             setShowDropdown(false);
+          } else {
+             alert(res.data.msg);
+          }
+       } catch (err) {
+          alert("Failed to update profile picture.");
+       }
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -109,7 +170,7 @@ const Navbar = () => {
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="flex items-center justify-center rounded-full overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm w-10 h-10 bg-slate-100"
                 >
-                  <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${username || 'dev'}`} alt="profile" className="w-10 h-10 object-cover" />
+                  <img src={profilePic || `https://api.dicebear.com/7.x/notionists/svg?seed=${username || 'dev'}`} alt="profile" className="w-10 h-10 object-cover" />
                 </button>
 
                 {/* Profile Dropdown Menu */}
@@ -129,7 +190,7 @@ const Navbar = () => {
                     </button>
 
                     <button
-                      onClick={() => { setShowDropdown(false); alert("Password Change feature coming soon!"); }}
+                      onClick={() => { setShowDropdown(false); setShowPasswordModal(true); }}
                       className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 flex items-center transition"
                     >
                       <Key className="w-4 h-4 mr-3" />
@@ -137,12 +198,19 @@ const Navbar = () => {
                     </button>
 
                     <button
-                      onClick={() => { setShowDropdown(false); alert("Update Profile Picture feature coming soon!"); }}
+                      onClick={() => fileInputRef.current.click()}
                       className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 flex items-center transition"
                     >
                       <Image className="w-4 h-4 mr-3" />
                       Update Profile Pic
                     </button>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      ref={fileInputRef} 
+                      onChange={handleProfileImageUpload} 
+                      className="hidden" 
+                    />
                     
                     <div className="h-px bg-gray-100 my-1"></div>
 
@@ -256,6 +324,37 @@ const Navbar = () => {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+      {/* Password Modal */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 relative">
+            <button onClick={() => setShowPasswordModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+              <X className="w-5 h-5"/>
+            </button>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="bg-blue-100 p-2 rounded-lg text-blue-600">
+                <Key className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800">Change Password</h3>
+            </div>
+            
+            <form onSubmit={handlePasswordChange} className="flex flex-col gap-4">
+               {passwordMsg && <p className="text-red-500 text-sm font-medium text-center bg-red-50 rounded p-2">{passwordMsg}</p>}
+               <div>
+                 <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                 <input type="password" required value={passwordData.currentPassword} onChange={e => setPasswordData({...passwordData, currentPassword: e.target.value})} className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+               </div>
+               <div>
+                 <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                 <input type="password" required value={passwordData.newPassword} onChange={e => setPasswordData({...passwordData, newPassword: e.target.value})} className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+               </div>
+               <button type="submit" className="w-full bg-[#0076BC] text-white py-3 rounded-lg font-semibold mt-2 hover:bg-blue-700 transition">
+                 Update Password
+               </button>
+            </form>
           </div>
         </div>
       )}

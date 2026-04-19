@@ -36,8 +36,9 @@ const Login = () => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("uname", res.data.user.user_name);
         localStorage.setItem("uemail", res.data.user.user_email);
+        localStorage.setItem("uprofilepic", res.data.user.profile_pic || "");
 
-        setToast("✅ Login successful! Redirecting...");
+        setToast("Login successful! Redirecting...");
         setTimeout(() => {
           navigate("/");
         }, 2000);
