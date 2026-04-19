@@ -2,10 +2,9 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
-// Fetch jobs from Adzuna API
 async function fetchJobsAdzuna(query = "", location = "") {
-  const APP_ID = "d461f071"; // replace with your App ID
-  const APP_KEY = "de399d2305d9102cb5356bb5dbc7aa13"; // replace with your App Key
+  const APP_ID = "d461f071";
+  const APP_KEY = "de399d2305d9102cb5356bb5dbc7aa13";
 
   const url = `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=10&what=${encodeURIComponent(
     query
@@ -22,9 +21,8 @@ async function fetchJobsAdzuna(query = "", location = "") {
     location: job.location?.display_name || "Not specified",
     contract: job.contract_time || "N/A",
     salary: job.salary_min
-      ? `₹${job.salary_min.toLocaleString()} - ₹${
-          job.salary_max?.toLocaleString() || ""
-        }`
+      ? `₹${job.salary_min.toLocaleString()} - ₹${job.salary_max?.toLocaleString() || ""
+      }`
       : "Not disclosed",
     applyUrl: job.redirect_url,
   }));
@@ -38,7 +36,7 @@ export default function Jobs() {
   const [toast, setToast] = useState("");
   const navigate = useNavigate();
 
-  const load = useCallback(async () => {
+  const load = async () => {
     try {
       setLoading(true);
       const res = await fetchJobsAdzuna(q, loc);
@@ -49,11 +47,12 @@ export default function Jobs() {
     } finally {
       setLoading(false);
     }
-  }, [q, loc]);
+  };
 
   useEffect(() => {
     load();
-  }, [load]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only initial load on mount
 
   // ✅ Handle Apply
   const handleApply = (url) => {
@@ -79,39 +78,42 @@ export default function Jobs() {
           <h2 className="text-3xl font-bold text-gray-800 mb-6">
             Find Your Dream Job
           </h2>
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <input
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0076BC] outline-none"
-              placeholder="Job title (e.g., Sales, Data Entry)"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-            />
-            <input
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0076BC] outline-none"
-              placeholder="Location (e.g., Delhi)"
-              value={loc}
-              onChange={(e) => setLoc(e.target.value)}
-            />
-          </div>
-          <div className="flex gap-4">
-            <button
-              onClick={load}
-              disabled={loading}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold transition disabled:opacity-50"
-            >
-              {loading ? "Searching…" : "Search"}
-            </button>
-            <button
-              onClick={() => {
-                setQ("");
-                setLoc("");
-                setJobs([]);
-              }}
-              className="border px-6 py-3 rounded-lg text-gray-700 hover:bg-gray-100 font-medium transition"
-            >
-              Clear
-            </button>
-          </div>
+          <form onSubmit={(e) => { e.preventDefault(); load(); }}>
+            <div className="grid md:grid-cols-2 gap-4 mb-6">
+              <input
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0076BC] outline-none text-gray-900"
+                placeholder="Job title (e.g., Sales, Data Entry)"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+              />
+              <input
+                className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#0076BC] outline-none text-gray-900"
+                placeholder="Location (e.g., Delhi)"
+                value={loc}
+                onChange={(e) => setLoc(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold transition disabled:opacity-50"
+              >
+                {loading ? "Searching…" : "Search"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setQ("");
+                  setLoc("");
+                  setJobs([]);
+                }}
+                className="border px-6 py-3 rounded-lg text-gray-700 hover:bg-gray-100 font-medium transition"
+              >
+                Clear
+              </button>
+            </div>
+          </form>
         </div>
 
         {/* Job Results */}
