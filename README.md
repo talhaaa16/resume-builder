@@ -12,7 +12,10 @@ A highly responsive, dynamic, and professional Resume Builder web application bu
   - *Creative Split*: High-contrast sidebars with skill progress bars and bold timeline dots.
 - **Live Theme Color Picker**: Customize the accent color of any template in real-time.
 - **Instant PDF Export**: Download your perfect resume in full A4 high quality with a single click.
-- **Secure Authentication**: Full JWT-based login, signup, and session management.
+- **Secure Authentication**: JWT-based secure login, signup, and session management.
+- **User Profile Management**: Personalized DiceBear avatars and custom profile picture uploads.
+- **Account Security**: Secure password change functionality with JWT-protected backend routes.
+- **Modern UI/UX**: Premium navbar with smooth hover animations, gradient branding, and responsive design.
 - **Cloud Database**: Persistent user profiles and secure resume data storage using MongoDB Atlas.
 
 ## 🚀 Tech Stack
