@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 async function fetchJobsAdzuna(query = "", location = "") {
-  const APP_ID = "d461f071";
-  const APP_KEY = "de399d2305d9102cb5356bb5dbc7aa13";
+  const APP_ID = process.env.REACT_APP_ADZUNA_ID;
+  const APP_KEY = process.env.REACT_APP_ADZUNA_KEY;
 
   const url = `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=10&what=${encodeURIComponent(
     query

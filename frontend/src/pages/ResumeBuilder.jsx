@@ -301,6 +301,14 @@ export default function ResumeBuilder() {
                        <button onClick={() => removeArrayItem(index, "education")} className="absolute top-2 right-2 text-red-400 hover:text-red-600"><FaTrash /></button>
                        <Input label="School/Univ" value={edu.school} onChange={(e) => handleArrayChange(index, "school", e.target.value, "education")} />
                        <Input label="Degree" value={edu.degree} onChange={(e) => handleArrayChange(index, "degree", e.target.value, "education")} />
+                       <div className="grid grid-cols-2 gap-2 mt-2">
+                         <Input label="Start" value={edu.startDate} onChange={(e) => handleArrayChange(index, "startDate", e.target.value, "education")} />
+                         <Input label="End" value={edu.endDate} onChange={(e) => handleArrayChange(index, "endDate", e.target.value, "education")} />
+                       </div>
+                       <div className="mt-3">
+                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+                         <textarea value={edu.description} onChange={(e) => handleArrayChange(index, "description", e.target.value, "education")} className="w-full p-2 bg-slate-50 border-b-2 border-transparent focus:border-[#0076BC] focus:bg-white outline-none transition-all rounded-t-lg text-sm h-20" placeholder="Relevant coursework, awards, etc." />
+                       </div>
                     </div>
                   ))}
                 </div>
@@ -322,6 +330,10 @@ export default function ResumeBuilder() {
                        <div className="grid grid-cols-2 gap-2 mt-2">
                          <Input label="Start" value={exp.startDate} onChange={(e) => handleArrayChange(index, "startDate", e.target.value, "experience")} />
                          <Input label="End" value={exp.endDate} onChange={(e) => handleArrayChange(index, "endDate", e.target.value, "experience")} />
+                       </div>
+                       <div className="mt-3">
+                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</label>
+                         <textarea value={exp.description} onChange={(e) => handleArrayChange(index, "description", e.target.value, "experience")} className="w-full p-2 bg-slate-50 border-b-2 border-transparent focus:border-[#0076BC] focus:bg-white outline-none transition-all rounded-t-lg text-sm h-24" placeholder="Key responsibilities and achievements..." />
                        </div>
                     </div>
                   ))}
