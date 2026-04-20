@@ -24,6 +24,22 @@ export default function Creative2Template({ form, resumeRef }) {
              )}
            </div>
         </div>
+        
+        {/* Summary */}
+        {form.personalInfo.summary && (
+          <div className="mb-12 px-2">
+             <div className="text-center font-black tracking-widest uppercase text-white py-1.5 mb-6 text-sm shadow-sm" style={{ backgroundColor: themeColor }}>Profile Summary</div>
+             <div className="flex gap-4">
+                <div className="w-16 shrink-0"></div>
+                <div className="w-3 h-3 mt-1 rounded bg-slate-400 shrink-0 opacity-0"></div> {/* Spacer to align with timeline dots below */}
+                <div className="pl-4 w-full">
+                  <p className="text-slate-600 italic text-[11.5px] leading-[1.7] whitespace-pre-wrap font-medium">
+                    {form.personalInfo.summary}
+                  </p>
+                </div>
+             </div>
+          </div>
+        )}
 
         {/* Education */}
         {form.education.some(e => e.school) && (
