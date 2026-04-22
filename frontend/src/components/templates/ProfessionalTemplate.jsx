@@ -47,6 +47,7 @@ export default function ProfessionalTemplate({ form, resumeRef }) {
                     <span>{proj.title}</span>
                     <span className="text-[10px] text-blue-500 italic lowercase font-normal">{proj.link}</span>
                   </div>
+                  {proj.technologies && <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-1">Tech: {proj.technologies}</p>}
                   <p className="text-slate-600 leading-relaxed mt-1 text-[11px]">{proj.description}</p>
                 </div>
               ))}

@@ -105,6 +105,7 @@ export default function ModernTemplate({ form, resumeRef }) {
                     <h4 className="font-bold text-slate-900 text-sm">{proj.title}</h4>
                     {proj.link && <a href={proj.link} target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline">View Link ↗</a>}
                   </div>
+                  {proj.technologies && <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest mb-1">Tech: {proj.technologies}</p>}
                   <p className="text-slate-600 leading-relaxed text-xs">{proj.description}</p>
                 </div>
               ))}

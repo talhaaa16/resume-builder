@@ -61,7 +61,7 @@ export default function ResumeBuilder() {
     education: [{ school: "", degree: "", startDate: "", endDate: "", description: "" }],
     experience: [{ company: "", role: "", startDate: "", endDate: "", description: "" }],
     skills: [""],
-    projects: [{ title: "", link: "", description: "" }],
+    projects: [{ title: "", link: "", description: "", technologies: "" }],
     languages: [""],
     template: "professional",
     themeColor: "#0076BC",
@@ -363,7 +363,7 @@ export default function ResumeBuilder() {
                 <div className="space-y-6 animate-fadeIn">
                    <div className="flex justify-between items-center">
                     <h3 className="font-bold text-slate-700">Key Projects</h3>
-                    <button onClick={() => addArrayItem("projects", { title: "", link: "", description: "" })} className="bg-[#00A86B] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+                    <button onClick={() => addArrayItem("projects", { title: "", link: "", description: "", technologies: "" })} className="bg-[#00A86B] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
                       <FaPlus /> Add
                     </button>
                   </div>
@@ -372,6 +372,11 @@ export default function ResumeBuilder() {
                        <button onClick={() => removeArrayItem(index, "projects")} className="absolute top-2 right-2 text-red-400 hover:text-red-600"><FaTrash /></button>
                        <Input label="Title" value={proj.title} onChange={(e) => handleArrayChange(index, "title", e.target.value, "projects")} />
                        <Input label="Link" value={proj.link} onChange={(e) => handleArrayChange(index, "link", e.target.value, "projects")} />
+                       <Input label="Technologies Used" value={proj.technologies} onChange={(e) => handleArrayChange(index, "technologies", e.target.value, "projects")} placeholder="e.g. React, Node.js, Tailwind" />
+                       <div className="mt-3">
+                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Project Description</label>
+                         <textarea value={proj.description} onChange={(e) => handleArrayChange(index, "description", e.target.value, "projects")} className="w-full p-2 bg-slate-50 border-b-2 border-transparent focus:border-[#0076BC] focus:bg-white outline-none transition-all rounded-t-lg text-sm h-24" placeholder="Describe the project goals and your contributions..." />
+                       </div>
                     </div>
                   ))}
                 </div>

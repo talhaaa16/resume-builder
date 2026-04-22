@@ -84,6 +84,36 @@ export default function Creative2Template({ form, resumeRef }) {
             </div>
           </div>
         )}
+        {/* Projects */}
+        {form.projects.some(p => p.title) && (
+          <div className="mt-10">
+            <div className="text-center font-black tracking-widest uppercase text-white py-1.5 mb-6 text-sm shadow-sm" style={{ backgroundColor: themeColor }}>Projects</div>
+            <div className="flex flex-col gap-6 pl-2 pr-4">
+               {form.projects.map((p,i)=> p.title && (
+                 <div key={i} className="flex gap-4">
+                   <div className="w-16 shrink-0 text-right text-slate-500 font-bold text-[11px] leading-snug pt-1">
+                     Project
+                   </div>
+                   <div className="w-3 h-3 mt-1.5 rounded bg-slate-400 shrink-0 shadow-sm" style={{ backgroundColor: themeColor }}></div>
+                   <div className="border-l-2 border-slate-100 pl-4 pb-2 w-full">
+                     <h4 className="font-bold text-slate-800 tracking-wider text-[13px] uppercase">{p.title}</h4>
+                     {p.link && (
+                       <a href={p.link} target="_blank" rel="noreferrer" className="text-[10px] font-bold block mb-1 hover:underline" style={{ color: themeColor }}>
+                         View Project ↗
+                       </a>
+                     )}
+                     {p.technologies && (
+                        <p className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-tight">
+                          Tech: {p.technologies}
+                        </p>
+                     )}
+                     <p className="text-slate-400 text-[11px] leading-relaxed">{p.description}</p>
+                   </div>
+                 </div>
+               ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Right Column (Dark) */}
