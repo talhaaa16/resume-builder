@@ -62,6 +62,21 @@ export default function ModernTemplate({ form, resumeRef }) {
           </>
         )}
 
+        {form.interests?.some(s => s) && (
+          <>
+            <div className="border-t border-slate-700 w-full"></div>
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Interests</h3>
+              <div className="flex flex-wrap gap-2">
+                {form.interests.map((interest, i) => interest && (
+                  <span key={i} className="bg-slate-800 text-slate-300 px-3 py-1 rounded text-[10px] font-medium border border-slate-700">
+                    {interest}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Right Content Area (Light) */}
@@ -113,6 +128,22 @@ export default function ModernTemplate({ form, resumeRef }) {
           </section>
         )}
 
+        {form.certifications?.some(c => c.title) && (
+          <section>
+            <h3 className="text-sm font-black border-b-2 border-[#00A86B] mb-4 pb-2 uppercase text-slate-800 tracking-wider inline-block">Certifications</h3>
+            <div className="grid grid-cols-1 gap-4">
+              {form.certifications.map((c, i) => c.title && (
+                <div key={i} className="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+                  <div>
+                    <h4 className="font-bold text-slate-900 text-sm uppercase">{c.title}</h4>
+                    <p className="text-slate-500 text-xs italic">{c.issuer}</p>
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{c.date}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

@@ -53,6 +53,20 @@ export default function ProfessionalTemplate({ form, resumeRef }) {
               ))}
             </section>
           )}
+           {form.certifications?.some(c => c.title) && (
+             <section>
+               <h3 className="text-sm font-black border-b border-slate-200 mb-3 pb-1 uppercase text-slate-800 tracking-wider">Certifications</h3>
+               {form.certifications.map((c, i) => c.title && (
+                 <div key={i} className="mb-3">
+                   <div className="flex justify-between font-bold text-slate-900 text-xs">
+                     <span>{c.title}</span>
+                     <span className="text-[10px] text-slate-400 font-normal">{c.date}</span>
+                   </div>
+                   <p className="text-[#0076BC] text-[10px] italic">{c.issuer}</p>
+                 </div>
+               ))}
+             </section>
+           )}
         </div>
 
         {/* Meta Content */}
@@ -80,6 +94,16 @@ export default function ProfessionalTemplate({ form, resumeRef }) {
               ))}
             </section>
           )}
+           {form.interests?.some(s => s) && (
+             <section>
+               <h3 className="text-xs font-black mb-3 uppercase text-slate-800 tracking-widest border-b border-slate-200 pb-1">Interests</h3>
+               <div className="flex flex-wrap gap-1">
+                 {form.interests.map((interest, i) => interest && (
+                   <span key={i} className="bg-slate-50 text-slate-600 px-2 py-0.5 rounded text-[9px] border border-slate-200">{interest}</span>
+                 ))}
+               </div>
+             </section>
+           )}
         </div>
       </div>
     </div>

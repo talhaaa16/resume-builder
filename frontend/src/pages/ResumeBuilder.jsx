@@ -35,7 +35,9 @@ const MOCK_DATA = {
     { title: "E-Commerce Dashboard", link: "github.com/alex/dashboard", description: "A comprehensive admin dashboard with real-time data visualization." }
   ],
   template: "professional",
-  languages: ["English", "Spanish"]
+  languages: ["English", "Spanish"],
+  certifications: [{ title: "AWS Certified Developer", issuer: "Amazon Web Services", date: "2023" }],
+  interests: ["Open Source", "Hiking", "Photography"]
 };
 
 export default function ResumeBuilder() {
@@ -63,6 +65,8 @@ export default function ResumeBuilder() {
     skills: [""],
     projects: [{ title: "", link: "", description: "", technologies: "" }],
     languages: [""],
+    certifications: [{ title: "", issuer: "", date: "" }],
+    interests: [""],
     template: "professional",
     themeColor: "#0076BC",
     resumeId: null
@@ -245,7 +249,8 @@ export default function ResumeBuilder() {
                 {step === 3 && "Work Experience"}
                 {step === 4 && "Skills"}
                 {step === 5 && "Projects"}
-                {step === 6 && "Ready to Download!"}
+                {step === 6 && "Certifications & Interests"}
+                {step === 7 && "Ready to Download!"}
               </h2>
               <div className="flex gap-2">
                  <button onClick={saveResume} disabled={loading} className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg transition">
@@ -383,6 +388,46 @@ export default function ResumeBuilder() {
               )}
 
               {step === 6 && (
+                <div className="space-y-8 animate-fadeIn">
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-bold text-slate-700">Certifications</h3>
+                      <button onClick={() => addArrayItem("certifications", { title: "", issuer: "", date: "" })} className="bg-[#00A86B] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+                        <FaPlus /> Add
+                      </button>
+                    </div>
+                    {form.certifications.map((cert, index) => (
+                      <div key={index} className="p-4 border border-slate-100 rounded-lg bg-slate-50 relative">
+                        <button onClick={() => removeArrayItem(index, "certifications")} className="absolute top-2 right-2 text-red-400 hover:text-red-600"><FaTrash /></button>
+                        <Input label="Certification Title" value={cert.title} onChange={(e) => handleArrayChange(index, "title", e.target.value, "certifications")} />
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          <Input label="Issuer" value={cert.issuer} onChange={(e) => handleArrayChange(index, "issuer", e.target.value, "certifications")} />
+                          <Input label="Date" value={cert.date} onChange={(e) => handleArrayChange(index, "date", e.target.value, "certifications")} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="space-y-4 pt-4 border-t border-slate-100">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-bold text-slate-700">Interests / Hobbies</h3>
+                      <button onClick={() => addArrayItem("interests", "")} className="bg-[#00A86B] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+                        <FaPlus /> Add
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {form.interests.map((interest, index) => (
+                        <div key={index} className="flex items-center bg-slate-100 px-2 py-1 rounded border border-slate-200">
+                          <input value={interest} onChange={(e) => handleArrayChange(index, null, e.target.value, "interests")} className="bg-transparent outline-none text-sm w-24" placeholder="e.g. Reading" />
+                          <button onClick={() => removeArrayItem(index, "interests")} className="text-red-400 ml-1"><FaTrash className="w-3 h-3"/></button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {step === 7 && (
                 <div className="text-center py-20 animate-fadeIn">
                    <FaDownload className="w-16 h-16 text-[#00A86B] mx-auto mb-6 opacity-30" />
                    <h3 className="text-xl font-bold text-slate-800 mb-2">Almost Done!</h3>
@@ -406,7 +451,7 @@ export default function ResumeBuilder() {
               >
                 <FaArrowLeft /> Back
               </button>
-              {step < 6 && (
+              {step < 7 && (
                 <button
                   onClick={nextStep}
                   className="bg-orange-500 text-white px-8 py-2 rounded-lg font-bold hover:bg-orange-600 flex items-center gap-2 shadow-lg transition"

@@ -95,6 +95,18 @@ export default function Creative1Template({ form, resumeRef }) {
               </div>
             </section>
           )}
+           {form.interests?.some(s => s) && (
+             <section>
+               <h2 className="text-2xl font-black mb-4 text-slate-900">Interests</h2>
+               <div className="flex flex-wrap gap-2">
+                 {form.interests.map((interest, i) => interest && (
+                   <span key={i} className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-[11px] font-bold border border-slate-200 uppercase tracking-tighter">
+                     {interest}
+                   </span>
+                 ))}
+               </div>
+             </section>
+           )}
         </div>
 
         <div className="flex flex-col gap-10">
@@ -137,6 +149,22 @@ export default function Creative1Template({ form, resumeRef }) {
               </div>
             </section>
           )}
+           {form.certifications?.some(c => c.title) && (
+             <section>
+               <h2 className="text-2xl font-black mb-4 text-slate-900">Certifications</h2>
+               <div className="space-y-4">
+                 {form.certifications.map((c, i) => c.title && (
+                   <div key={i} className="flex items-start gap-3">
+                     <div className="w-0 h-0 border-y-4 border-y-transparent border-l-[6px] mt-1.5" style={{ borderLeftColor: themeColor }}></div>
+                     <div>
+                       <p className="font-bold text-slate-800 text-sm tracking-wide">{c.title}</p>
+                       <p className="text-slate-500 text-[12px] italic">{c.issuer} {c.date && `— ${c.date}`}</p>
+                     </div>
+                   </div>
+                 ))}
+               </div>
+             </section>
+           )}
         </div>
       </div>
     </div>

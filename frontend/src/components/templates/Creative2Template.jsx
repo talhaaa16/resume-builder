@@ -114,6 +114,26 @@ export default function Creative2Template({ form, resumeRef }) {
             </div>
           </div>
         )}
+        {/* Certifications */}
+        {form.certifications?.some(c => c.title) && (
+          <div className="mt-10">
+            <div className="text-center font-black tracking-widest uppercase text-white py-1.5 mb-6 text-sm shadow-sm" style={{ backgroundColor: themeColor }}>Certifications</div>
+            <div className="flex flex-col gap-5 pl-2 pr-4">
+               {form.certifications.map((c,i)=> c.title && (
+                 <div key={i} className="flex gap-4">
+                   <div className="w-16 shrink-0 text-right text-slate-400 font-bold text-[10px] uppercase leading-tight pt-1">
+                     Cert
+                   </div>
+                   <div className="w-2.5 h-2.5 mt-1.5 rounded-full bg-slate-300 shrink-0 shadow-sm"></div>
+                   <div className="border-l border-slate-100 pl-4 pb-1 w-full">
+                     <h4 className="font-bold text-slate-800 tracking-wider text-xs uppercase">{c.title}</h4>
+                     <p className="text-slate-400 text-[10px] italic">{c.issuer} {c.date && `| ${c.date}`}</p>
+                   </div>
+                 </div>
+               ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Right Column (Dark) */}
@@ -169,6 +189,18 @@ export default function Creative2Template({ form, resumeRef }) {
               </>
             )}
 
+            {form.interests?.some(s => s) && (
+              <>
+                <h3 className="font-bold tracking-widest uppercase border-y border-slate-600 py-3 mb-8 text-center text-white text-sm">Interests</h3>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {form.interests.map((interest, i) => interest && (
+                    <span key={i} className="bg-white/5 text-slate-300 px-3 py-1 rounded text-[10px] font-medium border border-white/10 uppercase tracking-tighter hover:bg-white/10 transition">
+                      {interest}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
          </div>
       </div>
     </div>
