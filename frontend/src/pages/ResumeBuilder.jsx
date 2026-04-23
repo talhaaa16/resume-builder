@@ -76,7 +76,10 @@ export default function ResumeBuilder() {
     if (location.state && location.state.resumeData) {
       const data = location.state.resumeData;
       setForm({
+        ...form,
         ...data,
+        certifications: data.certifications || [{ title: "", issuer: "", date: "" }],
+        interests: data.interests || [""],
         resumeId: data._id
       });
       setStep(1);
@@ -396,7 +399,7 @@ export default function ResumeBuilder() {
                         <FaPlus /> Add
                       </button>
                     </div>
-                    {form.certifications.map((cert, index) => (
+                    {form.certifications?.map((cert, index) => (
                       <div key={index} className="p-4 border border-slate-100 rounded-lg bg-slate-50 relative">
                         <button onClick={() => removeArrayItem(index, "certifications")} className="absolute top-2 right-2 text-red-400 hover:text-red-600"><FaTrash /></button>
                         <Input label="Certification Title" value={cert.title} onChange={(e) => handleArrayChange(index, "title", e.target.value, "certifications")} />
@@ -416,7 +419,7 @@ export default function ResumeBuilder() {
                       </button>
                     </div>
                     <div className="flex flex-wrap gap-2">
-                      {form.interests.map((interest, index) => (
+                      {form.interests?.map((interest, index) => (
                         <div key={index} className="flex items-center bg-slate-100 px-2 py-1 rounded border border-slate-200">
                           <input value={interest} onChange={(e) => handleArrayChange(index, null, e.target.value, "interests")} className="bg-transparent outline-none text-sm w-24" placeholder="e.g. Reading" />
                           <button onClick={() => removeArrayItem(index, "interests")} className="text-red-400 ml-1"><FaTrash className="w-3 h-3"/></button>
