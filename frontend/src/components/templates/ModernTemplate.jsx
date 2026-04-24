@@ -3,8 +3,7 @@ import React from "react";
 export default function ModernTemplate({ form, resumeRef }) {
   return (
     <div ref={resumeRef} className="bg-white w-full min-h-[297mm] flex text-black shadow-lg mx-auto" style={{ fontFamily: "'Outfit', 'Inter', sans-serif", fontSize: "12px" }}>
-      
-      {/* Left Sidebar (Dark) */}
+
       <div className="w-[35%] bg-slate-900 text-white p-8 flex flex-col gap-8">
         <div className="text-center">
           {form.personalInfo.profilePhoto ? (
@@ -25,11 +24,11 @@ export default function ModernTemplate({ form, resumeRef }) {
         <div>
           <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Contact Info</h3>
           <div className="flex flex-col gap-3 text-xs text-slate-200">
-             {form.personalInfo.email && <p className="break-all">📧 {form.personalInfo.email}</p>}
-             {form.personalInfo.phone && <p>📱 {form.personalInfo.phone}</p>}
-             {form.personalInfo.address && <p>📍 {form.personalInfo.address}</p>}
-             {form.personalInfo.linkedin && <p>🔗 {form.personalInfo.linkedin}</p>}
-             {form.personalInfo.github && <p>💻 {form.personalInfo.github}</p>}
+            {form.personalInfo.email && <p className="break-all">📧 {form.personalInfo.email}</p>}
+            {form.personalInfo.phone && <p>📱 {form.personalInfo.phone}</p>}
+            {form.personalInfo.address && <p>📍 {form.personalInfo.address}</p>}
+            {form.personalInfo.linkedin && <p>🔗 {form.personalInfo.linkedin}</p>}
+            {form.personalInfo.github && <p>💻 {form.personalInfo.github}</p>}
           </div>
         </div>
 
@@ -45,7 +44,7 @@ export default function ModernTemplate({ form, resumeRef }) {
             </div>
           </div>
         )}
-        
+
         {form.education.some(e => e.school) && (
           <>
             <div className="border-t border-slate-700 w-full"></div>
@@ -53,9 +52,9 @@ export default function ModernTemplate({ form, resumeRef }) {
               <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Education</h3>
               {form.education.map((edu, i) => edu.school && (
                 <div key={i} className="mb-4 last:mb-0">
-                    <p className="font-bold text-slate-100">{edu.school}</p>
-                    <p className="text-slate-400 italic text-xs mb-1">{edu.degree}</p>
-                    <p className="text-slate-500 text-[10px] uppercase">{edu.startDate} - {edu.endDate}</p>
+                  <p className="font-bold text-slate-100">{edu.school}</p>
+                  <p className="text-slate-400 italic text-xs mb-1">{edu.degree}</p>
+                  <p className="text-slate-500 text-[10px] uppercase">{edu.startDate} - {edu.endDate}</p>
                 </div>
               ))}
             </div>
@@ -79,13 +78,12 @@ export default function ModernTemplate({ form, resumeRef }) {
         )}
       </div>
 
-      {/* Right Content Area (Light) */}
       <div className="w-[65%] p-8 bg-white flex flex-col gap-8">
-        
+
         {form.personalInfo.summary && (
           <section>
             <h3 className="text-sm font-black border-b-2 border-[#00A86B] mb-3 pb-2 uppercase text-slate-800 tracking-wider inline-block">Profile Summary</h3>
-            <p className="text-slate-600 leading-relaxed text-sm">{form.personalInfo.summary}</p>
+            <p className="text-slate-600 leading-relaxed text-sm whitespace-pre-wrap">{form.personalInfo.summary}</p>
           </section>
         )}
 
