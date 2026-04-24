@@ -3,14 +3,18 @@ import React from "react";
 export default function ProfessionalTemplate({ form, resumeRef }) {
   return (
     <div ref={resumeRef} className="bg-white w-full min-h-[297mm] p-12 flex flex-col gap-8 text-black shadow-lg mx-auto" style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px" }}>
-      {/* Preview Header */}
-      <div className="flex justify-between border-b-2 border-slate-800 pb-8">
+      <div className="flex justify-between items-start border-b-2 border-slate-800 pb-8 gap-6">
+        {form.personalInfo.profilePhoto && (
+          <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-slate-100 shadow-sm shrink-0">
+            <img src={form.personalInfo.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+          </div>
+        )}
         <div className="flex-1">
           <h1 className="text-4xl font-black uppercase tracking-tight text-slate-900 mb-1">{form.personalInfo.fullName || "NAME HERE"}</h1>
           <p className="text-lg font-bold text-[#0076BC] uppercase tracking-widest leading-none mb-3">{form.personalInfo.designation || "YOUR TITLE"}</p>
-          <p className="text-slate-600 leading-tight pr-10">{form.personalInfo.summary}</p>
+          <p className="text-slate-600 leading-tight pr-10 whitespace-pre-wrap">{form.personalInfo.summary}</p>
         </div>
-        <div className="flex flex-col text-right gap-1 font-medium text-slate-500 whitespace-nowrap">
+        <div className="flex flex-col text-right gap-1 font-medium text-slate-500 whitespace-nowrap text-xs">
           <p>{form.personalInfo.email}</p>
           <p>{form.personalInfo.phone}</p>
           <p>{form.personalInfo.address}</p>
@@ -45,7 +49,9 @@ export default function ProfessionalTemplate({ form, resumeRef }) {
                 <div key={i} className="mb-4 last:mb-0">
                   <div className="flex justify-between font-bold text-slate-900 text-sm">
                     <span>{proj.title}</span>
-                    <span className="text-[10px] text-blue-500 italic lowercase font-normal">{proj.link}</span>
+                    <span className="text-[10px] text-blue-500 italic lowercase font-normal">
+                      {proj.link ? (proj.link.includes("http") ? "Link ↗" : proj.link) : ""}
+                    </span>
                   </div>
                   {proj.technologies && <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-1">Tech: {proj.technologies}</p>}
                   <p className="text-slate-600 leading-relaxed mt-1 text-[11px]">{proj.description}</p>
@@ -53,23 +59,22 @@ export default function ProfessionalTemplate({ form, resumeRef }) {
               ))}
             </section>
           )}
-           {form.certifications?.some(c => c.title) && (
-             <section>
-               <h3 className="text-sm font-black border-b border-slate-200 mb-3 pb-1 uppercase text-slate-800 tracking-wider">Certifications</h3>
-               {form.certifications.map((c, i) => c.title && (
-                 <div key={i} className="mb-3">
-                   <div className="flex justify-between font-bold text-slate-900 text-xs">
-                     <span>{c.title}</span>
-                     <span className="text-[10px] text-slate-400 font-normal">{c.date}</span>
-                   </div>
-                   <p className="text-[#0076BC] text-[10px] italic">{c.issuer}</p>
-                 </div>
-               ))}
-             </section>
-           )}
+          {form.certifications?.some(c => c.title) && (
+            <section>
+              <h3 className="text-sm font-black border-b border-slate-200 mb-3 pb-1 uppercase text-slate-800 tracking-wider">Certifications</h3>
+              {form.certifications.map((c, i) => c.title && (
+                <div key={i} className="mb-3">
+                  <div className="flex justify-between font-bold text-slate-900 text-xs">
+                    <span>{c.title}</span>
+                    <span className="text-[10px] text-slate-400 font-normal">{c.date}</span>
+                  </div>
+                  <p className="text-[#0076BC] text-[10px] italic">{c.issuer}</p>
+                </div>
+              ))}
+            </section>
+          )}
         </div>
 
-        {/* Meta Content */}
         <div className="col-span-4 flex flex-col gap-8 bg-slate-50/50 p-4 rounded-xl">
           {form.skills.some(s => s) && (
             <section>
@@ -94,16 +99,16 @@ export default function ProfessionalTemplate({ form, resumeRef }) {
               ))}
             </section>
           )}
-           {form.interests?.some(s => s) && (
-             <section>
-               <h3 className="text-xs font-black mb-3 uppercase text-slate-800 tracking-widest border-b border-slate-200 pb-1">Interests</h3>
-               <div className="flex flex-wrap gap-1">
-                 {form.interests.map((interest, i) => interest && (
-                   <span key={i} className="bg-slate-50 text-slate-600 px-2 py-0.5 rounded text-[9px] border border-slate-200">{interest}</span>
-                 ))}
-               </div>
-             </section>
-           )}
+          {form.interests?.some(s => s) && (
+            <section>
+              <h3 className="text-xs font-black mb-3 uppercase text-slate-800 tracking-widest border-b border-slate-200 pb-1">Interests</h3>
+              <div className="flex flex-wrap gap-1">
+                {form.interests.map((interest, i) => interest && (
+                  <span key={i} className="bg-slate-50 text-slate-600 px-2 py-0.5 rounded text-[9px] border border-slate-200">{interest}</span>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </div>

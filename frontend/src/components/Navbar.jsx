@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image, BriefcaseBusiness, Sparkles } from "lucide-react";
 import axios from "axios";
+import { useToast } from "../context/ToastContext";
 
 const Navbar = () => {
   const [username, setUsername] = useState(null);
@@ -13,6 +14,7 @@ const Navbar = () => {
   const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "" });
   const [passwordMsg, setPasswordMsg] = useState("");
   const [resumes, setResumes] = useState([]);
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -45,7 +47,7 @@ const Navbar = () => {
     setUseremail(null);
     setProfilePic("");
     setShowDropdown(false);
-    navigate("/"); 
+    navigate("/");
   };
 
   const fetchResumes = async () => {
@@ -69,7 +71,7 @@ const Navbar = () => {
       await axios.delete(`${process.env.REACT_APP_API_URL || ""}/api/resume/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      fetchResumes(); // Refresh after deletion
+      fetchResumes();
     } catch (error) {
       alert("Failed to delete resume");
     }
@@ -105,30 +107,61 @@ const Navbar = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-       alert("File size must be less than 2MB");
-       return;
+    if (!file.type.startsWith("image/")) {
+      showToast("Please upload an image file (JPG, PNG).", "error");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("Maximum file size is 5MB.", "error");
+      return;
     }
 
     const reader = new FileReader();
-    reader.onloadend = async () => {
-       const base64String = reader.result;
-       try {
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = async () => {
+        const canvas = document.createElement("canvas");
+        const MAX_SIZE = 400;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height *= MAX_SIZE / width;
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width *= MAX_SIZE / height;
+            height = MAX_SIZE;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
+
+        try {
           const token = localStorage.getItem("token");
-          const res = await axios.post(`${process.env.REACT_APP_API_URL || ""}/api/auth/update-profile-pic`, { profile_pic: base64String }, {
-             headers: { Authorization: `Bearer ${token}` }
+          const res = await axios.post(`${process.env.REACT_APP_API_URL || ""}/api/auth/update-profile-pic`, { profile_pic: compressedBase64 }, {
+            headers: { Authorization: `Bearer ${token}` }
           });
           if (res.data.sts === 0) {
-             setProfilePic(base64String);
-             localStorage.setItem("uprofilepic", base64String);
-             alert("Profile picture updated!");
-             setShowDropdown(false);
+            setProfilePic(compressedBase64);
+            localStorage.setItem("uprofilepic", compressedBase64);
+            showToast("Profile picture updated!");
+            setShowDropdown(false);
           } else {
-             alert(res.data.msg);
+            showToast(res.data.msg, "error");
           }
-       } catch (err) {
-          alert("Failed to update profile picture.");
-       }
+        } catch (err) {
+          showToast("Failed to update profile picture.", "error");
+        }
+      };
+      img.src = event.target.result;
     };
     reader.readAsDataURL(file);
   };
@@ -180,7 +213,7 @@ const Navbar = () => {
                       <p className="text-sm font-bold text-gray-800">{username}</p>
                       <p className="text-xs text-gray-500 truncate mt-0.5">{useremail || 'user@example.com'}</p>
                     </div>
-                    
+
                     <button
                       onClick={openResumesModal}
                       className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 flex items-center transition"
@@ -204,14 +237,14 @@ const Navbar = () => {
                       <Image className="w-4 h-4 mr-3" />
                       Update Profile Pic
                     </button>
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      ref={fileInputRef} 
-                      onChange={handleProfileImageUpload} 
-                      className="hidden" 
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      onChange={handleProfileImageUpload}
+                      className="hidden"
                     />
-                    
+
                     <div className="h-px bg-gray-100 my-1"></div>
 
                     <button
@@ -252,23 +285,23 @@ const Navbar = () => {
                 <FileText className="w-6 h-6 text-[#0076BC]" />
                 Your Saved Resumes
               </h2>
-              <button 
+              <button
                 onClick={() => setShowResumesModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
-            
+
             <div className="p-6 overflow-y-auto bg-gray-50/50 flex-1">
               {resumes.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-gray-500 mb-4">You haven't created any resumes yet.</p>
-                  <button 
+                  <button
                     onClick={() => {
                       setShowResumesModal(false);
                       navigate("/resume-builder");
-                    }} 
+                    }}
                     className="bg-[#0076BC] text-white px-6 py-2 rounded-lg inline-flex items-center gap-2 hover:bg-blue-700 transition"
                   >
                     Create New Resume
@@ -282,8 +315,8 @@ const Navbar = () => {
                         <div className="bg-blue-50 p-3 rounded-lg text-[#0076BC]">
                           <FileText className="w-6 h-6" />
                         </div>
-                        <button 
-                          onClick={() => deleteResume(resume._id)} 
+                        <button
+                          onClick={() => deleteResume(resume._id)}
                           className="text-gray-300 hover:text-red-500 transition"
                           title="Delete Resume"
                         >
@@ -296,7 +329,7 @@ const Navbar = () => {
                       <p className="text-sm text-gray-500 mb-5 line-clamp-1">
                         {resume.personalInfo?.designation || "No designation"}
                       </p>
-                      <button 
+                      <button
                         onClick={() => {
                           setShowResumesModal(false);
                           navigate("/resume-builder", { state: { resumeData: resume } });
@@ -307,9 +340,9 @@ const Navbar = () => {
                       </button>
                     </div>
                   ))}
-                  
+
                   {/* Create New Card */}
-                  <div 
+                  <div
                     onClick={() => {
                       setShowResumesModal(false);
                       navigate("/resume-builder");
@@ -332,7 +365,7 @@ const Navbar = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 relative">
             <button onClick={() => setShowPasswordModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
-              <X className="w-5 h-5"/>
+              <X className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-3 mb-6">
               <div className="bg-blue-100 p-2 rounded-lg text-blue-600">
@@ -340,20 +373,20 @@ const Navbar = () => {
               </div>
               <h3 className="text-xl font-bold text-gray-800">Change Password</h3>
             </div>
-            
+
             <form onSubmit={handlePasswordChange} className="flex flex-col gap-4">
-               {passwordMsg && <p className="text-red-500 text-sm font-medium text-center bg-red-50 rounded p-2">{passwordMsg}</p>}
-               <div>
-                 <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                 <input type="password" required value={passwordData.currentPassword} onChange={e => setPasswordData({...passwordData, currentPassword: e.target.value})} className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900" />
-               </div>
-               <div>
-                 <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                 <input type="password" required value={passwordData.newPassword} onChange={e => setPasswordData({...passwordData, newPassword: e.target.value})} className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900" />
-               </div>
-               <button type="submit" className="w-full bg-[#0076BC] text-white py-3 rounded-lg font-semibold mt-2 hover:bg-blue-700 transition">
-                 Update Password
-               </button>
+              {passwordMsg && <p className="text-red-500 text-sm font-medium text-center bg-red-50 rounded p-2">{passwordMsg}</p>}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                <input type="password" required value={passwordData.currentPassword} onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })} className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                <input type="password" required value={passwordData.newPassword} onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })} className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900" />
+              </div>
+              <button type="submit" className="w-full bg-[#0076BC] text-white py-3 rounded-lg font-semibold mt-2 hover:bg-blue-700 transition">
+                Update Password
+              </button>
             </form>
           </div>
         </div>
