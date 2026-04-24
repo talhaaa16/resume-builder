@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [msg, setMsg] = useState(null);
   const [toast, setToast] = useState(null);
@@ -12,6 +13,13 @@ const Login = () => {
     user_email: "",
     password: "",
   });
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("expired") === "true") {
+      setMsg("Your session has expired. Please login again.");
+    }
+  }, [location]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -108,7 +116,6 @@ const Login = () => {
         </p>
       </form>
 
-      {/* ✅ Toast Notification */}
       <AnimatePresence>
         {toast && (
           <motion.div
