@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useToast } from "../context/ToastContext";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { showToast } = useToast();
   const [msg, setMsg] = useState(null);
-  const [toast, setToast] = useState(null);
   const [userlogin, setUserlogin] = useState({
     user_email: "",
     password: "",
@@ -46,7 +47,7 @@ const Login = () => {
         localStorage.setItem("uemail", res.data.user.user_email);
         localStorage.setItem("uprofilepic", res.data.user.profile_pic || "");
 
-        setToast("Login successful! Redirecting...");
+        showToast("Login successful! Redirecting...");
         setTimeout(() => {
           navigate("/");
         }, 2000);
@@ -116,19 +117,7 @@ const Login = () => {
         </p>
       </form>
 
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            transition={{ duration: 0.5 }}
-            className="fixed bottom-5 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg"
-          >
-            {toast}
-          </motion.div>
-        )}
-      </AnimatePresence>
+
     </div>
   );
 };

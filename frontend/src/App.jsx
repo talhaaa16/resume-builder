@@ -11,31 +11,35 @@ import Contact from "./pages/contact";
 import Privacy from "./pages/privacy";
 import Terms from "./pages/terms";
 
+import { ToastProvider } from "./context/ToastContext";
+
 function App() {
   return (
-    <div className="app-shell">
-      <main className="container">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/jobs" element={<Jobs />} />
-          <Route path="/carrier" element={<CareerGuidance />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
+    <ToastProvider>
+      <div className="app-shell">
+        <main className="container">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/jobs" element={<Jobs />} />
+            <Route path="/carrier" element={<CareerGuidance />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
 
-          <Route
-            path="/resume-builder"
-            element={
-              <PrivateRoute>
-                <ResumeBuilder />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </main>
-    </div>
+            <Route
+              path="/resume-builder"
+              element={
+                <PrivateRoute>
+                  <ResumeBuilder />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </main>
+      </div>
+    </ToastProvider>
   );
 }
 

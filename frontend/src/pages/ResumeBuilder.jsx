@@ -10,6 +10,7 @@ import ProfessionalTemplate from "../components/templates/ProfessionalTemplate";
 import ModernTemplate from "../components/templates/ModernTemplate";
 import Creative1Template from "../components/templates/Creative1Template";
 import Creative2Template from "../components/templates/Creative2Template";
+import { useToast } from "../context/ToastContext";
 
 const MOCK_DATA = {
   personalInfo: {
@@ -41,6 +42,7 @@ const MOCK_DATA = {
 export default function ResumeBuilder() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { showToast } = useToast();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const resumeRef = useRef();
@@ -131,12 +133,12 @@ export default function ResumeBuilder() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.data.sts === 0) {
-        alert("Resume saved successfully!");
+        showToast("Resume saved successfully!");
         navigate("/");
       }
     } catch (error) {
       console.error(error);
-      alert("Failed to save resume. Please login again.");
+      showToast("Failed to save resume. Please login again.", "error");
     } finally {
       setLoading(false);
     }

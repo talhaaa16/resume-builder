@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "../context/ToastContext";
 
 const Regi = () => {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [userregi, setUserRegi] = useState({
     user_name: "",
     user_email: "",
@@ -28,11 +30,11 @@ const Regi = () => {
         `${finalApiUrl}/api/auth/adduser`,
         userregi
       );
-      console.log(res);
-      console.log("Register success");
+      showToast("Account created successfully! Please login.");
       navigate("/login");
     } catch (error) {
       console.error(error);
+      showToast("Signup failed. Please try again.", "error");
     }
   };
 
