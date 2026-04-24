@@ -195,8 +195,9 @@ export default function ResumeBuilder() {
   const prevStep = () => setStep(step - 1);
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#0076BC] to-[#00A86B] pb-10">
+    <div className="min-h-screen bg-gradient-to-r from-[#0076BC] to-[#00A86B] flex flex-col">
       <Navbar />
+      <div className="flex-grow">
 
       {step === 0 ? (
         <div className="max-w-[1400px] mx-auto px-4 pt-10">
@@ -505,6 +506,7 @@ export default function ResumeBuilder() {
           </div>
         </div>
       )}
+      </div>
       <Footer />
     </div>
   );
