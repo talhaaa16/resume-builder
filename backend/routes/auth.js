@@ -3,15 +3,19 @@ const router = express.Router()
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken')
 
-const SECRET_KEY = "text"
+const SECRET_KEY = process.env.JWT_SECRET || "fallback_dev_secret";
 const User = require('../models/user');
 const Token = require('../models/token');
 const authMiddleware = require('../middleware/auth');
 
 
-//curd operation
 router.post('/adduser', async (req, res) => {
     try {
+        const existingUser = await User.findOne({ user_email: req.body.user_email });
+        if (existingUser) {
+            return res.status(400).json({ sts: 1, msg: "Email is already registered. Please login." });
+        }
+
         const newuser = new User({
             user_name: req.body.user_name,
             user_email: req.body.user_email,
@@ -103,7 +107,7 @@ router.post('/update-profile-pic', authMiddleware, async (req, res) => {
         const { profile_pic } = req.body;
         const user = await User.findById(req.user.userId);
         if (!user) return res.json({ sts: 1, msg: "User not found" });
-        
+
         user.profile_pic = profile_pic;
         await user.save();
         res.json({ sts: 0, msg: "Profile picture updated successfully", profile_pic });
