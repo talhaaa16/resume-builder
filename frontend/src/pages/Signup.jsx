@@ -35,15 +35,14 @@ const Regi = () => {
       navigate("/login");
     } catch (error) {
       console.error(error);
-      showToast("Signup failed. Please try again.", "error");
+      const errorMsg = error.response?.data?.msg || "Signup failed. Please try again.";
+      showToast(errorMsg, "error");
     }
   };
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      {/* Left Side - Branding/Info */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#00A86B] to-[#0076BC] p-12 flex-col justify-between text-white relative overflow-hidden">
-        {/* Decorative Circles */}
         <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-black/10 rounded-full blur-3xl"></div>
 
@@ -92,10 +91,8 @@ const Regi = () => {
         </div>
       </div>
 
-      {/* Right Side - Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md">
-          {/* Mobile Header (Hidden on Desktop) */}
           <div className="flex lg:hidden items-center gap-2 mb-10 justify-center">
             <div className="bg-[#00A86B] p-2 rounded-lg text-white">
               <FileText className="w-6 h-6" />
