@@ -14,6 +14,14 @@ const Navbar = () => {
   const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "" });
   const [passwordMsg, setPasswordMsg] = useState("");
   const [resumes, setResumes] = useState([]);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+    confirmText: "OK",
+    confirmColor: "bg-red-500 hover:bg-red-600"
+  });
   const { showToast } = useToast();
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
@@ -39,15 +47,25 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("uname");
-    localStorage.removeItem("uemail");
-    localStorage.removeItem("uprofilepic");
-    setUsername(null);
-    setUseremail(null);
-    setProfilePic("");
-    setShowDropdown(false);
-    navigate("/");
+    setConfirmModal({
+      isOpen: true,
+      title: "Are you sure?",
+      message: "You are about to logout from your account. You will need to login again to access your resumes.",
+      confirmText: "Logout",
+      confirmColor: "bg-red-500 hover:bg-red-600",
+      onConfirm: () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("uname");
+        localStorage.removeItem("uemail");
+        localStorage.removeItem("uprofilepic");
+        setUsername(null);
+        setUseremail(null);
+        setProfilePic("");
+        setShowDropdown(false);
+        navigate("/");
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+      }
+    });
   };
 
   const fetchResumes = async () => {
@@ -65,16 +83,25 @@ const Navbar = () => {
   };
 
   const deleteResume = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this resume?")) return;
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`${process.env.REACT_APP_API_URL || ""}/api/resume/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      fetchResumes();
-    } catch (error) {
-      alert("Failed to delete resume");
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: "Are you sure?",
+      message: "Once deleted, you will not be able to recover this resume!",
+      confirmText: "Delete",
+      confirmColor: "bg-red-500 hover:bg-red-600",
+      onConfirm: async () => {
+        try {
+          const token = localStorage.getItem("token");
+          await axios.delete(`${process.env.REACT_APP_API_URL || ""}/api/resume/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          fetchResumes();
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        } catch (error) {
+          alert("Failed to delete resume");
+        }
+      }
+    });
   };
 
   const openResumesModal = () => {
@@ -388,6 +415,39 @@ const Navbar = () => {
                 Update Password
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Confirmation Modal */}
+      {confirmModal.isOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center transform transition-all scale-100">
+            
+            {/* Warning Icon */}
+            <div className="mx-auto w-[72px] h-[72px] border-4 border-[#F8BB86] rounded-full flex items-center justify-center mb-6">
+              <span className="text-[#F8BB86] text-5xl font-light leading-none -mt-1">!</span>
+            </div>
+
+            <h2 className="text-[26px] font-semibold text-gray-700 mb-3">{confirmModal.title}</h2>
+            <p className="text-gray-500 mb-8 text-[15px] leading-relaxed px-2">
+              {confirmModal.message}
+            </p>
+
+            <div className="flex justify-center gap-3">
+              <button
+                onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+                className="px-5 py-2.5 bg-[#efefef] hover:bg-[#e2e2e2] rounded text-gray-700 font-semibold transition min-w-[100px]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmModal.onConfirm}
+                className={`px-5 py-2.5 rounded text-white font-semibold transition min-w-[100px] shadow-md ${confirmModal.confirmColor}`}
+              >
+                {confirmModal.confirmText}
+              </button>
+            </div>
           </div>
         </div>
       )}
