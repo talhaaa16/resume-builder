@@ -53,7 +53,16 @@ const Navbar = () => {
       message: "You are about to logout from your account. You will need to login again to access your resumes.",
       confirmText: "Logout",
       confirmColor: "bg-red-500 hover:bg-red-600",
-      onConfirm: () => {
+      onConfirm: async () => {
+        try {
+          const token = localStorage.getItem("token");
+          if (token) {
+            await axios.post(`${process.env.REACT_APP_API_URL || ""}/api/auth/logout`, { token });
+          }
+        } catch (error) {
+          console.error("Logout error:", error);
+        }
+
         localStorage.removeItem("token");
         localStorage.removeItem("uname");
         localStorage.removeItem("uemail");

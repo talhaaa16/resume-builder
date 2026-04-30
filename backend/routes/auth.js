@@ -67,6 +67,15 @@ router.post('/userlogin', async (req, res) => {
             expiresIn: "7d",
         });
 
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7);
+
+        await new Token({
+            userId: login._id,
+            token: token,
+            expiresAt: expiresAt.toISOString()
+        }).save();
+
         return res.json({
             sts: 0,
             msg: "Login success",
