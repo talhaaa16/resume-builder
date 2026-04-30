@@ -105,8 +105,24 @@ router.post('/change-password', authMiddleware, async (req, res) => {
 router.post('/update-profile-pic', authMiddleware, async (req, res) => {
     try {
         const { profile_pic } = req.body;
+
+        if (!profile_pic) {
+            return res.status(400).json({ sts: 1, msg: "No image provided" });
+        }
+
+        if (!profile_pic.startsWith('data:image/')) {
+            return res.status(400).json({ sts: 1, msg: "Invalid file format. Please upload a valid image." });
+        }
+
+        const sizeInBytes = (profile_pic.length * (3 / 4));
+        const sizeInMB = sizeInBytes / (1024 * 1024);
+
+        if (sizeInMB > 5) {
+            return res.status(400).json({ sts: 1, msg: "File too large! Maximum limit is 5MB." });
+        }
+
         const user = await User.findById(req.user.userId);
-        if (!user) return res.json({ sts: 1, msg: "User not found" });
+        if (!user) return res.status(404).json({ sts: 1, msg: "User not found" });
 
         user.profile_pic = profile_pic;
         await user.save();
