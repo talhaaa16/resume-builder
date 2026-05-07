@@ -26,6 +26,17 @@ const Regi = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
     const finalApiUrl = (apiUrl && apiUrl !== "undefined") ? apiUrl : "";
 
+    if (!userregi.user_name || !userregi.user_email || !userregi.password) {
+      showToast("Please fill in all fields.", "error");
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
+    if (!passwordRegex.test(userregi.password)) {
+      showToast("Password too weak! (Min 6 chars, A-z, 0-9)", "error");
+      return;
+    }
+
     try {
       const res = await axios.post(
         `${finalApiUrl}/api/auth/adduser`,

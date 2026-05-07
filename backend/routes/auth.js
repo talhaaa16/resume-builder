@@ -11,9 +11,19 @@ const authMiddleware = require('../middleware/auth');
 
 router.post('/adduser', async (req, res) => {
     try {
-        const existingUser = await User.findOne({ user_email: req.body.user_email });
+        const { user_email, password } = req.body;
+
+        const existingUser = await User.findOne({ user_email });
         if (existingUser) {
             return res.status(400).json({ sts: 1, msg: "Email is already registered. Please login." });
+        }
+
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
+        if (!passwordRegex.test(password)) {
+            return res.status(400).json({
+                sts: 1,
+                msg: "Password too weak! (Min 6 chars, A-z, 0-9)"
+            });
         }
 
         const newuser = new User({
