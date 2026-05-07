@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaArrowLeft, FaArrowRight, FaSave, FaPlus, FaTrash, FaDownload, FaUser, FaGraduationCap, FaBriefcase, FaCode, FaProjectDiagram } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaSave, FaPlus, FaTrash, FaDownload, FaUser, FaGraduationCap, FaBriefcase, FaCode, FaProjectDiagram, FaMagic } from "react-icons/fa";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -69,6 +69,8 @@ export default function ResumeBuilder() {
     themeColor: "#0076BC",
     resumeId: null
   });
+
+  const [aiGeneratingField, setAiGeneratingField] = useState(null);
 
   useEffect(() => {
     if (location.state && location.state.resumeData) {
@@ -250,6 +252,39 @@ export default function ResumeBuilder() {
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
 
+  const improveWithAI = async (text, field, updateFn, fieldKey) => {
+    if (!text || text.trim().length < 5) {
+      showToast("Please enter some basic text first so I can improve it!", "info");
+      return;
+    }
+
+    setAiGeneratingField(fieldKey);
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const finalApiUrl = (apiUrl && apiUrl !== "undefined") ? apiUrl : "";
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(
+        `${finalApiUrl}/api/ai/improve`,
+        { text, field },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data.sts === 0) {
+        updateFn(res.data.improvedText);
+        showToast("✨ Magic! Content improved successfully.");
+      } else {
+        showToast(res.data.msg || "AI Improvement failed", "error");
+      }
+    } catch (error) {
+      console.error(error);
+      const errorMsg = error.response?.data?.msg || "AI Improvement failed. Make sure your API key is set.";
+      showToast(errorMsg, "error");
+    } finally {
+      setAiGeneratingField(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-[#0076BC] to-[#00A86B] flex flex-col">
       <Navbar />
@@ -365,15 +400,38 @@ export default function ResumeBuilder() {
                         <Input label="Phone" name="phone" value={form.personalInfo.phone} onChange={handlePersonalChange} />
                       </div>
                       <Input label="Address" name="address" value={form.personalInfo.address} onChange={handlePersonalChange} />
-                      <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Summary</label>
-                        <textarea
-                          name="summary"
-                          value={form.personalInfo.summary}
-                          onChange={handlePersonalChange}
-                          className="w-full p-3 bg-slate-50 border-b-2 border-transparent focus:border-[#0076BC] outline-none rounded-t-lg h-24"
-                          placeholder="Your professional mission..."
-                        />
+                      <div className="mt-4">
+                        <div className="flex justify-between items-center mb-1">
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest">Summary</label>
+                          <button
+                            onClick={() => improveWithAI(form.personalInfo.summary, "Professional Summary", (val) => setForm({ ...form, personalInfo: { ...form.personalInfo, summary: val } }), "summary")}
+                            disabled={aiGeneratingField === "summary"}
+                            className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-lg font-bold hover:bg-indigo-100 flex items-center gap-1 transition-all border border-indigo-100 disabled:opacity-50"
+                            title="Improve summary with AI"
+                          >
+                            <FaMagic className={`w-2 h-2 ${aiGeneratingField === "summary" ? "animate-spin" : ""}`} />
+                            {aiGeneratingField === "summary" ? "Magic in progress..." : "Improve with AI"}
+                          </button>
+                        </div>
+                        <div className="relative">
+                          {aiGeneratingField === "summary" && (
+                            <div className="absolute inset-0 bg-slate-50/80 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center rounded-lg overflow-hidden border border-indigo-200">
+                              <div className="flex items-center gap-2 text-indigo-600 font-bold text-xs animate-pulse">
+                                <FaMagic className="animate-bounce" /> Generating professional summary...
+                              </div>
+                              <div className="w-2/3 h-1.5 bg-slate-200 rounded-full mt-3 relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent w-full h-full animate-shimmer"></div>
+                              </div>
+                            </div>
+                          )}
+                          <textarea
+                            name="summary"
+                            value={form.personalInfo.summary}
+                            onChange={handlePersonalChange}
+                            className="w-full p-3 bg-slate-50 border-b-2 border-transparent focus:border-[#0076BC] outline-none rounded-t-lg h-24 text-sm"
+                            placeholder="Your professional mission..."
+                          />
+                        </div>
                       </div>
                     </div>
                   )}
@@ -412,6 +470,38 @@ export default function ResumeBuilder() {
                           <div className="grid grid-cols-2 gap-2 mt-2">
                             <Input label="Start" value={exp.startDate} onChange={(e) => handleArrayChange(index, "startDate", e.target.value, "experience")} />
                             <Input label="End" value={exp.endDate} onChange={(e) => handleArrayChange(index, "endDate", e.target.value, "experience")} />
+                          </div>
+                          <div className="mt-4">
+                            <div className="flex justify-between items-center mb-1">
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest">Description</label>
+                              <button
+                                onClick={() => improveWithAI(exp.description, "Job Description", (val) => handleArrayChange(index, "description", val, "experience"), `experience-${index}`)}
+                                disabled={aiGeneratingField === `experience-${index}`}
+                                className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-lg font-bold hover:bg-indigo-100 flex items-center gap-1 transition-all border border-indigo-100 disabled:opacity-50"
+                                title="Professionalize description with AI"
+                              >
+                                <FaMagic className={`w-2 h-2 ${aiGeneratingField === `experience-${index}` ? "animate-spin" : ""}`} />
+                                {aiGeneratingField === `experience-${index}` ? "Magic in progress..." : "Improve with AI"}
+                              </button>
+                            </div>
+                            <div className="relative">
+                              {aiGeneratingField === `experience-${index}` && (
+                                <div className="absolute inset-0 bg-slate-50/80 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center rounded-lg overflow-hidden border border-indigo-200">
+                                  <div className="flex items-center gap-2 text-indigo-600 font-bold text-xs animate-pulse">
+                                    <FaMagic className="animate-bounce" /> Writing professional description...
+                                  </div>
+                                  <div className="w-2/3 h-1.5 bg-slate-200 rounded-full mt-3 relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent w-full h-full animate-shimmer"></div>
+                                  </div>
+                                </div>
+                              )}
+                              <textarea
+                                value={exp.description}
+                                onChange={(e) => handleArrayChange(index, "description", e.target.value, "experience")}
+                                className="w-full p-3 bg-slate-50 border-b-2 border-transparent focus:border-[#0076BC] outline-none rounded-t-lg h-32 text-sm"
+                                placeholder="Describe your achievements..."
+                              />
+                            </div>
                           </div>
                         </div>
                       ))}

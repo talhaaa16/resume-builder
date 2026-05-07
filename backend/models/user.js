@@ -17,6 +17,10 @@ const Userschema = new mongoose.Schema({
     profile_pic: {
         type: String,
         default: ''
+    },
+    aiUsageCount: {
+        type: Number,
+        default: 0
     }
 })
 

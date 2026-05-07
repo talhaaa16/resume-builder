@@ -20,9 +20,11 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 const resumeRouters = require("./routes/resume");
+const aiRouters = require("./routes/ai");
 
 app.use("/api/auth", authrouters);
 app.use("/api/resume", resumeRouters);
+app.use("/api/ai", aiRouters);
 
 app.get("/", (req, res) => {
   res.send("Hello World from Backend ");
