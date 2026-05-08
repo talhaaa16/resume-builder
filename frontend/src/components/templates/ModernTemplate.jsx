@@ -27,8 +27,16 @@ export default function ModernTemplate({ form, resumeRef }) {
             {form.personalInfo.email && <p className="break-all">📧 {form.personalInfo.email}</p>}
             {form.personalInfo.phone && <p>📱 {form.personalInfo.phone}</p>}
             {form.personalInfo.address && <p>📍 {form.personalInfo.address}</p>}
-            {form.personalInfo.linkedin && <p>🔗 {form.personalInfo.linkedin}</p>}
-            {form.personalInfo.github && <p>💻 {form.personalInfo.github}</p>}
+            {form.personalInfo.linkedin && (
+              <a href={form.personalInfo.linkedin.startsWith('http') ? form.personalInfo.linkedin : `https://${form.personalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors truncate block">
+                🔗 LinkedIn
+              </a>
+            )}
+            {form.personalInfo.github && (
+              <a href={form.personalInfo.github.startsWith('http') ? form.personalInfo.github : `https://${form.personalInfo.github}`} target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors truncate block">
+                💻 GitHub
+              </a>
+            )}
           </div>
         </div>
 
@@ -116,7 +124,7 @@ export default function ModernTemplate({ form, resumeRef }) {
                 <div key={i} className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                   <div className="flex justify-between items-start mb-2">
                     <h4 className="font-bold text-slate-900 text-sm">{proj.title}</h4>
-                    {proj.link && <a href={proj.link} target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline">View Link ↗</a>}
+                    {proj.link && <a href={proj.link.startsWith('http') ? proj.link : `https://${proj.link}`} target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline">View Link ↗</a>}
                   </div>
                   {proj.technologies && <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest mb-1">Tech: {proj.technologies}</p>}
                   <p className="text-slate-600 leading-relaxed text-xs">{proj.description}</p>

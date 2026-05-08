@@ -64,6 +64,8 @@ export default function ResumeBuilder() {
     experience: [{ company: "", role: "", startDate: "", endDate: "", description: "" }],
     skills: [""],
     projects: [{ title: "", link: "", description: "" }],
+    certifications: [],
+    interests: [],
     languages: [""],
     template: "professional",
     themeColor: "#0076BC",
@@ -101,7 +103,8 @@ export default function ResumeBuilder() {
   };
 
   const addArrayItem = (section, defaultObj) => {
-    setForm({ ...form, [section]: [...form[section], defaultObj] });
+    const currentArray = form[section] || [];
+    setForm({ ...form, [section]: [...currentArray, defaultObj] });
   };
 
   const removeArrayItem = (index, section) => {
@@ -190,17 +193,16 @@ export default function ResumeBuilder() {
     if (!input) return;
 
     setLoading(true);
-    showToast("Generating professional PDF...", "info");
+    showToast("Generating perfect PDF...", "info");
 
     try {
+
       const clone = input.cloneNode(true);
-      clone.style.position = 'fixed';
-      clone.style.top = '0';
-      clone.style.left = '-10000px';
-      clone.style.zoom = '1';
+      clone.style.position = 'absolute';
+      clone.style.top = '-9999px';
+      clone.style.left = '0';
       clone.style.transform = 'none';
-      clone.style.width = '210mm';
-      clone.style.height = 'auto';
+      clone.style.width = '794px';
       document.body.appendChild(clone);
 
       await document.fonts.ready;
@@ -209,46 +211,46 @@ export default function ResumeBuilder() {
       const canvas = await html2canvas(clone, {
         scale: 2.5,
         useCORS: true,
-        allowTaint: true,
         backgroundColor: "#ffffff",
-        logging: false,
         windowWidth: 794,
+        allowTaint: true
       });
-
-      document.body.removeChild(clone);
 
       const imgData = canvas.toDataURL("image/jpeg", 1.0);
       const pdf = new jsPDF("p", "mm", "a4");
 
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
+      const pdfWidth = 210;
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      const imgHeightInPdf = (canvasHeight * pdfWidth) / canvasWidth;
-      let heightLeft = imgHeightInPdf;
-      let position = 0;
+      pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
 
-      pdf.addImage(imgData, "JPEG", 0, position, pdfWidth, imgHeightInPdf, undefined, 'FAST');
-      heightLeft -= pdfHeight;
+      const links = clone.querySelectorAll('a');
+      const cloneRect = clone.getBoundingClientRect();
+      const scaleX = pdfWidth / cloneRect.width;
+      const scaleY = pdfHeight / cloneRect.height;
 
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeightInPdf;
-        pdf.addPage();
-        pdf.addImage(imgData, "JPEG", 0, position, pdfWidth, imgHeightInPdf, undefined, 'FAST');
-        heightLeft -= pdfHeight;
-      }
+      links.forEach(link => {
+        const rect = link.getBoundingClientRect();
+        const x = (rect.left - cloneRect.left) * scaleX;
+        const y = (rect.top - cloneRect.top) * scaleY;
+        const w = rect.width * scaleX;
+        const h = rect.height * scaleY;
 
-      pdf.save(`${form.personalInfo.fullName || "My_Resume"}.pdf`);
-      showToast("Resume downloaded successfully!");
+        pdf.link(x, y, w, h, { url: link.href });
+      });
+
+      // Cleanup
+      document.body.removeChild(clone);
+      pdf.save(`${form.personalInfo.fullName || "Resume"}.pdf`);
+
+      showToast("Resume downloaded! Visuals are perfect and links are clickable.");
     } catch (err) {
-      console.error("PDF Export Error:", err);
-      showToast("Failed to generate PDF. Try reducing image size or content.", "error");
+      console.error(err);
+      showToast("PDF generation failed", "error");
     } finally {
       setLoading(false);
     }
   };
-
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
 

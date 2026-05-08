@@ -1,43 +1,42 @@
 import React from "react";
-import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaGlobe } from "react-icons/fa";
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaGlobe, FaLinkedin, FaGithub } from "react-icons/fa";
 
 export default function Creative2Template({ form, resumeRef }) {
-  const themeColor = form.themeColor || "#F59E0B"; // Default Orange
-
+  const themeColor = form.themeColor || "#F59E0B";
   return (
     <div ref={resumeRef} className="bg-white w-[210mm] min-h-[297mm] text-black shadow-lg mx-auto flex overflow-hidden" style={{ fontFamily: "'Nunito', 'Inter', sans-serif", fontSize: "12px" }}>
-      
+
       {/* Left Column (White) */}
       <div className="w-[60%] flex flex-col pt-10 px-8 pb-10 relative">
         {/* Background accent top left */}
         <div className="absolute top-0 left-0 w-full h-48 bg-[#FFF8ED] -z-10" style={{ backgroundColor: `${themeColor}20` }}></div>
-        
+
         {/* Photo Container */}
         <div className="w-52 h-52 rounded-full border-[8px] p-1 mx-auto mb-10 z-10 bg-white" style={{ borderColor: themeColor }}>
-           <div className="w-full h-full rounded-full overflow-hidden bg-slate-200">
-             {form.personalInfo.profilePhoto ? (
-                <img src={form.personalInfo.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
-             ) : (
-                <div className="w-full h-full flex items-center justify-center text-4xl text-slate-400 font-bold uppercase">
-                  {form.personalInfo.fullName ? form.personalInfo.fullName.charAt(0) : "?"}
-                </div>
-             )}
-           </div>
+          <div className="w-full h-full rounded-full overflow-hidden bg-slate-200">
+            {form.personalInfo.profilePhoto ? (
+              <img src={form.personalInfo.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-4xl text-slate-400 font-bold uppercase">
+                {form.personalInfo.fullName ? form.personalInfo.fullName.charAt(0) : "?"}
+              </div>
+            )}
+          </div>
         </div>
-        
+
         {/* Summary */}
         {form.personalInfo.summary && (
           <div className="mb-12 px-2">
-             <div className="text-center font-black tracking-widest uppercase text-white py-1.5 mb-6 text-sm shadow-sm" style={{ backgroundColor: themeColor }}>Profile Summary</div>
-             <div className="flex gap-4">
-                <div className="w-16 shrink-0"></div>
-                <div className="w-3 h-3 mt-1 rounded bg-slate-400 shrink-0 opacity-0"></div> {/* Spacer to align with timeline dots below */}
-                <div className="pl-4 w-full">
-                  <p className="text-slate-600 italic text-[11.5px] leading-[1.7] whitespace-pre-wrap font-medium">
-                    {form.personalInfo.summary}
-                  </p>
-                </div>
-             </div>
+            <div className="text-center font-black tracking-widest uppercase text-white py-1.5 mb-6 text-sm shadow-sm" style={{ backgroundColor: themeColor }}>Profile Summary</div>
+            <div className="flex gap-4">
+              <div className="w-16 shrink-0"></div>
+              <div className="w-3 h-3 mt-1 rounded bg-slate-400 shrink-0 opacity-0"></div> {/* Spacer to align with timeline dots below */}
+              <div className="pl-4 w-full">
+                <p className="text-slate-600 italic text-[11.5px] leading-[1.7] whitespace-pre-wrap font-medium">
+                  {form.personalInfo.summary}
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
@@ -46,19 +45,19 @@ export default function Creative2Template({ form, resumeRef }) {
           <div className="mb-10">
             <div className="text-center font-black tracking-widest uppercase text-white py-1.5 mb-6 text-sm shadow-sm" style={{ backgroundColor: themeColor }}>Education</div>
             <div className="flex flex-col gap-6 pl-2 pr-4">
-               {form.education.map((e,i)=> e.school && (
-                 <div key={i} className="flex gap-4">
-                   <div className="w-16 shrink-0 text-right text-slate-500 font-bold text-[11px] leading-snug">
-                     {e.startDate} <br/><span className="text-slate-300">to</span><br/> {e.endDate}
-                   </div>
-                   <div className="w-3 h-3 mt-1 rounded bg-slate-400 shrink-0 shadow-sm" style={{ backgroundColor: themeColor }}></div>
-                   <div className="border-l-2 border-slate-100 pl-4 pb-2 w-full">
-                     <h4 className="font-bold text-slate-800 tracking-wider text-[13px]">{e.degree}</h4>
-                     <p className="italic text-slate-500 text-xs mb-1 font-medium">{e.school}</p>
-                     <p className="text-slate-400 text-[11px] leading-relaxed">{e.description}</p>
-                   </div>
-                 </div>
-               ))}
+              {form.education.map((e, i) => e.school && (
+                <div key={i} className="flex gap-4">
+                  <div className="w-16 shrink-0 text-right text-slate-500 font-bold text-[11px] leading-snug">
+                    {e.startDate} <br /><span className="text-slate-300">to</span><br /> {e.endDate}
+                  </div>
+                  <div className="w-3 h-3 mt-1 rounded bg-slate-400 shrink-0 shadow-sm" style={{ backgroundColor: themeColor }}></div>
+                  <div className="border-l-2 border-slate-100 pl-4 pb-2 w-full">
+                    <h4 className="font-bold text-slate-800 tracking-wider text-[13px]">{e.degree}</h4>
+                    <p className="italic text-slate-500 text-xs mb-1 font-medium">{e.school}</p>
+                    <p className="text-slate-400 text-[11px] leading-relaxed">{e.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -68,19 +67,19 @@ export default function Creative2Template({ form, resumeRef }) {
           <div>
             <div className="text-center font-black tracking-widest uppercase text-white py-1.5 mb-6 text-sm shadow-sm" style={{ backgroundColor: themeColor }}>Experience</div>
             <div className="flex flex-col gap-6 pl-2 pr-4">
-               {form.experience.map((e,i)=> e.company && (
-                 <div key={i} className="flex gap-4">
-                   <div className="w-16 shrink-0 text-right text-slate-500 font-bold text-[11px] leading-snug">
-                     {e.startDate} <br/><span className="text-slate-300">to</span><br/> {e.endDate}
-                   </div>
-                   <div className="w-3 h-3 mt-1 rounded bg-slate-400 shrink-0 shadow-sm" style={{ backgroundColor: themeColor }}></div>
-                   <div className="border-l-2 border-slate-100 pl-4 pb-2 w-full">
-                     <h4 className="font-bold text-slate-800 tracking-wider text-[13px]">{e.role}</h4>
-                     <p className="italic text-slate-500 text-xs mb-1 font-medium">{e.company}</p>
-                     <p className="text-slate-400 text-[11px] leading-relaxed">{e.description}</p>
-                   </div>
-                 </div>
-               ))}
+              {form.experience.map((e, i) => e.company && (
+                <div key={i} className="flex gap-4">
+                  <div className="w-16 shrink-0 text-right text-slate-500 font-bold text-[11px] leading-snug">
+                    {e.startDate} <br /><span className="text-slate-300">to</span><br /> {e.endDate}
+                  </div>
+                  <div className="w-3 h-3 mt-1 rounded bg-slate-400 shrink-0 shadow-sm" style={{ backgroundColor: themeColor }}></div>
+                  <div className="border-l-2 border-slate-100 pl-4 pb-2 w-full">
+                    <h4 className="font-bold text-slate-800 tracking-wider text-[13px]">{e.role}</h4>
+                    <p className="italic text-slate-500 text-xs mb-1 font-medium">{e.company}</p>
+                    <p className="text-slate-400 text-[11px] leading-relaxed">{e.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -89,28 +88,28 @@ export default function Creative2Template({ form, resumeRef }) {
           <div className="mt-10">
             <div className="text-center font-black tracking-widest uppercase text-white py-1.5 mb-6 text-sm shadow-sm" style={{ backgroundColor: themeColor }}>Projects</div>
             <div className="flex flex-col gap-6 pl-2 pr-4">
-               {form.projects.map((p,i)=> p.title && (
-                 <div key={i} className="flex gap-4">
-                   <div className="w-16 shrink-0 text-right text-slate-500 font-bold text-[11px] leading-snug pt-1">
-                     Project
-                   </div>
-                   <div className="w-3 h-3 mt-1.5 rounded bg-slate-400 shrink-0 shadow-sm" style={{ backgroundColor: themeColor }}></div>
-                   <div className="border-l-2 border-slate-100 pl-4 pb-2 w-full">
-                     <h4 className="font-bold text-slate-800 tracking-wider text-[13px] uppercase">{p.title}</h4>
-                     {p.link && (
-                       <a href={p.link} target="_blank" rel="noreferrer" className="text-[10px] font-bold block mb-1 hover:underline" style={{ color: themeColor }}>
-                         View Project ↗
-                       </a>
-                     )}
-                     {p.technologies && (
-                        <p className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-tight">
-                          Tech: {p.technologies}
-                        </p>
-                     )}
-                     <p className="text-slate-400 text-[11px] leading-relaxed">{p.description}</p>
-                   </div>
-                 </div>
-               ))}
+              {form.projects.map((p, i) => p.title && (
+                <div key={i} className="flex gap-4">
+                  <div className="w-16 shrink-0 text-right text-slate-500 font-bold text-[11px] leading-snug pt-1">
+                    Project
+                  </div>
+                  <div className="w-3 h-3 mt-1.5 rounded bg-slate-400 shrink-0 shadow-sm" style={{ backgroundColor: themeColor }}></div>
+                  <div className="border-l-2 border-slate-100 pl-4 pb-2 w-full">
+                    <h4 className="font-bold text-slate-800 tracking-wider text-[13px] uppercase">{p.title}</h4>
+                    {p.link && (
+                      <a href={p.link.startsWith('http') ? p.link : `https://${p.link}`} target="_blank" rel="noreferrer" className="text-[10px] font-bold block mb-1 hover:underline" style={{ color: themeColor }}>
+                        View Project ↗
+                      </a>
+                    )}
+                    {p.technologies && (
+                      <p className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-tight">
+                        Tech: {p.technologies}
+                      </p>
+                    )}
+                    <p className="text-slate-400 text-[11px] leading-relaxed">{p.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -119,18 +118,18 @@ export default function Creative2Template({ form, resumeRef }) {
           <div className="mt-10">
             <div className="text-center font-black tracking-widest uppercase text-white py-1.5 mb-6 text-sm shadow-sm" style={{ backgroundColor: themeColor }}>Certifications</div>
             <div className="flex flex-col gap-5 pl-2 pr-4">
-               {form.certifications.map((c,i)=> c.title && (
-                 <div key={i} className="flex gap-4">
-                   <div className="w-16 shrink-0 text-right text-slate-400 font-bold text-[10px] uppercase leading-tight pt-1">
-                     Cert
-                   </div>
-                   <div className="w-2.5 h-2.5 mt-1.5 rounded-full bg-slate-300 shrink-0 shadow-sm"></div>
-                   <div className="border-l border-slate-100 pl-4 pb-1 w-full">
-                     <h4 className="font-bold text-slate-800 tracking-wider text-xs uppercase">{c.title}</h4>
-                     <p className="text-slate-400 text-[10px] italic">{c.issuer} {c.date && `| ${c.date}`}</p>
-                   </div>
-                 </div>
-               ))}
+              {form.certifications.map((c, i) => c.title && (
+                <div key={i} className="flex gap-4">
+                  <div className="w-16 shrink-0 text-right text-slate-400 font-bold text-[10px] uppercase leading-tight pt-1">
+                    Cert
+                  </div>
+                  <div className="w-2.5 h-2.5 mt-1.5 rounded-full bg-slate-300 shrink-0 shadow-sm"></div>
+                  <div className="border-l border-slate-100 pl-4 pb-1 w-full">
+                    <h4 className="font-bold text-slate-800 tracking-wider text-xs uppercase">{c.title}</h4>
+                    <p className="text-slate-400 text-[10px] italic">{c.issuer} {c.date && `| ${c.date}`}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -138,70 +137,82 @@ export default function Creative2Template({ form, resumeRef }) {
 
       {/* Right Column (Dark) */}
       <div className="w-[40%] bg-[#2b2b2b] text-white flex flex-col pt-20 shadow-2xl z-20 pb-10">
-         
-         <div className="px-8 py-8 mb-12 text-white relative left-[-20px] w-[calc(100%+20px)] shadow-lg" style={{ backgroundColor: themeColor }}>
-            <h1 className="text-[26px] font-black uppercase tracking-widest leading-none mb-2">{form.personalInfo.fullName || "KELLY WHITE"}</h1>
-            <p className="text-xs font-bold tracking-[0.2em] uppercase opacity-90">{form.personalInfo.designation || "ART DIRECTOR"}</p>
-         </div>
 
-         <div className="px-8 text-xs text-slate-300">
-            <h3 className="font-bold tracking-widest uppercase border-y border-slate-600 py-3 mb-8 text-center text-white text-sm">Contact Me</h3>
-            <div className="flex flex-col gap-6 mb-12">
-               {form.personalInfo.address && (
-                  <div className="flex gap-4 items-center">
-                     <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: themeColor }}><FaMapMarkerAlt className="text-white w-3 h-3"/></div>
-                     <p className="text-[11px] leading-snug">{form.personalInfo.address}</p>
-                  </div>
-               )}
-               {form.personalInfo.email && (
-                  <div className="flex gap-4 items-center">
-                     <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: themeColor }}><FaEnvelope className="text-white w-3 h-3"/></div>
-                     <p className="text-[11px] break-all">{form.personalInfo.email}</p>
-                  </div>
-               )}
-               {form.personalInfo.phone && (
-                  <div className="flex gap-4 items-center">
-                     <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: themeColor }}><FaPhoneAlt className="text-white w-3 h-3"/></div>
-                     <p className="text-[11px]">{form.personalInfo.phone}</p>
-                  </div>
-               )}
-               {form.personalInfo.portfolio && (
-                  <div className="flex gap-4 items-center">
-                     <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: themeColor }}><FaGlobe className="text-white w-3 h-3"/></div>
-                     <p className="text-[11px]">{form.personalInfo.portfolio}</p>
-                  </div>
-               )}
-            </div>
+        <div className="px-8 py-8 mb-12 text-white relative left-[-20px] w-[calc(100%+20px)] shadow-lg" style={{ backgroundColor: themeColor }}>
+          <h1 className="text-[26px] font-black uppercase tracking-widest leading-none mb-2">{form.personalInfo.fullName || "KELLY WHITE"}</h1>
+          <p className="text-xs font-bold tracking-[0.2em] uppercase opacity-90">{form.personalInfo.designation || "ART DIRECTOR"}</p>
+        </div>
 
-            {form.skills.some(s => s) && (
-              <>
-                <h3 className="font-bold tracking-widest uppercase border-y border-slate-600 py-3 mb-8 text-center text-white text-sm">Pro Skills</h3>
-                <div className="flex flex-col gap-5">
-                  {form.skills.map((s, i) => s && (
-                    <div key={i}>
-                      <p className="uppercase text-[11px] font-bold mb-2 tracking-wider">{s}</p>
-                      <div className="w-full bg-slate-700 h-[6px] rounded-full overflow-hidden">
-                         <div className="h-full rounded-full transition-all" style={{ width: `${Math.floor(Math.random() * 30) + 70}%`, backgroundColor: themeColor }}></div>
-                      </div>
+        <div className="px-8 text-xs text-slate-300">
+          <h3 className="font-bold tracking-widest uppercase border-y border-slate-600 py-3 mb-8 text-center text-white text-sm">Contact Me</h3>
+          <div className="flex flex-col gap-6 mb-12">
+            {form.personalInfo.address && (
+              <div className="flex gap-4 items-center">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: themeColor }}><FaMapMarkerAlt className="text-white w-3 h-3" /></div>
+                <p className="text-[11px] leading-snug">{form.personalInfo.address}</p>
+              </div>
+            )}
+            {form.personalInfo.email && (
+              <div className="flex gap-4 items-center">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: themeColor }}><FaEnvelope className="text-white w-3 h-3" /></div>
+                <p className="text-[11px] break-all">{form.personalInfo.email}</p>
+              </div>
+            )}
+            {form.personalInfo.phone && (
+              <div className="flex gap-4 items-center">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: themeColor }}><FaPhoneAlt className="text-white w-3 h-3" /></div>
+                <p className="text-[11px]">{form.personalInfo.phone}</p>
+              </div>
+            )}
+            {form.personalInfo.portfolio && (
+              <div className="flex gap-4 items-center">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: themeColor }}><FaGlobe className="text-white w-3 h-3" /></div>
+                <a href={form.personalInfo.portfolio.startsWith('http') ? form.personalInfo.portfolio : `https://${form.personalInfo.portfolio}`} target="_blank" rel="noopener noreferrer" className="text-[11px] hover:text-white transition-colors">Portfolio</a>
+              </div>
+            )}
+            {form.personalInfo.linkedin && (
+              <div className="flex gap-4 items-center">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: themeColor }}><FaLinkedin className="text-white w-3 h-3" /></div>
+                <a href={form.personalInfo.linkedin.startsWith('http') ? form.personalInfo.linkedin : `https://${form.personalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" className="text-[11px] hover:text-white transition-colors">LinkedIn</a>
+              </div>
+            )}
+            {form.personalInfo.github && (
+              <div className="flex gap-4 items-center">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: themeColor }}><FaGithub className="text-white w-3 h-3" /></div>
+                <a href={form.personalInfo.github.startsWith('http') ? form.personalInfo.github : `https://${form.personalInfo.github}`} target="_blank" rel="noopener noreferrer" className="text-[11px] hover:text-white transition-colors">GitHub</a>
+              </div>
+            )}
+          </div>
+
+          {form.skills.some(s => s) && (
+            <>
+              <h3 className="font-bold tracking-widest uppercase border-y border-slate-600 py-3 mb-8 text-center text-white text-sm">Pro Skills</h3>
+              <div className="flex flex-col gap-5">
+                {form.skills.map((s, i) => s && (
+                  <div key={i}>
+                    <p className="uppercase text-[11px] font-bold mb-2 tracking-wider">{s}</p>
+                    <div className="w-full bg-slate-700 h-[6px] rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${Math.floor(Math.random() * 30) + 70}%`, backgroundColor: themeColor }}></div>
                     </div>
-                  ))}
-                </div>
-              </>
-            )}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
 
-            {form.interests?.some(s => s) && (
-              <>
-                <h3 className="font-bold tracking-widest uppercase border-y border-slate-600 py-3 mb-8 text-center text-white text-sm">Interests</h3>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {form.interests.map((interest, i) => interest && (
-                    <span key={i} className="bg-white/5 text-slate-300 px-3 py-1 rounded text-[10px] font-medium border border-white/10 uppercase tracking-tighter hover:bg-white/10 transition">
-                      {interest}
-                    </span>
-                  ))}
-                </div>
-              </>
-            )}
-         </div>
+          {form.interests?.some(s => s) && (
+            <>
+              <h3 className="font-bold tracking-widest uppercase border-y border-slate-600 py-3 mb-8 text-center text-white text-sm">Interests</h3>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {form.interests.map((interest, i) => interest && (
+                  <span key={i} className="bg-white/5 text-slate-300 px-3 py-1 rounded text-[10px] font-medium border border-white/10 uppercase tracking-tighter hover:bg-white/10 transition">
+                    {interest}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )
