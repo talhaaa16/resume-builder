@@ -89,11 +89,5 @@ The project is configured for deployment on **Render / Vercel**.
 
 ---
 
-## 🤝 Roadmap / Future Features
-- [ ] AI Content Generation / Smart Phrasing
-- [ ] Drag-and-Drop section ordering
-- [ ] Direct hyperlinked PDF exports via `@react-pdf/renderer`
-- [ ] Automated ATS Score Checker
-
 ## License
 MIT License
