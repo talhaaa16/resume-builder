@@ -28,14 +28,14 @@ export default function Creative1Template({ form, resumeRef }) {
           </div>
           <div className="flex gap-3 mt-5 text-lg">
             {form.personalInfo.linkedin && (
-              <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-md">
+              <a href={form.personalInfo.linkedin.startsWith('http') ? form.personalInfo.linkedin : `https://${form.personalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-md hover:scale-110 transition-transform">
                 <FaLinkedin className="w-4 h-4" />
-              </div>
+              </a>
             )}
             {form.personalInfo.github && (
-              <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-md">
+              <a href={form.personalInfo.github.startsWith('http') ? form.personalInfo.github : `https://${form.personalInfo.github}`} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-md hover:scale-110 transition-transform">
                 <FaGithub className="w-4 h-4" />
-              </div>
+              </a>
             )}
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function Creative1Template({ form, resumeRef }) {
                   <div key={i}>
                     <h3 className="font-bold text-slate-800 text-[13px] uppercase tracking-wide">{p.title}</h3>
                     {p.link && (
-                      <a href={p.link} target="_blank" rel="noreferrer" className="text-[10px] font-bold flex items-center gap-1 hover:underline mb-1" style={{ color: themeColor }}>
+                      <a href={p.link.startsWith('http') ? p.link : `https://${p.link}`} target="_blank" rel="noreferrer" className="text-[10px] font-bold flex items-center gap-1 hover:underline mb-1" style={{ color: themeColor }}>
                         View Project <FaExternalLinkAlt className="w-2 h-2" />
                       </a>
                     )}

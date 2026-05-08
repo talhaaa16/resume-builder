@@ -18,8 +18,16 @@ export default function ProfessionalTemplate({ form, resumeRef }) {
           <p>{form.personalInfo.email}</p>
           <p>{form.personalInfo.phone}</p>
           <p>{form.personalInfo.address}</p>
-          {form.personalInfo.linkedin && <p>LinkedIn: {form.personalInfo.linkedin}</p>}
-          {form.personalInfo.github && <p>GitHub: {form.personalInfo.github}</p>}
+          {form.personalInfo.linkedin && (
+            <a href={form.personalInfo.linkedin.startsWith('http') ? form.personalInfo.linkedin : `https://${form.personalInfo.linkedin}`} target="_blank" rel="noopener noreferrer" className="hover:text-[#0076BC] transition-colors">
+              LinkedIn
+            </a>
+          )}
+          {form.personalInfo.github && (
+            <a href={form.personalInfo.github.startsWith('http') ? form.personalInfo.github : `https://${form.personalInfo.github}`} target="_blank" rel="noopener noreferrer" className="hover:text-[#0076BC] transition-colors">
+              GitHub
+            </a>
+          )}
         </div>
       </div>
 
@@ -50,7 +58,11 @@ export default function ProfessionalTemplate({ form, resumeRef }) {
                   <div className="flex justify-between font-bold text-slate-900 text-sm">
                     <span>{proj.title}</span>
                     <span className="text-[10px] text-blue-500 italic lowercase font-normal">
-                      {proj.link ? (proj.link.includes("http") ? "Link ↗" : proj.link) : ""}
+                      {proj.link && (
+                        <a href={proj.link.startsWith('http') ? proj.link : `https://${proj.link}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                          Link ↗
+                        </a>
+                      )}
                     </span>
                   </div>
                   {proj.technologies && <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-1">Tech: {proj.technologies}</p>}
