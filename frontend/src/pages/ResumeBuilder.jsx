@@ -69,6 +69,7 @@ export default function ResumeBuilder() {
     languages: [""],
     template: "professional",
     themeColor: "#0076BC",
+    fontFamily: "font-sans",
     resumeId: null
   });
 
@@ -630,6 +631,19 @@ export default function ResumeBuilder() {
                   <span className="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse shadow-[0_0_10px_rgba(74,222,128,0.8)]"></span>
                   Live Preview
                 </h4>
+
+                <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-lg border border-white/10">
+                  <label className="text-white text-xs font-bold uppercase tracking-wider">Typography</label>
+                  <select
+                    value={form.fontFamily || "font-sans"}
+                    onChange={(e) => setForm({ ...form, fontFamily: e.target.value })}
+                    className="bg-slate-800 text-white text-xs border border-slate-600 rounded p-1 outline-none cursor-pointer"
+                  >
+                    <option value="font-sans">Modern (Sans)</option>
+                    <option value="font-serif">Classic (Serif)</option>
+                    <option value="font-mono">Tech (Mono)</option>
+                  </select>
+                </div>
 
                 <div className="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-lg border border-white/10">
                   <label className="text-white text-xs font-bold uppercase tracking-wider">Theme Color</label>

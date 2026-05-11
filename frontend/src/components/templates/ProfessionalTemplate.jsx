@@ -2,7 +2,7 @@ import React from "react";
 
 export default function ProfessionalTemplate({ form, resumeRef }) {
   return (
-    <div ref={resumeRef} className="bg-white w-full min-h-[297mm] p-12 flex flex-col gap-8 text-black shadow-lg mx-auto" style={{ fontFamily: "'Inter', sans-serif", fontSize: "12px" }}>
+    <div ref={resumeRef} className={`bg-white w-full min-h-[297mm] p-12 flex flex-col gap-8 text-black shadow-lg mx-auto ${form.fontFamily || "font-sans"}`} style={{ fontSize: "12px" }}>
       <div className="flex justify-between items-start border-b-2 border-slate-800 pb-8 gap-6">
         {form.personalInfo.profilePhoto && (
           <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-slate-100 shadow-sm shrink-0">

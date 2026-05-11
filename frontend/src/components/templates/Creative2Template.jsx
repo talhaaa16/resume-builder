@@ -4,14 +4,12 @@ import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaGlobe, FaLinkedin, FaGithub }
 export default function Creative2Template({ form, resumeRef }) {
   const themeColor = form.themeColor || "#F59E0B";
   return (
-    <div ref={resumeRef} className="bg-white w-[210mm] min-h-[297mm] text-black shadow-lg mx-auto flex overflow-hidden" style={{ fontFamily: "'Nunito', 'Inter', sans-serif", fontSize: "12px" }}>
+    <div ref={resumeRef} className={`bg-white w-[210mm] min-h-[297mm] text-black shadow-lg mx-auto flex overflow-hidden ${form.fontFamily || "font-sans"}`} style={{ fontSize: "12px" }}>
 
-      {/* Left Column (White) */}
       <div className="w-[60%] flex flex-col pt-10 px-8 pb-10 relative">
-        {/* Background accent top left */}
         <div className="absolute top-0 left-0 w-full h-48 bg-[#FFF8ED] -z-10" style={{ backgroundColor: `${themeColor}20` }}></div>
 
-        {/* Photo Container */}
+
         <div className="w-52 h-52 rounded-full border-[8px] p-1 mx-auto mb-10 z-10 bg-white" style={{ borderColor: themeColor }}>
           <div className="w-full h-full rounded-full overflow-hidden bg-slate-200">
             {form.personalInfo.profilePhoto ? (

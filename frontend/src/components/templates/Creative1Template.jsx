@@ -5,7 +5,7 @@ export default function Creative1Template({ form, resumeRef }) {
   const themeColor = form.themeColor || "#FFB000";
 
   return (
-    <div ref={resumeRef} className="bg-white w-[210mm] min-h-[297mm] text-black shadow-lg mx-auto overflow-hidden relative" style={{ fontFamily: "'Montserrat', 'Inter', sans-serif", fontSize: "12px" }}>
+    <div ref={resumeRef} className={`bg-white w-[210mm] min-h-[297mm] text-black shadow-lg mx-auto overflow-hidden relative ${form.fontFamily || "font-sans"}`} style={{ fontSize: "12px" }}>
 
       <div className="absolute top-0 left-0 w-full h-24 bg-slate-50 z-0"></div>
 
