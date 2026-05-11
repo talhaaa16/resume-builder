@@ -2,7 +2,7 @@ import React from "react";
 
 export default function ModernTemplate({ form, resumeRef }) {
   return (
-    <div ref={resumeRef} className="bg-white w-full min-h-[297mm] flex text-black shadow-lg mx-auto" style={{ fontFamily: "'Outfit', 'Inter', sans-serif", fontSize: "12px" }}>
+    <div ref={resumeRef} className={`bg-white w-full min-h-[297mm] flex text-black shadow-lg mx-auto ${form.fontFamily || "font-sans"}`} style={{ fontSize: "12px" }}>
 
       <div className="w-[35%] bg-slate-900 text-white p-8 flex flex-col gap-8">
         <div className="text-center">
