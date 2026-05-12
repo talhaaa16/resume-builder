@@ -8,6 +8,8 @@ const User = require('../models/user');
 const Token = require('../models/token');
 const authMiddleware = require('../middleware/auth');
 
+const loginAttempts = new Map();
+
 
 router.post('/adduser', async (req, res) => {
     try {
@@ -60,18 +62,18 @@ router.post('/logout', async (req, res) => {
 
 router.post('/userlogin', async (req, res) => {
     const { user_email, password } = req.body;
+    const ip = req.ip, now = Date.now();
+    const attempts = (loginAttempts.get(ip) || []).filter(t => now - t < 900000);
+    if (attempts.length >= 5) return res.status(429).json({ sts: 4, msg: 'Too many attempts' });
 
     try {
         const login = await User.findOne({ user_email });
-
-        if (!login) {
-            return res.json({ sts: 1, msg: "Email not found" });
+        if (!login || !(await bcryptjs.compare(password, login.password))) {
+            attempts.push(now);
+            loginAttempts.set(ip, attempts);
+            return res.json({ sts: 1, msg: 'Invalid credentials' });
         }
-
-        const isMatch = await bcryptjs.compare(password, login.password);
-        if (!isMatch) {
-            return res.json({ sts: 2, msg: "Password is wrong" });
-        }
+        loginAttempts.delete(ip);
 
         const token = jwt.sign({ userId: login._id }, SECRET_KEY, {
             expiresIn: "7d",
