@@ -50,7 +50,7 @@ router.post('/improve', auth, async (req, res) => {
         res.json({ sts: 0, improvedText });
     } catch (error) {
         console.error("AI Generation Error:", error);
-        res.status(500).json({ sts: 1, msg: "AI Generation failed. Please check your API key.", error: error.message });
+        res.status(500).json({ sts: 1, msg: "AI Generation failed." });
     }
 });
 

@@ -33,7 +33,7 @@ router.post('/save', auth, async (req, res) => {
         res.json({ sts: 0, msg: "Resume saved successfully", resume });
     } catch (error) {
         console.error("Resume Save Error:", error);
-        res.status(500).json({ sts: 1, msg: "Failed to save resume", error: error.message });
+        res.status(500).json({ sts: 1, msg: "Failed to save resume" });
     }
 });
 
