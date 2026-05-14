@@ -52,30 +52,31 @@ const Regi = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#00A86B] to-[#0076BC] p-12 flex-col justify-between text-white relative overflow-hidden">
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-black/10 rounded-full blur-3xl"></div>
+    <div className="flex flex-col lg:flex-row min-h-screen bg-slate-50">
+      {/* Branding Section - Banner on Mobile, Sidebar on Desktop */}
+      <div className="w-full lg:w-1/2 bg-gradient-to-br from-[#00A86B] to-[#0076BC] p-8 lg:p-12 flex flex-col justify-between text-white relative overflow-hidden min-h-[300px] lg:min-h-screen">
+        <div className="absolute -top-24 -left-24 w-64 h-64 lg:w-96 lg:h-96 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-24 -right-24 w-64 h-64 lg:w-96 lg:h-96 bg-black/10 rounded-full blur-3xl"></div>
 
         <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-16">
+          <div className="flex items-center gap-2 mb-8 lg:mb-16">
             <div className="bg-white p-2 rounded-lg text-[#00A86B]">
-              <FileText className="w-8 h-8" />
+              <FileText className="w-6 h-6 lg:w-8 lg:h-8" />
             </div>
-            <span className="text-2xl font-black tracking-widest">YUVANAUKRI</span>
+            <span className="text-xl lg:text-2xl font-black tracking-widest">YUVANAUKRI</span>
           </div>
 
-          <h1 className="text-5xl font-black mb-6 leading-tight">
+          <h1 className="text-3xl lg:text-5xl font-black mb-4 lg:mb-6 leading-tight">
             Join the Network of <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-300">
               Top Professionals
             </span>
           </h1>
-          <p className="text-lg text-white/80 max-w-md mb-12">
+          <p className="text-sm lg:text-lg text-white/80 max-w-md mb-8 lg:mb-12">
             Your dream job is just a few clicks away. Sign up to build your stellar resume and connect with employers.
           </p>
 
-          <div className="space-y-6">
+          <div className="hidden lg:block space-y-6">
             <div className="flex items-center gap-4">
               <div className="bg-white/20 p-3 rounded-xl">
                 <CheckCircle className="w-6 h-6 text-white" />
@@ -97,21 +98,15 @@ const Regi = () => {
           </div>
         </div>
 
-        <div className="relative z-10 text-sm text-white/60 font-medium">
+        <div className="hidden lg:block relative z-10 text-xs lg:text-sm text-white/60 font-medium mt-8 lg:mt-0">
           © {new Date().getFullYear()} YuvaNaukri. All rights reserved.
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
-        <div className="w-full max-w-md">
-          <div className="flex lg:hidden items-center gap-2 mb-10 justify-center">
-            <div className="bg-[#00A86B] p-2 rounded-lg text-white">
-              <FileText className="w-6 h-6" />
-            </div>
-            <span className="text-2xl font-black tracking-widest text-[#00A86B]">YUVANAUKRI</span>
-          </div>
-
-          <div className="mb-10 text-center lg:text-left">
+      {/* Form Section */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 bg-white lg:bg-transparent">
+        <div className="w-full max-w-md bg-white p-8 lg:p-0 rounded-3xl lg:rounded-none shadow-xl lg:shadow-none -mt-24 lg:mt-0 relative z-20">
+          <div className="mb-8 text-center lg:text-left">
             <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Create Account</h2>
             <p className="text-slate-500">Sign up to kickstart your career journey.</p>
           </div>
@@ -170,6 +165,11 @@ const Regi = () => {
               </a>
             </p>
           </form>
+
+          {/* Mobile Copyright (Visible only on small screens) */}
+          <div className="lg:hidden text-center text-slate-400 text-xs mt-12 pb-4">
+            © {new Date().getFullYear()} YuvaNaukri. All rights reserved.
+          </div>
         </div>
       </div>
     </div>
