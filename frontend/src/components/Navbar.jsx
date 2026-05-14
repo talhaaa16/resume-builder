@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image, BriefcaseBusiness, Sparkles } from "lucide-react";
+import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image, BriefcaseBusiness, Sparkles, Menu } from "lucide-react";
 import axios from "axios";
 import { useToast } from "../context/ToastContext";
 
@@ -9,6 +9,7 @@ const Navbar = () => {
   const [useremail, setUseremail] = useState(null);
   const [profilePic, setProfilePic] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showResumesModal, setShowResumesModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "" });
@@ -232,7 +233,7 @@ const Navbar = () => {
             </a>
           </div>
 
-          <div className="flex items-center space-x-4 relative" ref={dropdownRef}>
+          <div className="hidden md:flex items-center space-x-4 relative" ref={dropdownRef}>
             {username ? (
               <>
                 <button
@@ -309,7 +310,54 @@ const Navbar = () => {
               </>
             )}
           </div>
+
+          {/* Mobile Hamburger Button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-gray-700 hover:text-blue-600 focus:outline-none transition"
+            >
+              {isMobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Dropdown Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-xl border-t border-gray-100 z-50 flex flex-col py-4 px-6 space-y-4">
+            <a href="/" className="text-gray-700 font-semibold hover:text-blue-600 transition">Home</a>
+            <a href="/resume-builder" className="text-gray-700 font-semibold hover:text-blue-600 transition">Resume Builder</a>
+            <a href="/jobs" className="text-gray-700 font-semibold hover:text-blue-600 transition">Jobs</a>
+            <a href="/carrier" className="text-gray-700 font-semibold hover:text-blue-600 transition">Career Guidance</a>
+            
+            <div className="h-px bg-gray-200 my-2"></div>
+            
+            {username ? (
+              <div className="flex flex-col space-y-4">
+                <div className="flex items-center space-x-3 mb-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                  <img src={profilePic || `https://api.dicebear.com/7.x/notionists/svg?seed=${username || 'dev'}`} alt="profile" className="w-12 h-12 object-cover rounded-full bg-slate-200" />
+                  <div>
+                    <p className="text-base font-bold text-gray-800">{username}</p>
+                    <p className="text-sm text-gray-500">{useremail || 'user@example.com'}</p>
+                  </div>
+                </div>
+                <button onClick={() => { setIsMobileMenuOpen(false); openResumesModal(); }} className="text-left text-sm font-medium text-gray-700 flex items-center py-2"><FileText className="w-5 h-5 mr-3 text-blue-600" />My Resumes</button>
+                <button onClick={() => { setIsMobileMenuOpen(false); setShowPasswordModal(true); }} className="text-left text-sm font-medium text-gray-700 flex items-center py-2"><Key className="w-5 h-5 mr-3 text-gray-500" />Change Password</button>
+                <button onClick={() => { setIsMobileMenuOpen(false); fileInputRef.current.click(); }} className="text-left text-sm font-medium text-gray-700 flex items-center py-2"><Image className="w-5 h-5 mr-3 text-green-500" />Update Profile Pic</button>
+                <button onClick={() => { setIsMobileMenuOpen(false); handleLogout(); }} className="text-left text-sm font-medium text-red-600 flex items-center py-2"><LogOut className="w-5 h-5 mr-3 text-red-500" />Logout</button>
+              </div>
+            ) : (
+              <div className="flex flex-col space-y-3 pt-2">
+                <button onClick={() => { setIsMobileMenuOpen(false); navigate("/login"); }} className="w-full text-center text-gray-700 hover:text-blue-600 font-semibold py-3 border border-gray-200 rounded-xl transition">
+                  Login
+                </button>
+                <button onClick={() => { setIsMobileMenuOpen(false); navigate("/signup"); }} className="w-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-3 rounded-xl shadow-md hover:opacity-90 transition">
+                  Get Started
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </nav>
 
       {/* Resumes Modal */}
