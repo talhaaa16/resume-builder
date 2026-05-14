@@ -66,32 +66,32 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      {/* Left Side - Branding/Info */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0076BC] to-[#00A86B] p-12 flex-col justify-between text-white relative overflow-hidden">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-slate-50">
+      {/* Branding Section - Banner on Mobile, Sidebar on Desktop */}
+      <div className="w-full lg:w-1/2 bg-gradient-to-br from-[#0076BC] to-[#00A86B] p-8 lg:p-12 flex flex-col justify-between text-white relative overflow-hidden min-h-[300px] lg:min-h-screen">
         {/* Decorative Circles */}
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-black/10 rounded-full blur-3xl"></div>
+        <div className="absolute -top-24 -left-24 w-64 h-64 lg:w-96 lg:h-96 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-24 -right-24 w-64 h-64 lg:w-96 lg:h-96 bg-black/10 rounded-full blur-3xl"></div>
 
         <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-16">
+          <div className="flex items-center gap-2 mb-8 lg:mb-16">
             <div className="bg-white p-2 rounded-lg text-[#0076BC]">
-              <FileText className="w-8 h-8" />
+              <FileText className="w-6 h-6 lg:w-8 lg:h-8" />
             </div>
-            <span className="text-2xl font-black tracking-widest">YUVANAUKRI</span>
+            <span className="text-xl lg:text-2xl font-black tracking-widest">YUVANAUKRI</span>
           </div>
 
-          <h1 className="text-5xl font-black mb-6 leading-tight">
+          <h1 className="text-3xl lg:text-5xl font-black mb-4 lg:mb-6 leading-tight">
             Build Your Future <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 to-yellow-300">
               One Step at a Time
             </span>
           </h1>
-          <p className="text-lg text-white/80 max-w-md mb-12">
+          <p className="text-sm lg:text-lg text-white/80 max-w-md mb-8 lg:mb-12">
             Create professional resumes, discover exciting job opportunities, and take the next step in your career journey.
           </p>
 
-          <div className="space-y-6">
+          <div className="hidden lg:block space-y-6">
             <div className="flex items-center gap-4">
               <div className="bg-white/20 p-3 rounded-xl">
                 <FileText className="w-6 h-6 text-white" />
@@ -113,23 +113,15 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="relative z-10 text-sm text-white/60 font-medium">
+        <div className="hidden lg:block relative z-10 text-xs lg:text-sm text-white/60 font-medium mt-8 lg:mt-0">
           © {new Date().getFullYear()} YuvaNaukri. All rights reserved.
         </div>
       </div>
 
-      {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
-        <div className="w-full max-w-md">
-          {/* Mobile Header (Hidden on Desktop) */}
-          <div className="flex lg:hidden items-center gap-2 mb-10 justify-center">
-            <div className="bg-[#0076BC] p-2 rounded-lg text-white">
-              <FileText className="w-6 h-6" />
-            </div>
-            <span className="text-2xl font-black tracking-widest text-[#0076BC]">YUVANAUKRI</span>
-          </div>
-
-          <div className="mb-10 text-center lg:text-left">
+      {/* Form Section */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 bg-white lg:bg-transparent">
+        <div className="w-full max-w-md bg-white p-8 lg:p-0 rounded-3xl lg:rounded-none shadow-xl lg:shadow-none -mt-24 lg:mt-0 relative z-20">
+          <div className="mb-8 text-center lg:text-left">
             <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Welcome Back</h2>
             <p className="text-slate-500">Please enter your details to sign in.</p>
           </div>
@@ -182,6 +174,11 @@ const Login = () => {
               </a>
             </p>
           </form>
+
+          {/* Mobile Copyright (Visible only on small screens) */}
+          <div className="lg:hidden text-center text-slate-400 text-xs mt-12 pb-4">
+            © {new Date().getFullYear()} YuvaNaukri. All rights reserved.
+          </div>
         </div>
       </div>
     </div>
