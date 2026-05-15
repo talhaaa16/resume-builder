@@ -104,7 +104,7 @@ const Regi = () => {
       </div>
 
       {/* Form Section */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 bg-white lg:bg-transparent">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 bg-transparent lg:bg-white">
         <div className="w-full max-w-md bg-white p-8 lg:p-0 rounded-3xl lg:rounded-none shadow-xl lg:shadow-none -mt-24 lg:mt-0 relative z-20">
           <div className="mb-8 text-center lg:text-left">
             <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Create Account</h2>
