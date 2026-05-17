@@ -9,3 +9,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom Font Family Classes */
+.font-inter { font-family: 'Inter', sans-serif !important; }
+.font-playfair { font-family: 'Playfair Display', serif !important; }
+.font-roboto-mono { font-family: 'Roboto Mono', monospace !important; }
+.font-montserrat { font-family: 'Montserrat', sans-serif !important; }
+.font-lora { font-family: 'Lora', serif !important; }
+.font-poppins { font-family: 'Poppins', sans-serif !important; }
+.font-merriweather { font-family: 'Merriweather', serif !important; }
+.font-oswald { font-family: 'Oswald', sans-serif !important; }
+.font-raleway { font-family: 'Raleway', sans-serif !important; }
+.font-eb-garamond { font-family: 'EB Garamond', serif !important; }

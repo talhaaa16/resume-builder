@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import axios from "axios";
+import "./index.css";
 
 axios.interceptors.response.use(
   (response) => response,
