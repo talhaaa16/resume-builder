@@ -639,9 +639,19 @@ export default function ResumeBuilder() {
                     onChange={(e) => setForm({ ...form, fontFamily: e.target.value })}
                     className="bg-slate-800 text-white text-xs border border-slate-600 rounded p-1 outline-none cursor-pointer"
                   >
-                    <option value="font-sans">Modern (Sans)</option>
-                    <option value="font-serif">Classic (Serif)</option>
-                    <option value="font-mono">Tech (Mono)</option>
+                    <option value="font-sans">System Default (Sans)</option>
+                    <option value="font-serif">System Default (Serif)</option>
+                    <option value="font-mono">System Default (Mono)</option>
+                    <option value="font-inter">Inter (Minimal & Clean)</option>
+                    <option value="font-poppins">Poppins (Modern & Rounded)</option>
+                    <option value="font-montserrat">Montserrat (Trendy & Bold)</option>
+                    <option value="font-raleway">Raleway (Elegant & Thin)</option>
+                    <option value="font-oswald">Oswald (Condensed & Strong)</option>
+                    <option value="font-playfair">Playfair Display (Premium Editorial)</option>
+                    <option value="font-lora">Lora (Stylish Storyteller)</option>
+                    <option value="font-merriweather">Merriweather (Highly Readable)</option>
+                    <option value="font-eb-garamond">EB Garamond (Classic Royal)</option>
+                    <option value="font-roboto-mono">Roboto Mono (Tech & Modern)</option>
                   </select>
                 </div>
 
