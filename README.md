@@ -73,6 +73,11 @@ cd frontend
 npm install
 ```
 
+Create a `.env` file in the root of the `frontend` directory and add your environment variables:
+```env
+REACT_APP_API_URL=http://localhost:5000
+```
+
 Start the Vite development server:
 ```bash
 npm start
