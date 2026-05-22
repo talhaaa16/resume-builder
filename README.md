@@ -16,15 +16,17 @@ A highly responsive, dynamic, and professional Resume Builder web application bu
 - **User Profile Management**: Personalized DiceBear avatars and custom profile picture uploads.
 - **Account Security**: Secure password change functionality with JWT-protected backend routes.
 - **Modern UI/UX**: Premium navbar with smooth hover animations, gradient branding, and responsive design.
+- **Interactive Legal Center & Privacy Hub**: Completely redesigned Terms of Service and Privacy Policy pages featuring sticky Table of Contents navigation with active scroll-spy, plain-English "TL;DR" callouts, and search/keyword filtering.
 - **Cloud Database**: Persistent user profiles and secure resume data storage using MongoDB Atlas.
 
 ## 🚀 Tech Stack
 
 ### Frontend
-- **React.js** (Vite)
+- **React.js** (Create React App)
 - **Tailwind CSS** (for highly responsive and modern styling)
 - **React Router v6** (for seamless SPA navigation)
 - **html2canvas & jsPDF** (for PDF generation)
+- **Framer Motion** (for smooth entry transitions and interactive animations)
 - **Lucide React** & **React Icons** (for iconography)
 
 ### Backend
@@ -78,11 +80,11 @@ Create a `.env` file in the root of the `frontend` directory and add your enviro
 REACT_APP_API_URL=http://localhost:5000
 ```
 
-Start the Vite development server:
+Start the development server:
 ```bash
 npm start
 ```
-*The frontend will run on http://localhost:3000 (or the port provided by Vite)*
+*The frontend will run on http://localhost:3000*
 
 ---
 
