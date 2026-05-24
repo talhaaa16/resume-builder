@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaArrowLeft, FaArrowRight, FaSave, FaPlus, FaTrash, FaDownload, FaUser, FaGraduationCap, FaBriefcase, FaCode, FaProjectDiagram, FaMagic } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaSave, FaPlus, FaTrash, FaDownload, FaUser, FaGraduationCap, FaBriefcase, FaCode, FaProjectDiagram, FaMagic, FaGripVertical } from "react-icons/fa";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -46,6 +46,39 @@ export default function ResumeBuilder() {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const resumeRef = useRef();
+  const [draggingIndex, setDraggingIndex] = useState(null);
+
+  const handleDragStart = (e, index, section) => {
+    setDraggingIndex({ index, section });
+    e.dataTransfer.setData("text/plain", index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e, index, section) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = (e, targetIndex, section) => {
+    e.preventDefault();
+    const sourceIndex = parseInt(e.dataTransfer.getData("text/plain"), 10);
+    if (isNaN(sourceIndex) || sourceIndex === targetIndex) return;
+
+    if (draggingIndex && draggingIndex.section === section) {
+      const list = [...form[section]];
+      const [removed] = list.splice(sourceIndex, 1);
+      list.splice(targetIndex, 0, removed);
+      setForm({
+        ...form,
+        [section]: list
+      });
+    }
+    setDraggingIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggingIndex(null);
+  };
 
   const [form, setForm] = useState({
     personalInfo: {
@@ -448,10 +481,28 @@ export default function ResumeBuilder() {
                         </button>
                       </div>
                       {form.education.map((edu, index) => (
-                        <div key={index} className="p-4 border border-slate-100 rounded-lg bg-slate-50 relative">
-                          <button onClick={() => removeArrayItem(index, "education")} className="absolute top-2 right-2 text-red-400 hover:text-red-600"><FaTrash /></button>
-                          <Input label="School/Univ" value={edu.school} onChange={(e) => handleArrayChange(index, "school", e.target.value, "education")} />
-                          <Input label="Degree" value={edu.degree} onChange={(e) => handleArrayChange(index, "degree", e.target.value, "education")} />
+                        <div
+                          key={index}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, index, "education")}
+                          onDragOver={(e) => handleDragOver(e, index, "education")}
+                          onDrop={(e) => handleDrop(e, index, "education")}
+                          onDragEnd={handleDragEnd}
+                          className={`p-4 border rounded-xl bg-slate-50 relative transition-all duration-200 cursor-move ${
+                            draggingIndex?.section === "education" && draggingIndex?.index === index
+                              ? "opacity-40 border-dashed border-indigo-400 scale-[0.98] shadow-inner"
+                              : "border-slate-200 hover:border-slate-300 shadow-sm"
+                          }`}
+                        >
+                          <div className="absolute top-2.5 left-3.5 text-slate-400 flex items-center gap-1.5 pointer-events-none select-none">
+                            <FaGripVertical className="w-3.5 h-3.5 text-slate-400" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Education #{index + 1}</span>
+                          </div>
+                          <button onClick={() => removeArrayItem(index, "education")} className="absolute top-2 right-2 text-red-400 hover:text-red-600 z-10"><FaTrash /></button>
+                          <div className="pt-4">
+                            <Input label="School/Univ" value={edu.school} onChange={(e) => handleArrayChange(index, "school", e.target.value, "education")} />
+                            <Input label="Degree" value={edu.degree} onChange={(e) => handleArrayChange(index, "degree", e.target.value, "education")} />
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -466,44 +517,62 @@ export default function ResumeBuilder() {
                         </button>
                       </div>
                       {form.experience.map((exp, index) => (
-                        <div key={index} className="p-4 border border-slate-100 rounded-lg bg-slate-50 relative">
-                          <button onClick={() => removeArrayItem(index, "experience")} className="absolute top-2 right-2 text-red-400 hover:text-red-600"><FaTrash /></button>
-                          <Input label="Company" value={exp.company} onChange={(e) => handleArrayChange(index, "company", e.target.value, "experience")} />
-                          <Input label="Role" value={exp.role} onChange={(e) => handleArrayChange(index, "role", e.target.value, "experience")} />
-                          <div className="grid grid-cols-2 gap-2 mt-2">
-                            <Input label="Start" value={exp.startDate} onChange={(e) => handleArrayChange(index, "startDate", e.target.value, "experience")} />
-                            <Input label="End" value={exp.endDate} onChange={(e) => handleArrayChange(index, "endDate", e.target.value, "experience")} />
+                        <div
+                          key={index}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, index, "experience")}
+                          onDragOver={(e) => handleDragOver(e, index, "experience")}
+                          onDrop={(e) => handleDrop(e, index, "experience")}
+                          onDragEnd={handleDragEnd}
+                          className={`p-4 border rounded-xl bg-slate-50 relative transition-all duration-200 cursor-move ${
+                            draggingIndex?.section === "experience" && draggingIndex?.index === index
+                              ? "opacity-40 border-dashed border-indigo-400 scale-[0.98] shadow-inner"
+                              : "border-slate-200 hover:border-slate-300 shadow-sm"
+                          }`}
+                        >
+                          <div className="absolute top-2.5 left-3.5 text-slate-400 flex items-center gap-1.5 pointer-events-none select-none">
+                            <FaGripVertical className="w-3.5 h-3.5 text-slate-400" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Experience #{index + 1}</span>
                           </div>
-                          <div className="mt-4">
-                            <div className="flex justify-between items-center mb-1">
-                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest">Description</label>
-                              <button
-                                onClick={() => improveWithAI(exp.description, "Job Description", (val) => handleArrayChange(index, "description", val, "experience"), `experience-${index}`)}
-                                disabled={aiGeneratingField === `experience-${index}`}
-                                className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-lg font-bold hover:bg-indigo-100 flex items-center gap-1 transition-all border border-indigo-100 disabled:opacity-50"
-                                title="Professionalize description with AI"
-                              >
-                                <FaMagic className={`w-2 h-2 ${aiGeneratingField === `experience-${index}` ? "animate-spin" : ""}`} />
-                                {aiGeneratingField === `experience-${index}` ? "Magic in progress..." : "Improve with AI"}
-                              </button>
+                          <button onClick={() => removeArrayItem(index, "experience")} className="absolute top-2 right-2 text-red-400 hover:text-red-600 z-10"><FaTrash /></button>
+                          <div className="pt-4">
+                            <Input label="Company" value={exp.company} onChange={(e) => handleArrayChange(index, "company", e.target.value, "experience")} />
+                            <Input label="Role" value={exp.role} onChange={(e) => handleArrayChange(index, "role", e.target.value, "experience")} />
+                            <div className="grid grid-cols-2 gap-2 mt-2">
+                              <Input label="Start" value={exp.startDate} onChange={(e) => handleArrayChange(index, "startDate", e.target.value, "experience")} />
+                              <Input label="End" value={exp.endDate} onChange={(e) => handleArrayChange(index, "endDate", e.target.value, "experience")} />
                             </div>
-                            <div className="relative">
-                              {aiGeneratingField === `experience-${index}` && (
-                                <div className="absolute inset-0 bg-slate-50/80 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center rounded-lg overflow-hidden border border-indigo-200">
-                                  <div className="flex items-center gap-2 text-indigo-600 font-bold text-xs animate-pulse">
-                                    <FaMagic className="animate-bounce" /> Writing professional description...
+                            <div className="mt-4">
+                              <div className="flex justify-between items-center mb-1">
+                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest">Description</label>
+                                <button
+                                  onClick={() => improveWithAI(exp.description, "Job Description", (val) => handleArrayChange(index, "description", val, "experience"), `experience-${index}`)}
+                                  disabled={aiGeneratingField === `experience-${index}`}
+                                  className="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-lg font-bold hover:bg-indigo-100 flex items-center gap-1 transition-all border border-indigo-100 disabled:opacity-50"
+                                  title="Professionalize description with AI"
+                                >
+                                  <FaMagic className={`w-2 h-2 ${aiGeneratingField === `experience-${index}` ? "animate-spin" : ""}`} />
+                                  {aiGeneratingField === `experience-${index}` ? "Magic in progress..." : "Improve with AI"}
+                                </button>
+                              </div>
+                              <div className="relative">
+                                {aiGeneratingField === `experience-${index}` && (
+                                  <div className="absolute inset-0 bg-slate-50/80 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center rounded-lg overflow-hidden border border-indigo-200">
+                                    <div className="flex items-center gap-2 text-indigo-600 font-bold text-xs animate-pulse">
+                                      <FaMagic className="animate-bounce" /> Writing professional description...
+                                    </div>
+                                    <div className="w-2/3 h-1.5 bg-slate-200 rounded-full mt-3 relative overflow-hidden">
+                                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent w-full h-full animate-shimmer"></div>
+                                    </div>
                                   </div>
-                                  <div className="w-2/3 h-1.5 bg-slate-200 rounded-full mt-3 relative overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent w-full h-full animate-shimmer"></div>
-                                  </div>
-                                </div>
-                              )}
-                              <textarea
-                                value={exp.description}
-                                onChange={(e) => handleArrayChange(index, "description", e.target.value, "experience")}
-                                className="w-full p-3 bg-slate-50 border-b-2 border-transparent focus:border-[#0076BC] outline-none rounded-t-lg h-32 text-sm"
-                                placeholder="Describe your achievements..."
-                              />
+                                )}
+                                <textarea
+                                  value={exp.description}
+                                  onChange={(e) => handleArrayChange(index, "description", e.target.value, "experience")}
+                                  className="w-full p-3 bg-slate-50 border-b-2 border-transparent focus:border-[#0076BC] outline-none rounded-t-lg h-32 text-sm"
+                                  placeholder="Describe your achievements..."
+                                />
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -539,10 +608,28 @@ export default function ResumeBuilder() {
                         </button>
                       </div>
                       {form.projects.map((proj, index) => (
-                        <div key={index} className="p-4 border border-slate-100 rounded-lg bg-slate-50 relative">
-                          <button onClick={() => removeArrayItem(index, "projects")} className="absolute top-2 right-2 text-red-400 hover:text-red-600"><FaTrash /></button>
-                          <Input label="Title" value={proj.title} onChange={(e) => handleArrayChange(index, "title", e.target.value, "projects")} />
-                          <Input label="Link" value={proj.link} onChange={(e) => handleArrayChange(index, "link", e.target.value, "projects")} />
+                        <div
+                          key={index}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, index, "projects")}
+                          onDragOver={(e) => handleDragOver(e, index, "projects")}
+                          onDrop={(e) => handleDrop(e, index, "projects")}
+                          onDragEnd={handleDragEnd}
+                          className={`p-4 border rounded-xl bg-slate-50 relative transition-all duration-200 cursor-move ${
+                            draggingIndex?.section === "projects" && draggingIndex?.index === index
+                              ? "opacity-40 border-dashed border-indigo-400 scale-[0.98] shadow-inner"
+                              : "border-slate-200 hover:border-slate-300 shadow-sm"
+                          }`}
+                        >
+                          <div className="absolute top-2.5 left-3.5 text-slate-400 flex items-center gap-1.5 pointer-events-none select-none">
+                            <FaGripVertical className="w-3.5 h-3.5 text-slate-400" />
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Project #{index + 1}</span>
+                          </div>
+                          <button onClick={() => removeArrayItem(index, "projects")} className="absolute top-2 right-2 text-red-400 hover:text-red-600 z-10"><FaTrash /></button>
+                          <div className="pt-4">
+                            <Input label="Title" value={proj.title} onChange={(e) => handleArrayChange(index, "title", e.target.value, "projects")} />
+                            <Input label="Link" value={proj.link} onChange={(e) => handleArrayChange(index, "link", e.target.value, "projects")} />
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -558,12 +645,30 @@ export default function ResumeBuilder() {
                           </button>
                         </div>
                         {form.certifications?.map((cert, index) => (
-                          <div key={index} className="p-4 border border-slate-100 rounded-lg bg-slate-50 relative">
-                            <button onClick={() => removeArrayItem(index, "certifications")} className="absolute top-2 right-2 text-red-400 hover:text-red-600"><FaTrash /></button>
-                            <Input label="Certification Title" value={cert.title} onChange={(e) => handleArrayChange(index, "title", e.target.value, "certifications")} />
-                            <div className="grid grid-cols-2 gap-2 mt-2">
-                              <Input label="Issuer" value={cert.issuer} onChange={(e) => handleArrayChange(index, "issuer", e.target.value, "certifications")} />
-                              <Input label="Date" value={cert.date} onChange={(e) => handleArrayChange(index, "date", e.target.value, "certifications")} />
+                          <div
+                            key={index}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, index, "certifications")}
+                            onDragOver={(e) => handleDragOver(e, index, "certifications")}
+                            onDrop={(e) => handleDrop(e, index, "certifications")}
+                            onDragEnd={handleDragEnd}
+                            className={`p-4 border rounded-xl bg-slate-50 relative transition-all duration-200 cursor-move ${
+                              draggingIndex?.section === "certifications" && draggingIndex?.index === index
+                                ? "opacity-40 border-dashed border-indigo-400 scale-[0.98] shadow-inner"
+                                : "border-slate-200 hover:border-slate-300 shadow-sm"
+                            }`}
+                          >
+                            <div className="absolute top-2.5 left-3.5 text-slate-400 flex items-center gap-1.5 pointer-events-none select-none">
+                              <FaGripVertical className="w-3.5 h-3.5 text-slate-400" />
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Certification #{index + 1}</span>
+                            </div>
+                            <button onClick={() => removeArrayItem(index, "certifications")} className="absolute top-2 right-2 text-red-400 hover:text-red-600 z-10"><FaTrash /></button>
+                            <div className="pt-4">
+                              <Input label="Certification Title" value={cert.title} onChange={(e) => handleArrayChange(index, "title", e.target.value, "certifications")} />
+                              <div className="grid grid-cols-2 gap-2 mt-2">
+                                <Input label="Issuer" value={cert.issuer} onChange={(e) => handleArrayChange(index, "issuer", e.target.value, "certifications")} />
+                                <Input label="Date" value={cert.date} onChange={(e) => handleArrayChange(index, "date", e.target.value, "certifications")} />
+                              </div>
                             </div>
                           </div>
                         ))}
