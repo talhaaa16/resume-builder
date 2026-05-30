@@ -64,7 +64,7 @@ router.post('/userlogin', async (req, res) => {
     const { user_email, password } = req.body;
     const ip = req.ip, now = Date.now();
     const attempts = (loginAttempts.get(ip) || []).filter(t => now - t < 900000);
-    if (attempts.length >= 5) return res.status(429).json({ sts: 4, msg: 'Too many attempts' });
+    if (attempts.length >= 15) return res.status(429).json({ sts: 4, msg: 'Too many attempts' });
 
     try {
         const login = await User.findOne({ user_email });
@@ -148,6 +148,40 @@ router.post('/update-profile-pic', authMiddleware, async (req, res) => {
         user.profile_pic = profile_pic;
         await user.save();
         res.json({ sts: 0, msg: "Profile picture updated successfully", profile_pic });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ sts: 1, msg: "Internal server error" });
+    }
+});
+
+router.post('/update-profile', authMiddleware, async (req, res) => {
+    try {
+        const { user_name, user_email } = req.body;
+        const user = await User.findById(req.user.userId);
+        if (!user) return res.status(404).json({ sts: 1, msg: "User not found" });
+
+        if (user_name) {
+            user.user_name = user_name;
+        }
+
+        if (user_email && user_email !== user.user_email) {
+            const emailExists = await User.findOne({ user_email });
+            if (emailExists) {
+                return res.json({ sts: 1, msg: "Email is already taken by another user" });
+            }
+            user.user_email = user_email;
+        }
+
+        await user.save();
+        res.json({
+            sts: 0,
+            msg: "Profile updated successfully",
+            user: {
+                user_name: user.user_name,
+                user_email: user.user_email,
+                profile_pic: user.profile_pic
+            }
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ sts: 1, msg: "Internal server error" });

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image, BriefcaseBusiness, Sparkles, Menu } from "lucide-react";
+import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image, BriefcaseBusiness, Sparkles, Menu, Settings, Camera, Check, Edit2, ChevronDown, ChevronUp } from "lucide-react";
 import axios from "axios";
 import { useToast } from "../context/ToastContext";
 
@@ -12,6 +12,15 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showResumesModal, setShowResumesModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  
+  // Account Sidebar state
+  const [showAccountSidebar, setShowAccountSidebar] = useState(false);
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [editUsername, setEditUsername] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [isPasswordCollapsed, setIsPasswordCollapsed] = useState(true);
+
   const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "" });
   const [passwordMsg, setPasswordMsg] = useState("");
   const [resumes, setResumes] = useState([]);
@@ -118,6 +127,69 @@ const Navbar = () => {
     setShowDropdown(false);
     setShowResumesModal(true);
     fetchResumes();
+  };
+
+  const openAccountSidebar = () => {
+    setShowDropdown(false);
+    setIsMobileMenuOpen(false);
+    setEditUsername(username || "");
+    setEditEmail(useremail || "");
+    setIsEditingUsername(false);
+    setIsEditingEmail(false);
+    setPasswordData({ currentPassword: "", newPassword: "" });
+    setPasswordMsg("");
+    setIsPasswordCollapsed(true);
+    setShowAccountSidebar(true);
+  };
+
+  const handleProfileUpdate = async (field) => {
+    try {
+      const token = localStorage.getItem("token");
+      const payload = {};
+      
+      if (field === "username") {
+        if (!editUsername.trim()) {
+          showToast("Username cannot be empty", "error");
+          return;
+        }
+        payload.user_name = editUsername.trim();
+      } else if (field === "email") {
+        if (!editEmail.trim()) {
+          showToast("Email address cannot be empty", "error");
+          return;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(editEmail.trim())) {
+          showToast("Please enter a valid email address", "error");
+          return;
+        }
+        payload.user_email = editEmail.trim();
+      }
+
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL || ""}/api/auth/update-profile`,
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (res.data.sts === 0) {
+        showToast(res.data.msg || "Profile updated successfully!");
+        if (field === "username") {
+          setUsername(res.data.user.user_name);
+          localStorage.setItem("uname", res.data.user.user_name);
+          setIsEditingUsername(false);
+        } else if (field === "email") {
+          setUseremail(res.data.user.user_email);
+          localStorage.setItem("uemail", res.data.user.user_email);
+          setIsEditingEmail(false);
+        }
+      } else {
+        showToast(res.data.msg || "Failed to update profile", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast(err.response?.data?.msg || "Error updating profile. Please try again.", "error");
+    }
   };
 
   const handlePasswordChange = async (e) => {
@@ -243,7 +315,7 @@ const Navbar = () => {
                   <img src={profilePic || `https://api.dicebear.com/7.x/notionists/svg?seed=${username || 'dev'}`} alt="profile" className="w-10 h-10 object-cover" />
                 </button>
 
-                {/* Profile Dropdown Menu */}
+                 {/* Profile Dropdown Menu */}
                 {showDropdown && (
                   <div className="absolute right-0 top-12 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50 transform origin-top-right transition-all">
                     <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 rounded-t-xl mb-1">
@@ -255,32 +327,17 @@ const Navbar = () => {
                       onClick={openResumesModal}
                       className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 flex items-center transition"
                     >
-                      <FileText className="w-4 h-4 mr-3" />
+                      <FileText className="w-4 h-4 mr-3 text-gray-500" />
                       My Resumes
                     </button>
 
                     <button
-                      onClick={() => { setShowDropdown(false); setShowPasswordModal(true); }}
+                      onClick={openAccountSidebar}
                       className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 flex items-center transition"
                     >
-                      <Key className="w-4 h-4 mr-3" />
-                      Change Password
+                      <Settings className="w-4 h-4 mr-3 text-gray-500" />
+                      My Account
                     </button>
-
-                    <button
-                      onClick={() => fileInputRef.current.click()}
-                      className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 flex items-center transition"
-                    >
-                      <Image className="w-4 h-4 mr-3" />
-                      Update Profile Pic
-                    </button>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      ref={fileInputRef}
-                      onChange={handleProfileImageUpload}
-                      className="hidden"
-                    />
 
                     <div className="h-px bg-gray-100 my-1"></div>
 
@@ -342,8 +399,7 @@ const Navbar = () => {
                   </div>
                 </div>
                 <button onClick={() => { setIsMobileMenuOpen(false); openResumesModal(); }} className="text-left text-sm font-medium text-gray-700 flex items-center py-2"><FileText className="w-5 h-5 mr-3 text-blue-600" />My Resumes</button>
-                <button onClick={() => { setIsMobileMenuOpen(false); setShowPasswordModal(true); }} className="text-left text-sm font-medium text-gray-700 flex items-center py-2"><Key className="w-5 h-5 mr-3 text-gray-500" />Change Password</button>
-                <button onClick={() => { setIsMobileMenuOpen(false); fileInputRef.current.click(); }} className="text-left text-sm font-medium text-gray-700 flex items-center py-2"><Image className="w-5 h-5 mr-3 text-green-500" />Update Profile Pic</button>
+                <button onClick={() => { setIsMobileMenuOpen(false); openAccountSidebar(); }} className="text-left text-sm font-medium text-gray-700 flex items-center py-2"><Settings className="w-5 h-5 mr-3 text-gray-600" />My Account</button>
                 <button onClick={() => { setIsMobileMenuOpen(false); handleLogout(); }} className="text-left text-sm font-medium text-red-600 flex items-center py-2"><LogOut className="w-5 h-5 mr-3 text-red-500" />Logout</button>
               </div>
             ) : (
@@ -444,36 +500,215 @@ const Navbar = () => {
           </div>
         </div>
       )}
-      {/* Password Modal */}
-      {showPasswordModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 relative">
-            <button onClick={() => setShowPasswordModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
-              <X className="w-5 h-5" />
-            </button>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="bg-blue-100 p-2 rounded-lg text-blue-600">
-                <Key className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800">Change Password</h3>
+      {/* Account Sidebar */}
+      {showAccountSidebar && (
+        <>
+          {/* Backdrop Overlay */}
+          <div
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowAccountSidebar(false)}
+          />
+
+          {/* Sidebar Panel */}
+          <div className="fixed inset-y-0 right-0 z-50 w-full sm:w-[420px] bg-white shadow-2xl flex flex-col h-full border-l border-gray-200 animate-slideIn">
+            {/* Header */}
+            <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2.5">
+                <Settings className="w-5.5 h-5.5 text-blue-600" />
+                Account Settings
+              </h2>
+              <button
+                onClick={() => setShowAccountSidebar(false)}
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            <form onSubmit={handlePasswordChange} className="flex flex-col gap-4">
-              {passwordMsg && <p className="text-red-500 text-sm font-medium text-center bg-red-50 rounded p-2">{passwordMsg}</p>}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                <input type="password" required value={passwordData.currentPassword} onChange={e => setPasswordData({ ...passwordData, currentPassword: e.target.value })} className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900" />
+            {/* Scrollable Content */}
+            <div className="flex-grow overflow-y-auto p-6 space-y-6">
+              {/* Profile Image Section */}
+              <div className="text-center pb-6 border-b border-gray-100 flex flex-col items-center">
+                <div className="relative w-28 h-28 mb-3.5 group cursor-pointer" onClick={() => fileInputRef.current.click()}>
+                  <img
+                    src={profilePic || `https://api.dicebear.com/7.x/notionists/svg?seed=${username || 'dev'}`}
+                    alt="Profile"
+                    className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md ring-2 ring-gray-100 group-hover:opacity-90 transition"
+                  />
+                  <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200">
+                    <Camera className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleProfileImageUpload}
+                  className="hidden"
+                />
+                <button
+                  onClick={() => fileInputRef.current.click()}
+                  className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition"
+                >
+                  Change Profile Photo
+                </button>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                <input type="password" required value={passwordData.newPassword} onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })} className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900" />
+
+              {/* Username Section */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">Username</label>
+                {isEditingUsername ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={editUsername}
+                      onChange={(e) => setEditUsername(e.target.value)}
+                      className="flex-1 border border-gray-300 px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 font-semibold"
+                    />
+                    <button
+                      onClick={() => handleProfileUpdate("username")}
+                      className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition shrink-0"
+                      title="Save Username"
+                    >
+                      <Check className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsEditingUsername(false);
+                        setEditUsername(username || "");
+                      }}
+                      className="p-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition shrink-0"
+                      title="Cancel"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex justify-between items-center bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl">
+                    <span className="font-semibold text-gray-700 truncate mr-2">{username || "Not set"}</span>
+                    <button
+                      onClick={() => setIsEditingUsername(true)}
+                      className="p-1 rounded text-gray-400 hover:text-blue-600 hover:bg-white transition shrink-0"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
               </div>
-              <button type="submit" className="w-full bg-[#0076BC] text-white py-3 rounded-lg font-semibold mt-2 hover:bg-blue-700 transition">
-                Update Password
+
+              {/* Email Address Section */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider">Email Address</label>
+                {isEditingEmail ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="email"
+                      value={editEmail}
+                      onChange={(e) => setEditEmail(e.target.value)}
+                      className="flex-1 border border-gray-300 px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 font-semibold"
+                    />
+                    <button
+                      onClick={() => handleProfileUpdate("email")}
+                      className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition shrink-0"
+                      title="Save Email"
+                    >
+                      <Check className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsEditingEmail(false);
+                        setEditEmail(useremail || "");
+                      }}
+                      className="p-2 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition shrink-0"
+                      title="Cancel"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex justify-between items-center bg-gray-50 border border-gray-100 px-4 py-3 rounded-xl">
+                    <span className="font-semibold text-gray-700 truncate mr-2">{useremail || "Not set"}</span>
+                    <button
+                      onClick={() => setIsEditingEmail(true)}
+                      className="p-1 rounded text-gray-400 hover:text-blue-600 hover:bg-white transition shrink-0"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Security / Password Accordion */}
+              <div className="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <button
+                  type="button"
+                  onClick={() => setIsPasswordCollapsed(!isPasswordCollapsed)}
+                  className="w-full flex justify-between items-center px-4 py-3.5 bg-gray-50 hover:bg-gray-100/70 transition text-gray-700 font-semibold text-sm"
+                >
+                  <span className="flex items-center gap-2">
+                    <Key className="w-4 h-4 text-gray-500" />
+                    Change Password
+                  </span>
+                  {isPasswordCollapsed ? (
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  ) : (
+                    <ChevronUp className="w-4 h-4 text-gray-400" />
+                  )}
+                </button>
+
+                {!isPasswordCollapsed && (
+                  <form onSubmit={handlePasswordChange} className="p-4 border-t border-gray-200 bg-white flex flex-col gap-4">
+                    {passwordMsg && (
+                      <p className="text-red-500 text-xs font-semibold text-center bg-red-50 rounded-lg py-2 px-3 border border-red-100">
+                        {passwordMsg}
+                      </p>
+                    )}
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 mb-1">Current Password</label>
+                      <input
+                        type="password"
+                        required
+                        value={passwordData.currentPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                        className="w-full border border-gray-300 px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 font-semibold"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 mb-1">New Password</label>
+                      <input
+                        type="password"
+                        required
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                        className="w-full border border-gray-300 px-3 py-2 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900 font-semibold"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-bold text-sm hover:bg-blue-700 transition"
+                    >
+                      Update Password
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
+
+            {/* Footer / Logout in Sidebar */}
+            <div className="p-6 border-t border-gray-100 bg-gray-50 flex gap-3">
+              <button
+                onClick={() => {
+                  setShowAccountSidebar(false);
+                  handleLogout();
+                }}
+                className="w-full flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 py-3 rounded-xl font-bold text-sm border border-red-100 transition"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
               </button>
-            </form>
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Custom Confirmation Modal */}
