@@ -295,6 +295,11 @@ const Navbar = () => {
               Resume Builder
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </a>
+            <a href="/ats-checker" className="relative group transition-colors duration-300 hover:text-blue-600 flex items-center gap-1">
+              ATS Checker
+              <span className="bg-gradient-to-r from-blue-500 to-green-400 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider mb-3">New</span>
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+            </a>
             <a href="/jobs" className="relative group transition-colors duration-300 hover:text-blue-600">
               Jobs
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
@@ -384,6 +389,7 @@ const Navbar = () => {
           <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-xl border-t border-gray-100 z-50 flex flex-col py-4 px-6 space-y-4">
             <a href="/" className="text-gray-700 font-semibold hover:text-blue-600 transition">Home</a>
             <a href="/resume-builder" className="text-gray-700 font-semibold hover:text-blue-600 transition">Resume Builder</a>
+            <a href="/ats-checker" className="text-gray-700 font-semibold hover:text-blue-600 transition flex items-center gap-2">ATS Checker <span className="bg-gradient-to-r from-blue-500 to-green-400 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">New</span></a>
             <a href="/jobs" className="text-gray-700 font-semibold hover:text-blue-600 transition">Jobs</a>
             <a href="/carrier" className="text-gray-700 font-semibold hover:text-blue-600 transition">Career Guidance</a>
             

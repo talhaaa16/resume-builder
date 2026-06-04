@@ -10,6 +10,7 @@ import CareerGuidance from "./pages/carrer-guidance";
 import Contact from "./pages/contact";
 import Privacy from "./pages/privacy";
 import Terms from "./pages/terms";
+import ATSChecker from "./pages/ATSChecker";
 
 import { ToastProvider } from "./context/ToastContext";
 
@@ -27,6 +28,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/ats-checker" element={<ATSChecker />} />
 
             <Route
               path="/resume-builder"
