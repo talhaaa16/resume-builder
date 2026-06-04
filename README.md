@@ -12,9 +12,10 @@ A highly responsive, dynamic, and professional Resume Builder web application bu
   - *Creative Split*: High-contrast sidebars with skill progress bars and bold timeline dots.
 - **Live Theme Color Picker**: Customize the accent color of any template in real-time.
 - **Instant PDF Export**: Download your perfect resume in full A4 high quality with a single click.
+- **🤖 AI ATS Checker** *(Coming Soon)*: An upcoming AI-powered tool that will analyze your resume against any job description, calculate an ATS match score, and provide actionable keyword suggestions to help you pass Applicant Tracking Systems.
 - **Secure Authentication**: JWT-based secure login, signup, and session management.
 - **User Profile Management**: Personalized DiceBear avatars and custom profile picture uploads.
-- **Account Security**: Secure password change functionality with JWT-protected backend routes.
+- **Account Security**: Secure password change functionality with JWT-protected backend routes and strong password policy enforcement (min. 6 chars, letters + numbers) mirrored on both frontend and backend.
 - **Modern UI/UX**: Premium navbar with smooth hover animations, gradient branding, and responsive design.
 - **Interactive Legal Center & Privacy Hub**: Completely redesigned Terms of Service and Privacy Policy pages featuring sticky Table of Contents navigation with active scroll-spy, plain-English "TL;DR" callouts, and search/keyword filtering.
 - **Cloud Database**: Persistent user profiles and secure resume data storage using MongoDB Atlas.
