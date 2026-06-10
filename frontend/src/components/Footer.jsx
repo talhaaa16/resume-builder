@@ -25,6 +25,7 @@ export default function Footer() {
             <li><Link to="/" className="hover:text-white">Home</Link></li>
             <li><Link to="/resume-builder" className="hover:text-white">Resume Builder</Link></li>
             <li><Link to="/jobs" className="hover:text-white">Job Listings</Link></li>
+            <li><Link to="/ats-checker" className="hover:text-white">ATS Checker</Link></li>
             <li><Link to="/carrier" className="hover:text-white">Career Guidance</Link></li>
           </ul>
         </div>

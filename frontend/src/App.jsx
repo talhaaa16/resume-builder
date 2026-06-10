@@ -11,6 +11,7 @@ import Contact from "./pages/contact";
 import Privacy from "./pages/privacy";
 import Terms from "./pages/terms";
 import ATSChecker from "./pages/ATSChecker";
+import NotFound from "./pages/NotFound";
 
 import { ToastProvider } from "./context/ToastContext";
 
@@ -38,6 +39,8 @@ function App() {
                 </PrivateRoute>
               }
             />
+            {/* Catch-all route for 404 Not Found */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
       </div>
