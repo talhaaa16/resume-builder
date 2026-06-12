@@ -21,6 +21,15 @@ const Userschema = new mongoose.Schema({
     aiUsageCount: {
         type: Number,
         default: 0
+    },
+
+    atsUsageCount: {
+        type: Number,
+        default: 0
+    },
+    atsLastResetDate: {
+        type: String,
+        default: ''
     }
 })
 
