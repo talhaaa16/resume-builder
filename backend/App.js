@@ -21,10 +21,33 @@ app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 const resumeRouters = require("./routes/resume");
 const aiRouters = require("./routes/ai");
+const adminRouters = require("./routes/admin");
+const PageVisit = require("./models/pageVisit");
+
+app.use(async (req, res, next) => {
+
+  const skip = req.path.startsWith('/api') || req.path === '/ping' || req.path.includes('.');
+  if (!skip) {
+    try {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress || 'unknown';
+      await PageVisit.findOneAndUpdate(
+        { date: todayStr },
+        {
+          $inc: { count: 1 },
+          $addToSet: { uniqueIPs: ip }
+        },
+        { upsert: true }
+      );
+    } catch (e) { console.error('Failed to update page visit:', e); }
+  }
+  next();
+});
 
 app.use("/api/auth", authrouters);
 app.use("/api/resume", resumeRouters);
 app.use("/api/ai", aiRouters);
+app.use("/api/admin", adminRouters);
 
 app.get("/", (req, res) => {
   res.send("Hello World from Backend ");

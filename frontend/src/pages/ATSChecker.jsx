@@ -12,7 +12,6 @@ import {
   RefreshCw, User, BarChart3, ShieldCheck, FileSearch, X, Clock,
 } from "lucide-react";
 
-// ─── Animated Score Ring ──────────────────────────────────────────────────────
 function ScoreRing({ score, size = 160, strokeWidth = 14 }) {
   const radius = (size - strokeWidth * 2) / 2;
   const circumference = radius * 2 * Math.PI;
@@ -40,7 +39,6 @@ function ScoreRing({ score, size = 160, strokeWidth = 14 }) {
   );
 }
 
-// ─── Mini Score Bar ──────────────────────────────────────────────────────────
 function ScoreBar({ label, score, icon: Icon, color }) {
   const barColor = score >= 80 ? "bg-emerald-500" : score >= 60 ? "bg-blue-500" : score >= 40 ? "bg-amber-500" : "bg-red-500";
   return (
@@ -59,7 +57,6 @@ function ScoreBar({ label, score, icon: Icon, color }) {
   );
 }
 
-// ─── Section Analysis Accordion ───────────────────────────────────────────────
 function SectionCard({ icon: Icon, title, score, feedback, iconBg }) {
   const [open, setOpen] = useState(false);
   const scoreColor = score >= 80 ? "text-emerald-600 bg-emerald-50" : score >= 60 ? "text-blue-600 bg-blue-50" : score >= 40 ? "text-amber-600 bg-amber-50" : "text-red-600 bg-red-50";
@@ -80,15 +77,13 @@ function SectionCard({ icon: Icon, title, score, feedback, iconBg }) {
   );
 }
 
-// ─── Verdict Config ───────────────────────────────────────────────────────────
 const VERDICT = {
-  Excellent:    { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", icon: Award },
-  Good:         { bg: "bg-blue-50",    text: "text-blue-700",    border: "border-blue-200",    icon: CheckCircle2 },
-  Fair:         { bg: "bg-amber-50",   text: "text-amber-700",   border: "border-amber-200",   icon: AlertTriangle },
-  "Needs Work": { bg: "bg-red-50",     text: "text-red-700",     border: "border-red-200",     icon: XCircle },
+  Excellent: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", icon: Award },
+  Good: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200", icon: CheckCircle2 },
+  Fair: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200", icon: AlertTriangle },
+  "Needs Work": { bg: "bg-red-50", text: "text-red-700", border: "border-red-200", icon: XCircle },
 };
 
-// ─── Upload Zone ──────────────────────────────────────────────────────────────
 function UploadZone({ file, onFile, onRemove, loading }) {
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef(null);
@@ -133,7 +128,6 @@ function UploadZone({ file, onFile, onRemove, loading }) {
   );
 }
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
 export default function ATSChecker() {
   const [file, setFile] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
@@ -154,9 +148,9 @@ export default function ATSChecker() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-      tl.fromTo(".hero-badge",  { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 })
-        .fromTo(".hero-title",  { y: 30, opacity: 0 },  { y: 0, opacity: 1, duration: 0.7 }, "-=0.3")
-        .fromTo(".hero-sub",    { y: 20, opacity: 0 },  { y: 0, opacity: 1, duration: 0.6 }, "-=0.4")
+      tl.fromTo(".hero-badge", { y: -20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 })
+        .fromTo(".hero-title", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, "-=0.3")
+        .fromTo(".hero-sub", { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6 }, "-=0.4")
         .fromTo(".hero-blob-1", { scale: 0 }, { scale: 1, duration: 1.5, ease: "elastic.out(1, 0.5)" }, 0)
         .fromTo(".hero-blob-2", { scale: 0 }, { scale: 1, duration: 1.5, ease: "elastic.out(1, 0.5)" }, 0.2);
 
@@ -166,7 +160,6 @@ export default function ATSChecker() {
     return () => ctx.revert();
   }, []);
 
-  // ── GSAP: Form entrance animation ──
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(".form-card",
@@ -177,7 +170,6 @@ export default function ATSChecker() {
     return () => ctx.revert();
   }, []);
 
-  // ── GSAP: Results entrance animation ──
   useEffect(() => {
     if (!result) return;
     const ctx = gsap.context(() => {
@@ -248,7 +240,7 @@ export default function ATSChecker() {
         <div className="hero-blob-2 absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
         <div className="relative z-10 max-w-3xl mx-auto">
           <div className="hero-badge inline-flex items-center gap-2 bg-white/20 text-white border border-white/30 px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-widest mb-5 backdrop-blur-sm">
-            <Sparkles className="w-4 h-4 animate-spin" style={{ animationDuration: "3s" }} /> AI Powered · Gemini 2.5
+            <Sparkles className="w-4 h-4 animate-spin" style={{ animationDuration: "3s" }} /> AI Powered
           </div>
           <h1 className="hero-title text-4xl md:text-5xl font-black text-white mb-4 tracking-tight leading-tight">
             Resume <span className="text-emerald-300">ATS Checker</span>
