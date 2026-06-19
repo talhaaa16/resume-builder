@@ -146,24 +146,6 @@ Visit `http://localhost:3000/admin` and enter your `ADMIN_SECRET` password.
 
 ---
 
-## 🌩️ Production Deployment (Render)
-
-| Service | URL |
-|---|---|
-| Frontend (Static Site) | `yuvanaukri.onrender.com` |
-| Backend (Web Service) | `test-2-09s8.onrender.com` |
-
-### Environment Variables (Backend — Render Dashboard)
-```
-PORT, MONGODB_URI, JWT_SECRET, GEMINI_API_KEY, ADMIN_SECRET
-```
-
-### Keep-Alive (Prevents Render Free Tier Sleep)
-The backend exposes `GET /ping` which returns `{ status: "ok" }`.  
-Set up **UptimeRobot** (free) to ping `https://test-2-09s8.onrender.com/ping` every **14 minutes** to keep the server awake 24/7.
-
----
-
 ## 📁 Project Structure
 
 ```
