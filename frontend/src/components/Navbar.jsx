@@ -308,6 +308,10 @@ const Navbar = () => {
               Career Guidance
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </a>
+            <a href="/about" className="relative group transition-colors duration-300 hover:text-blue-600">
+              About Us
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+            </a>
           </div>
 
           <div className="hidden md:flex items-center space-x-4 relative" ref={dropdownRef}>
@@ -392,6 +396,7 @@ const Navbar = () => {
             <a href="/ats-checker" className="text-gray-700 font-semibold hover:text-blue-600 transition flex items-center gap-2">ATS Checker <span className="bg-gradient-to-r from-blue-500 to-green-400 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">New</span></a>
             <a href="/jobs" className="text-gray-700 font-semibold hover:text-blue-600 transition">Jobs</a>
             <a href="/carrier" className="text-gray-700 font-semibold hover:text-blue-600 transition">Career Guidance</a>
+            <a href="/about" className="text-gray-700 font-semibold hover:text-blue-600 transition">About Us</a>
             
             <div className="h-px bg-gray-200 my-2"></div>
             
