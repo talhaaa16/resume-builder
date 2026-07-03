@@ -14,6 +14,12 @@
 - **Live Theme Color Picker** — customize accent colors on any template
 - **Instant PDF Export** — full A4 quality, single click
 - **AI Content Improve** — Gemini AI rewrites any section with strong action verbs and professional tone (3 free uses)
+- **🔗 Resume Share Link** — generate a public, read-only shareable URL for any saved resume
+  - One-click share from the Resume Builder toolbar
+  - One-click share from the **My Resumes** modal in the Navbar
+  - Unique 10-character alphanumeric share ID per resume
+  - Anyone with the link can view the resume in its original template (no login required)
+  - Toggle sharing on/off at any time from the same button
 
 ### 🤖 AI ATS Checker *(New)*
 - **Upload Resume PDF** — Gemini reads the actual PDF directly (no text extraction)
@@ -56,6 +62,20 @@
 - GSAP animations throughout (ATS Checker, 404 page)
 - Modern glassmorphism and gradient design language
 - Toast notification system
+
+### ℹ️ About Us
+- Story, mission, and what makes YuvaNaukri different
+- Features showcase panel with iconography
+- Direct CTA into the Resume Builder
+
+### ❓ FAQ
+- 26 questions across 6 categories: General, Resume Builder, ATS Checker, Account, Jobs & Career, Pricing & Limits
+- Live search across all questions and categories
+- Category tab filter with icons
+- Accordion UI (one question open at a time) with smooth expand animation
+- Result counter showing matches
+- "Still have questions?" support CTA banner
+- Accessible from the Footer (Support column)
 
 ### 📜 Legal Center
 - Redesigned Terms of Service and Privacy Policy
@@ -169,11 +189,14 @@ resume-builder/
     ├── pages/
     │   ├── Home.jsx
     │   ├── ResumeBuilder.jsx
-    │   ├── ATSChecker.jsx   # Full AI resume analysis with file upload
+    │   ├── ResumeView.jsx     # Public read-only resume view (shareable link)
+    │   ├── ATSChecker.jsx    # Full AI resume analysis with file upload
     │   ├── Jobs.jsx
+    │   ├── About.jsx
+    │   ├── FAQ.jsx
     │   ├── AdminLogin.jsx
     │   ├── AdminDashboard.jsx
-    │   └── NotFound.jsx     # GSAP animated 404
+    │   └── NotFound.jsx      # GSAP animated 404
     ├── components/
     │   └── Navbar.jsx
     └── hooks/
@@ -193,6 +216,8 @@ resume-builder/
 | GET | `/api/resume/my-resumes` | ✅ | Get all user resumes |
 | POST | `/api/resume/save` | ✅ | Save/update resume |
 | DELETE | `/api/resume/:id` | ✅ | Delete resume |
+| POST | `/api/resume/share/:id` | ✅ | Toggle public sharing (returns shareId) |
+| GET | `/api/resume/public/:shareId` | — | Fetch a public shared resume (no auth) |
 | POST | `/api/ai/improve` | ✅ | AI improve resume text (3 uses) |
 | POST | `/api/ai/analyze-resume` | ✅ | Upload PDF + AI full analysis (2/day) |
 | POST | `/api/admin/login` | — | Admin login |
