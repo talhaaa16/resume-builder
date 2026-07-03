@@ -47,6 +47,17 @@ const ResumeSchema = new mongoose.Schema({
         type: String,
         default: '#0076BC'
     },
+    // Public share link
+    isPublic: {
+        type: Boolean,
+        default: false
+    },
+    shareId: {
+        type: String,
+        default: null,
+        unique: true,
+        sparse: true   // allow multiple nulls
+    },
     createdAt: {
         type: Date,
         default: Date.now

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image, BriefcaseBusiness, Sparkles, Menu, Settings, Camera, Check, Edit2, ChevronDown, ChevronUp } from "lucide-react";
+import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image, BriefcaseBusiness, Sparkles, Menu, Settings, Camera, Check, Edit2, ChevronDown, ChevronUp, Share2, Copy } from "lucide-react";
 import axios from "axios";
 import { useToast } from "../context/ToastContext";
 
@@ -12,6 +12,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showResumesModal, setShowResumesModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [shareState, setShareState] = useState({ resumeId: null, loading: false, link: "", copied: false });
   
   // Account Sidebar state
   const [showAccountSidebar, setShowAccountSidebar] = useState(false);
@@ -101,26 +102,58 @@ const Navbar = () => {
     }
   };
 
-  const deleteResume = async (id) => {
+  const deleteResume = async (resumeId) => {
     setConfirmModal({
       isOpen: true,
-      title: "Are you sure?",
-      message: "Once deleted, you will not be able to recover this resume!",
+      title: "Delete Resume?",
+      message: "This action cannot be undone. Your resume data will be permanently deleted.",
       confirmText: "Delete",
       confirmColor: "bg-red-500 hover:bg-red-600",
       onConfirm: async () => {
         try {
           const token = localStorage.getItem("token");
-          await axios.delete(`${process.env.REACT_APP_API_URL || ""}/api/resume/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
+          await axios.delete(`${process.env.REACT_APP_API_URL || ""}/api/resume/${resumeId}`, {
+            headers: { Authorization: `Bearer ${token}` },
           });
-          fetchResumes();
+          setResumes(resumes.filter((r) => r._id !== resumeId));
+          showToast("Resume deleted.");
           setConfirmModal(prev => ({ ...prev, isOpen: false }));
         } catch (error) {
-          alert("Failed to delete resume");
+          showToast("Failed to delete resume.", "error");
         }
-      }
+      },
     });
+  };
+
+  const handleShareResume = async (resumeId) => {
+    setShareState({ resumeId, loading: true, link: "", copied: false });
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL || ""}/api/resume/share/${resumeId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.sts === 0 && res.data.shared) {
+        const link = `${window.location.origin}/r/${res.data.shareId}`;
+        setShareState({ resumeId, loading: false, link, copied: false });
+      } else if (res.data.sts === 0 && !res.data.shared) {
+        setShareState({ resumeId: null, loading: false, link: "", copied: false });
+        showToast("Sharing disabled. Resume is now private.", "info");
+      } else {
+        setShareState({ resumeId: null, loading: false, link: "", copied: false });
+        showToast("Failed to generate link.", "error");
+      }
+    } catch {
+      setShareState({ resumeId: null, loading: false, link: "", copied: false });
+      showToast("Error sharing resume.", "error");
+    }
+  };
+
+  const handleCopyShareLink = () => {
+    navigator.clipboard.writeText(shareState.link);
+    setShareState(prev => ({ ...prev, copied: true }));
+    setTimeout(() => setShareState(prev => ({ ...prev, copied: false })), 2000);
   };
 
   const openResumesModal = () => {
@@ -477,18 +510,50 @@ const Navbar = () => {
                       <h3 className="font-bold text-gray-800 text-lg line-clamp-1 mb-1">
                         {resume.personalInfo?.fullName || "Untitled Resume"}
                       </h3>
-                      <p className="text-sm text-gray-500 mb-5 line-clamp-1">
+                      <p className="text-sm text-gray-500 mb-4 line-clamp-1">
                         {resume.personalInfo?.designation || "No designation"}
                       </p>
-                      <button
-                        onClick={() => {
-                          setShowResumesModal(false);
-                          navigate("/resume-builder", { state: { resumeData: resume } });
-                        }}
-                        className="w-full bg-gray-50 hover:bg-[#0076BC] hover:text-white text-gray-700 py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-colors border border-gray-100"
-                      >
-                        Edit Resume <ExternalLink className="w-4 h-4" />
-                      </button>
+
+                      {/* Share link panel — shows inline when this resume's link is ready */}
+                      {shareState.resumeId === resume._id && shareState.link && (
+                        <div className="mb-3 bg-slate-50 border border-slate-200 rounded-lg p-2.5 flex items-center gap-2">
+                          <span className="flex-1 text-xs text-slate-600 truncate font-mono">{shareState.link}</span>
+                          <button
+                            onClick={handleCopyShareLink}
+                            className={`shrink-0 flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-md transition ${
+                              shareState.copied ? "bg-emerald-500 text-white" : "bg-[#0076BC] text-white hover:opacity-90"
+                            }`}
+                          >
+                            {shareState.copied ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
+                          </button>
+                        </div>
+                      )}
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setShowResumesModal(false);
+                            navigate("/resume-builder", { state: { resumeData: resume } });
+                          }}
+                          className="flex-1 bg-gray-50 hover:bg-[#0076BC] hover:text-white text-gray-700 py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors border border-gray-100"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" /> Edit
+                        </button>
+                        <button
+                          onClick={() => handleShareResume(resume._id)}
+                          disabled={shareState.loading && shareState.resumeId === resume._id}
+                          title={resume.isPublic ? "Disable sharing" : "Share this resume"}
+                          className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold border transition ${
+                            resume.isPublic
+                              ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                              : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-blue-50 hover:text-[#0076BC] hover:border-blue-200"
+                          }`}
+                        >
+                          {shareState.loading && shareState.resumeId === resume._id
+                            ? <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                            : <Share2 className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
                     </div>
                   ))}
 

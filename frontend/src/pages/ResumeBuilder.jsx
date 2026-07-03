@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaArrowLeft, FaArrowRight, FaSave, FaPlus, FaTrash, FaDownload, FaUser, FaGraduationCap, FaBriefcase, FaCode, FaProjectDiagram, FaMagic, FaGripVertical } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaSave, FaPlus, FaTrash, FaDownload, FaUser, FaGraduationCap, FaBriefcase, FaCode, FaProjectDiagram, FaMagic, FaGripVertical, FaShare, FaCopy, FaCheck } from "react-icons/fa";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -47,6 +47,7 @@ export default function ResumeBuilder() {
   const [loading, setLoading] = useState(false);
   const resumeRef = useRef();
   const [draggingIndex, setDraggingIndex] = useState(null);
+  const [shareModal, setShareModal] = useState({ open: false, sharing: false, link: "", copied: false });
 
   const handleDragStart = (e, index, section) => {
     setDraggingIndex({ index, section });
@@ -285,6 +286,43 @@ export default function ResumeBuilder() {
       setLoading(false);
     }
   };
+  const handleShare = async () => {
+    if (!form.resumeId) {
+      showToast("Please save your resume first before sharing.", "info");
+      return;
+    }
+    setShareModal({ open: true, sharing: true, link: "", copied: false });
+    try {
+      const token = localStorage.getItem("token");
+      const apiUrl = process.env.REACT_APP_API_URL;
+      const finalApiUrl = (apiUrl && apiUrl !== "undefined") ? apiUrl : "";
+      const res = await axios.post(
+        `${finalApiUrl}/api/resume/share/${form.resumeId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.sts === 0 && res.data.shared) {
+        const link = `${window.location.origin}/r/${res.data.shareId}`;
+        setShareModal({ open: true, sharing: false, link, copied: false });
+      } else if (res.data.sts === 0 && !res.data.shared) {
+        setShareModal({ open: false, sharing: false, link: "", copied: false });
+        showToast("Sharing disabled. Your resume is now private.", "info");
+      } else {
+        setShareModal({ open: false, sharing: false, link: "", copied: false });
+        showToast("Failed to generate share link.", "error");
+      }
+    } catch (err) {
+      setShareModal({ open: false, sharing: false, link: "", copied: false });
+      showToast("Error generating share link.", "error");
+    }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(shareModal.link);
+    setShareModal(prev => ({ ...prev, copied: true }));
+    setTimeout(() => setShareModal(prev => ({ ...prev, copied: false })), 2000);
+  };
+
   const nextStep = () => setStep(step + 1);
   const prevStep = () => setStep(step - 1);
 
@@ -409,8 +447,11 @@ export default function ResumeBuilder() {
                     {step === 7 && "Ready to Download!"}
                   </h2>
                   <div className="flex gap-2">
-                    <button onClick={saveResume} disabled={loading} className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg transition">
+                    <button onClick={saveResume} disabled={loading} title="Save Resume" className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg transition">
                       <FaSave className="w-5 h-5" />
+                    </button>
+                    <button onClick={handleShare} disabled={loading} title="Share Resume Link" className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-lg transition">
+                      <FaShare className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -785,6 +826,57 @@ export default function ResumeBuilder() {
         )}
       </div>
       <Footer />
+
+      {/* ── Share Modal ── */}
+      {shareModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 text-center">
+            {shareModal.sharing ? (
+              <>
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0076BC] to-[#00A86B] flex items-center justify-center mx-auto mb-4 animate-pulse">
+                  <FaShare className="w-6 h-6 text-white" />
+                </div>
+                <p className="font-bold text-slate-700">Generating share link…</p>
+              </>
+            ) : (
+              <>
+                <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto mb-4">
+                  <FaShare className="w-6 h-6 text-emerald-600" />
+                </div>
+                <h3 className="text-lg font-black text-slate-800 mb-1">Your Resume is Live! 🎉</h3>
+                <p className="text-slate-500 text-sm mb-5">Share this link with anyone. No login required to view it.</p>
+
+                <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-3 mb-5">
+                  <span className="flex-1 text-xs text-slate-600 truncate font-mono">{shareModal.link}</span>
+                  <button
+                    onClick={handleCopyLink}
+                    className={`shrink-0 flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition ${
+                      shareModal.copied ? "bg-emerald-500 text-white" : "bg-[#0076BC] text-white hover:opacity-90"
+                    }`}
+                  >
+                    {shareModal.copied ? <><FaCheck className="w-3 h-3" /> Copied!</> : <><FaCopy className="w-3 h-3" /> Copy</>}
+                  </button>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShareModal({ open: false, sharing: false, link: "", copied: false })}
+                    className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-xl font-semibold text-sm hover:bg-slate-50 transition"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={handleShare}
+                    className="flex-1 py-2.5 bg-red-50 border border-red-200 text-red-600 rounded-xl font-semibold text-sm hover:bg-red-100 transition"
+                  >
+                    Disable Sharing
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

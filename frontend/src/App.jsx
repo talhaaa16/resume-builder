@@ -15,6 +15,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import FAQ from "./pages/FAQ";
+import ResumeView from "./pages/ResumeView";
 import { usePageTracker } from "./hooks/usePageTracker";
 import { ToastProvider } from "./context/ToastContext";
 
@@ -33,6 +34,7 @@ function AppRoutes() {
       <Route path="/ats-checker" element={<ATSChecker />} />
       <Route path="/about" element={<About />} />
       <Route path="/faq" element={<FAQ />} />
+      <Route path="/r/:shareId" element={<ResumeView />} />
 
       <Route
         path="/resume-builder"

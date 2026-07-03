@@ -70,4 +70,46 @@ router.delete('/:id', auth, async (req, res) => {
     }
 });
 
+// ── Toggle public share link ───────────────────────────────────────────────
+router.post('/share/:id', auth, async (req, res) => {
+    try {
+        const resume = await Resume.findOne({ _id: req.params.id, userId: req.user.userId });
+        if (!resume) return res.status(404).json({ sts: 1, msg: "Resume not found" });
+
+        if (resume.isPublic && resume.shareId) {
+            // Already shared → disable sharing
+            resume.isPublic = false;
+            resume.shareId = null;
+            await resume.save();
+            return res.json({ sts: 0, shared: false, msg: "Sharing disabled" });
+        }
+
+        // Generate a random 10-char alphanumeric shareId
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let shareId = '';
+        for (let i = 0; i < 10; i++) shareId += chars.charAt(Math.floor(Math.random() * chars.length));
+
+        resume.isPublic = true;
+        resume.shareId = shareId;
+        await resume.save();
+
+        res.json({ sts: 0, shared: true, shareId, msg: "Sharing enabled" });
+    } catch (error) {
+        console.error("Share error:", error);
+        res.status(500).json({ sts: 1, msg: "Error toggling share" });
+    }
+});
+
+// ── Get public resume by shareId (no auth) ────────────────────────────────
+router.get('/public/:shareId', async (req, res) => {
+    try {
+        const resume = await Resume.findOne({ shareId: req.params.shareId, isPublic: true })
+            .select('-userId'); // don't expose userId
+        if (!resume) return res.status(404).json({ sts: 1, msg: "Resume not found or sharing is disabled" });
+        res.json({ sts: 0, resume });
+    } catch (error) {
+        res.status(500).json({ sts: 1, msg: "Error fetching resume" });
+    }
+});
+
 module.exports = router;
