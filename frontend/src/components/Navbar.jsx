@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image, BriefcaseBusiness, Sparkles, Menu, Settings, Camera, Check, Edit2, ChevronDown, ChevronUp, Share2, Copy } from "lucide-react";
+import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image, BriefcaseBusiness, Sparkles, Menu, Settings, Camera, Check, Edit2, ChevronDown, ChevronUp, Share2, Copy, LayoutDashboard } from "lucide-react";
 import axios from "axios";
 import { useToast } from "../context/ToastContext";
 
@@ -366,6 +366,14 @@ const Navbar = () => {
                     </div>
 
                     <button
+                      onClick={() => { setShowDropdown(false); navigate("/dashboard"); }}
+                      className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-[#0076BC] flex items-center transition"
+                    >
+                      <LayoutDashboard className="w-4 h-4 mr-3 text-[#0076BC]" />
+                      My Dashboard
+                    </button>
+
+                    <button
                       onClick={openResumesModal}
                       className="w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 flex items-center transition"
                     >
@@ -442,6 +450,7 @@ const Navbar = () => {
                     <p className="text-sm text-gray-500">{useremail || 'user@example.com'}</p>
                   </div>
                 </div>
+                <button onClick={() => { setIsMobileMenuOpen(false); navigate("/dashboard"); }} className="text-left text-sm font-medium text-[#0076BC] flex items-center py-2"><LayoutDashboard className="w-5 h-5 mr-3 text-[#0076BC]" />My Dashboard</button>
                 <button onClick={() => { setIsMobileMenuOpen(false); openResumesModal(); }} className="text-left text-sm font-medium text-gray-700 flex items-center py-2"><FileText className="w-5 h-5 mr-3 text-blue-600" />My Resumes</button>
                 <button onClick={() => { setIsMobileMenuOpen(false); openAccountSidebar(); }} className="text-left text-sm font-medium text-gray-700 flex items-center py-2"><Settings className="w-5 h-5 mr-3 text-gray-600" />My Account</button>
                 <button onClick={() => { setIsMobileMenuOpen(false); handleLogout(); }} className="text-left text-sm font-medium text-red-600 flex items-center py-2"><LogOut className="w-5 h-5 mr-3 text-red-500" />Logout</button>

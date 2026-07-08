@@ -188,4 +188,42 @@ router.post('/update-profile', authMiddleware, async (req, res) => {
     }
 });
 
-module.exports = router;
+// ── Dashboard stats ─────────────────────────────────────────────────────────
+router.get('/dashboard', authMiddleware, async (req, res) => {
+    try {
+        const Resume = require('../models/resume');
+        const user = await User.findById(req.user.userId).select('-password');
+        if (!user) return res.status(404).json({ sts: 1, msg: "User not found" });
+
+        // Check if ATS count should reset (new day)
+        const today = new Date().toISOString().split('T')[0];
+        const atsToday = user.atsLastResetDate === today ? user.atsUsageCount : 0;
+
+        // Fetch resume stats
+        const resumes = await Resume.find({ userId: req.user.userId })
+            .select('personalInfo template themeColor isPublic shareId createdAt')
+            .sort({ createdAt: -1 });
+
+        res.json({
+            sts: 0,
+            profile: {
+                name: user.user_name,
+                email: user.user_email,
+                avatar: user.profile_pic,
+                memberSince: user._id.getTimestamp()
+            },
+            usage: {
+                aiUsed: user.aiUsageCount,
+                aiLimit: 3,
+                atsToday,
+                atsLimit: 2,
+            },
+            resumes
+        });
+    } catch (error) {
+        console.error("Dashboard error:", error);
+        res.status(500).json({ sts: 1, msg: "Internal server error" });
+    }
+});
+
+module.exports = router;
