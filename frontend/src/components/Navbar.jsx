@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image, BriefcaseBusiness, Sparkles, Menu, Settings, Camera, Check, Edit2, ChevronDown, ChevronUp, Share2, Copy, LayoutDashboard } from "lucide-react";
+import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image, BriefcaseBusiness, Sparkles, Menu, Settings, Camera, Check, Edit2, ChevronDown, ChevronUp, Share2, Copy, LayoutDashboard, Bell } from "lucide-react";
 import axios from "axios";
 import { useToast } from "../context/ToastContext";
 
@@ -12,6 +12,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showResumesModal, setShowResumesModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showBell, setShowBell] = useState(false);
   const [shareState, setShareState] = useState({ resumeId: null, loading: false, link: "", copied: false });
   
   // Account Sidebar state
@@ -350,6 +351,51 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-4 relative" ref={dropdownRef}>
             {username ? (
               <>
+                {/* Bell icon + notification panel */}
+                <div className="relative">
+                  <button
+                    onClick={() => { setShowBell(!showBell); setShowDropdown(false); }}
+                    title="Notifications"
+                    className="relative w-9 h-9 flex items-center justify-center rounded-full text-gray-500 hover:text-[#0076BC] hover:bg-blue-50 transition"
+                  >
+                    <Bell className="w-5 h-5" />
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white animate-pulse" />
+                  </button>
+
+                  {/* Notification Dropdown */}
+                  {showBell && (
+                    <div className="absolute right-0 top-11 mt-1 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
+                      {/* Header */}
+                      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/60">
+                        <div className="flex items-center gap-2">
+                          <Bell className="w-4 h-4 text-[#0076BC]" />
+                          <span className="text-sm font-bold text-gray-800">Notifications</span>
+                        </div>
+                        <button
+                          onClick={() => setShowBell(false)}
+                          className="text-gray-400 hover:text-gray-600 transition"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      {/* Empty state */}
+                      <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                        <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-3">
+                          <Bell className="w-6 h-6 text-slate-300" />
+                        </div>
+                        <p className="text-sm font-semibold text-slate-600 mb-1">No notifications yet</p>
+                        <p className="text-xs text-slate-400">We'll notify you when something important happens.</p>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="px-4 py-2.5 border-t border-gray-100 bg-gray-50/40">
+                        <p className="text-[10px] text-slate-400 text-center">You're all caught up 🎉</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="flex items-center justify-center rounded-full overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm w-10 h-10 bg-slate-100"
