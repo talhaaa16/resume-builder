@@ -30,6 +30,14 @@ const Userschema = new mongoose.Schema({
     atsLastResetDate: {
         type: String,
         default: ''
+    },
+    interviewPrepCount: {
+        type: Number,
+        default: 0
+    },
+    interviewPrepLastResetDate: {
+        type: String,
+        default: ''
     }
 })
 

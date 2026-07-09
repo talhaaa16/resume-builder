@@ -17,6 +17,7 @@ import About from "./pages/About";
 import FAQ from "./pages/FAQ";
 import ResumeView from "./pages/ResumeView";
 import Dashboard from "./pages/Dashboard";
+import InterviewPrep from "./pages/InterviewPrep";
 import { usePageTracker } from "./hooks/usePageTracker";
 import { ToastProvider } from "./context/ToastContext";
 
@@ -37,6 +38,7 @@ function AppRoutes() {
       <Route path="/faq" element={<FAQ />} />
       <Route path="/r/:shareId" element={<ResumeView />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/interview-prep" element={<InterviewPrep />} />
 
       <Route
         path="/resume-builder"

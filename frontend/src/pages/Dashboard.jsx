@@ -11,7 +11,6 @@ import {
 
 const API = process.env.REACT_APP_API_URL || "";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function UsageBar({ used, limit, label, color, icon: Icon }) {
   const pct = Math.min((used / limit) * 100, 100);
@@ -97,11 +96,10 @@ function ResumeCard({ resume, onEdit, onShare }) {
         </button>
         <button
           onClick={() => onShare(resume)}
-          className={`flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border transition-all ${
-            resume.isPublic
+          className={`flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border transition-all ${resume.isPublic
               ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
               : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-blue-50 hover:text-[#0076BC] hover:border-blue-200"
-          }`}
+            }`}
           title={resume.isPublic ? "Disable sharing" : "Share resume"}
         >
           <Share2 className="w-3.5 h-3.5" />
@@ -236,10 +234,10 @@ export default function Dashboard() {
             {(localPic || profile.avatar)
               ? <img src={localPic || profile.avatar} alt="avatar" className="w-full h-full object-cover" />
               : <img
-                  src={`https://api.dicebear.com/7.x/notionists/svg?seed=${profile.name || 'user'}`}
-                  alt="avatar"
-                  className="w-full h-full object-cover"
-                />
+                src={`https://api.dicebear.com/7.x/notionists/svg?seed=${profile.name || 'user'}`}
+                alt="avatar"
+                className="w-full h-full object-cover"
+              />
             }
           </div>
           <div>
@@ -305,8 +303,8 @@ export default function Dashboard() {
             {[
               { label: "Build Resume", icon: Plus, href: "/resume-builder", color: "bg-[#0076BC] text-white hover:opacity-90" },
               { label: "ATS Checker", icon: Shield, href: "/ats-checker", color: "bg-violet-600 text-white hover:opacity-90" },
+              { label: "Interview Prep", icon: Sparkles, href: "/interview-prep", color: "bg-amber-500 text-white hover:opacity-90" },
               { label: "Browse Jobs", icon: Briefcase, href: "/jobs", color: "bg-emerald-600 text-white hover:opacity-90" },
-              { label: "Career Guide", icon: Target, href: "/carrier", color: "bg-amber-500 text-white hover:opacity-90" },
             ].map(({ label, icon: Icon, href, color }) => (
               <button
                 key={label}

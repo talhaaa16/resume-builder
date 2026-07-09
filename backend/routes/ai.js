@@ -6,7 +6,21 @@ const auth = require('../middleware/auth');
 const User = require('../models/user');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+const primaryModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+const fallbackModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+async function generateWithFallback(contents) {
+    try {
+        return await primaryModel.generateContent(contents);
+    } catch (err) {
+        if (err.status === 503 || (err.message && err.message.includes("503"))) {
+            console.warn("gemini-2.5-flash overloaded, retrying with gemini-1.5-flash...");
+            return await fallbackModel.generateContent(contents);
+        }
+        throw err;
+    }
+}
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -53,7 +67,7 @@ router.post('/improve', auth, async (req, res) => {
             Input Text: "${text}"
         `;
 
-        const result = await model.generateContent(prompt);
+        const result = await generateWithFallback(prompt);
         const improvedText = result.response.text().trim();
 
         user.aiUsageCount += 1;
@@ -124,7 +138,7 @@ Return this EXACT JSON structure (all fields required):
 }
 `;
 
-        const result = await model.generateContent([
+        const result = await generateWithFallback([
             {
                 inlineData: {
                     mimeType: "application/pdf",
@@ -155,6 +169,79 @@ Return this EXACT JSON structure (all fields required):
         }
         console.error("Resume Analysis Error:", error);
         res.status(500).json({ sts: 1, msg: "Resume analysis failed. Please try again." });
+    }
+});
+
+router.post('/interview-prep', auth, async (req, res) => {
+    try {
+        const { jobRole, experienceLevel } = req.body;
+
+        if (!jobRole || jobRole.trim().length < 2) {
+            return res.status(400).json({ sts: 1, msg: "Please provide a job role." });
+        }
+
+        const user = await User.findById(req.user.userId);
+        if (!user) return res.status(404).json({ sts: 1, msg: "User not found." });
+
+        const DAILY_LIMIT = 2;
+        const todayStr = new Date().toISOString().slice(0, 10);
+
+        // Reset count if it's a new day
+        if (user.interviewPrepLastResetDate !== todayStr) {
+            user.interviewPrepCount = 0;
+            user.interviewPrepLastResetDate = todayStr;
+        }
+
+        if (user.interviewPrepCount >= DAILY_LIMIT) {
+            return res.status(429).json({
+                sts: 1,
+                limitReached: true,
+                msg: `Daily limit reached! You can generate interview prep ${DAILY_LIMIT} times per day (including regenerate). Come back tomorrow for more.`,
+                usesLeft: 0
+            });
+        }
+
+        const level = experienceLevel || "fresher";
+
+        const prompt = `You are an expert career coach and interviewer with 15+ years of experience.
+
+Generate exactly 10 common interview questions for a "${jobRole.trim()}" role (experience level: ${level}).
+
+Return ONLY a strict JSON array — no markdown, no code fences, no extra text.
+
+Each item must follow this structure:
+{
+  "id": <number 1-10>,
+  "category": "<one of: Behavioral | Technical | Situational | HR | Role-Specific>",
+  "question": "<interview question>",
+  "answer": "<model answer in 3-5 sentences, practical and concise>",
+  "tip": "<1-sentence interviewer tip>"
+}
+
+Make the questions realistic, commonly asked in Indian IT/corporate interviews for this role.
+Return only the JSON array, starting with [ and ending with ].`;
+
+        const result = await generateWithFallback(prompt);
+        let raw = result.response.text().trim();
+        raw = raw.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
+
+        let questions;
+        try {
+            questions = JSON.parse(raw);
+            if (!Array.isArray(questions)) throw new Error("Not an array");
+        } catch (parseErr) {
+            console.error("Interview prep JSON parse error:", raw.slice(0, 500));
+            return res.status(500).json({ sts: 1, msg: "AI returned an unexpected response. Please try again." });
+        }
+
+        user.interviewPrepCount += 1;
+        await user.save();
+
+        const usesLeft = Math.max(0, DAILY_LIMIT - user.interviewPrepCount);
+        res.json({ sts: 0, jobRole: jobRole.trim(), experienceLevel: level, questions, usesLeft });
+    } catch (error) {
+        console.error("Interview Prep Error:", error);
+        res.status(500).json({ sts: 1, msg: "Failed to generate interview questions. Please try again." });
     }
 });
 
