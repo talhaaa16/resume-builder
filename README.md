@@ -29,6 +29,19 @@
 - **Top 5 Actionable Suggestions** — specific improvements ranked by impact
 - **Daily Limit** — 2 free analyses per day per user, auto-resets at midnight
 
+### 🎤 Interview Prep *(New)*
+- **Role-Based Questions** — Enter target job role and experience level (Fresher to Senior)
+- **AI-Generated Q&A** — 10 tailored interview questions with professional model answers and actionable tips
+- **Categorized** — Questions tagged as Behavioral, Technical, Situational, HR, or Role-Specific
+- **Daily Limit** — 2 free generations per day (including regenerations), auto-resets at midnight
+- **Robust AI** — Automatic fallback to `gemini-1.5-flash` if `gemini-2.5-flash` is experiencing high demand
+
+### 📊 User Dashboard *(New)*
+- **Centralized Hub** — Replaces basic navbar profile with a full dashboard page
+- **Quick Stats** — Track total resumes, shared links, ATS daily checks, and AI improvements
+- **My Resumes Grid** — View all saved resumes with template badges, plus inline Edit and Share buttons
+- **Quick Actions** — One-click access to Build Resume, ATS Checker, Interview Prep, and Jobs
+
 ### 💼 Jobs Board
 - Live job listings powered by **Adzuna API**
 - Search by keyword, location, category filters
@@ -191,6 +204,8 @@ resume-builder/
     │   ├── ResumeBuilder.jsx
     │   ├── ResumeView.jsx     # Public read-only resume view (shareable link)
     │   ├── ATSChecker.jsx    # Full AI resume analysis with file upload
+    │   ├── InterviewPrep.jsx # AI-generated interview questions and answers
+    │   ├── Dashboard.jsx     # User dashboard with stats and saved resumes
     │   ├── Jobs.jsx
     │   ├── About.jsx
     │   ├── FAQ.jsx
@@ -213,6 +228,7 @@ resume-builder/
 | POST | `/api/auth/userlogin` | — | Login |
 | POST | `/api/auth/logout` | ✅ | Logout |
 | POST | `/api/auth/change-password` | ✅ | Change password |
+| GET | `/api/auth/dashboard` | ✅ | Fetch user profile, usage stats, and resumes |
 | GET | `/api/resume/my-resumes` | ✅ | Get all user resumes |
 | POST | `/api/resume/save` | ✅ | Save/update resume |
 | DELETE | `/api/resume/:id` | ✅ | Delete resume |
@@ -220,6 +236,7 @@ resume-builder/
 | GET | `/api/resume/public/:shareId` | — | Fetch a public shared resume (no auth) |
 | POST | `/api/ai/improve` | ✅ | AI improve resume text (3 uses) |
 | POST | `/api/ai/analyze-resume` | ✅ | Upload PDF + AI full analysis (2/day) |
+| POST | `/api/ai/interview-prep` | ✅ | AI generate interview questions (2/day) |
 | POST | `/api/admin/login` | — | Admin login |
 | GET | `/api/admin/stats` | Admin | Dashboard statistics |
 | POST | `/api/admin/track` | — | Record page visit |
