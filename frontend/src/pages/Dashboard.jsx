@@ -120,12 +120,17 @@ export default function Dashboard() {
   const [error, setError] = useState("");
   const [shareToast, setShareToast] = useState("");
 
+  const [localPic, setLocalPic] = useState("");
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
       return;
     }
+    // Read profile pic from localStorage (same key Navbar uses)
+    const pic = localStorage.getItem("uprofilepic");
+    if (pic) setLocalPic(pic);
     fetchDashboard(token);
   }, []);
 
@@ -228,11 +233,13 @@ export default function Dashboard() {
         <div className="absolute bottom-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
         <div className="relative z-10 max-w-5xl mx-auto flex items-center gap-5">
           <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/30 shadow-xl shrink-0">
-            {profile.avatar
-              ? <img src={profile.avatar} alt="avatar" className="w-full h-full object-cover" />
-              : <div className="w-full h-full bg-white/20 flex items-center justify-center">
-                  <User className="w-8 h-8 text-white/80" />
-                </div>
+            {(localPic || profile.avatar)
+              ? <img src={localPic || profile.avatar} alt="avatar" className="w-full h-full object-cover" />
+              : <img
+                  src={`https://api.dicebear.com/7.x/notionists/svg?seed=${profile.name || 'user'}`}
+                  alt="avatar"
+                  className="w-full h-full object-cover"
+                />
             }
           </div>
           <div>
