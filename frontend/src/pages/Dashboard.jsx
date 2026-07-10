@@ -7,6 +7,7 @@ import {
   FileText, Zap, Shield, ArrowRight, Plus, Share2,
   Edit2, Clock, CheckCircle2, AlertCircle, User,
   Sparkles, Briefcase, Target, ExternalLink, Calendar,
+  Copy, Lock,
 } from "lucide-react";
 
 const API = process.env.REACT_APP_API_URL || "";
@@ -41,7 +42,7 @@ function UsageBar({ used, limit, label, color, icon: Icon }) {
   );
 }
 
-function ResumeCard({ resume, onEdit, onShare }) {
+function ResumeCard({ resume, onEdit, onShare, onCopyLink }) {
   const name = resume.personalInfo?.fullName || "Untitled Resume";
   const role = resume.personalInfo?.designation || "No designation";
   const template = resume.template || "professional";
@@ -94,16 +95,32 @@ function ResumeCard({ resume, onEdit, onShare }) {
         >
           <Edit2 className="w-3.5 h-3.5" /> Edit
         </button>
-        <button
-          onClick={() => onShare(resume)}
-          className={`flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border transition-all ${resume.isPublic
-              ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-              : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-blue-50 hover:text-[#0076BC] hover:border-blue-200"
-            }`}
-          title={resume.isPublic ? "Disable sharing" : "Share resume"}
-        >
-          <Share2 className="w-3.5 h-3.5" />
-        </button>
+        {resume.isPublic ? (
+          <>
+            <button
+              onClick={() => onCopyLink(resume)}
+              className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border transition-all bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
+              title="Copy Link"
+            >
+              <Copy className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => onShare(resume)}
+              className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border transition-all bg-slate-50 text-slate-500 border-slate-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+              title="Make Private"
+            >
+              <Lock className="w-3.5 h-3.5" />
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => onShare(resume)}
+            className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border transition-all bg-slate-50 text-slate-500 border-slate-200 hover:bg-blue-50 hover:text-[#0076BC] hover:border-blue-200"
+            title="Share Resume"
+          >
+            <Share2 className="w-3.5 h-3.5" /> Share
+          </button>
+        )}
       </div>
     </div>
   );
@@ -149,6 +166,15 @@ export default function Dashboard() {
 
   const handleEdit = (resume) => {
     navigate("/resume-builder", { state: { resumeData: resume } });
+  };
+
+  const handleCopyLink = (resume) => {
+    if (resume.shareId) {
+      const link = `${window.location.origin}/r/${resume.shareId}`;
+      navigator.clipboard.writeText(link);
+      setShareToast("Link copied to clipboard!");
+      setTimeout(() => setShareToast(""), 3500);
+    }
   };
 
   const handleShare = async (resume) => {
@@ -353,6 +379,7 @@ export default function Dashboard() {
                   resume={resume}
                   onEdit={handleEdit}
                   onShare={handleShare}
+                  onCopyLink={handleCopyLink}
                 />
               ))}
               {/* Add new card */}
