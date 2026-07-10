@@ -243,7 +243,6 @@ export default function Dashboard() {
           <div>
             <p className="text-white/70 text-sm font-medium">Welcome back 👋</p>
             <h1 className="text-2xl md:text-3xl font-black text-white">{profile.name}</h1>
-            <p className="text-blue-200 text-sm mt-0.5">{profile.email} · Member since {joinDate}</p>
           </div>
         </div>
       </div>
