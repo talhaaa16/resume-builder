@@ -4,6 +4,7 @@ const multer = require('multer');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const auth = require('../middleware/auth');
 const User = require('../models/user');
+const InterviewPrep = require('../models/interviewPrep');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
@@ -237,11 +238,29 @@ Return only the JSON array, starting with [ and ending with ].`;
         user.interviewPrepCount += 1;
         await user.save();
 
+        // Save prep to DB
+        await InterviewPrep.create({
+            userId: user._id,
+            jobRole: jobRole.trim(),
+            experienceLevel: level,
+            questions: questions
+        });
+
         const usesLeft = Math.max(0, DAILY_LIMIT - user.interviewPrepCount);
         res.json({ sts: 0, jobRole: jobRole.trim(), experienceLevel: level, questions, usesLeft });
     } catch (error) {
         console.error("Interview Prep Error:", error);
         res.status(500).json({ sts: 1, msg: "Failed to generate interview questions. Please try again." });
+    }
+});
+
+router.get('/my-interview-preps', auth, async (req, res) => {
+    try {
+        const preps = await InterviewPrep.find({ userId: req.user.userId }).sort({ createdAt: -1 });
+        res.json({ sts: 0, preps });
+    } catch (error) {
+        console.error("Fetch Preps Error:", error);
+        res.status(500).json({ sts: 1, msg: "Failed to fetch interview preps." });
     }
 });
 
