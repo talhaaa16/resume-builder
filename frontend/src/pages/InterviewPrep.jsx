@@ -250,7 +250,7 @@ export default function InterviewPrep() {
                 {POPULAR_ROLES.map(role => (
                   <button
                     key={role}
-                    onClick={() => { setJobRole(role); handleGenerate(role); }}
+                    onClick={() => setJobRole(role)}
                     className="text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-600 rounded-full hover:bg-[#0076BC] hover:text-white hover:border-[#0076BC] transition font-medium"
                   >
                     {role}
