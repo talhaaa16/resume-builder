@@ -7,7 +7,7 @@ import {
   Sparkles, ChevronDown, ChevronUp, Copy, Check,
   Briefcase, Brain, Heart, Users, HelpCircle,
   BookOpen, Lightbulb, Search, ArrowRight, RefreshCw,
-  Star, MessageSquare, Target,
+  Star, MessageSquare, Target, History, Clock,
 } from "lucide-react";
 
 const API = process.env.REACT_APP_API_URL || "";
@@ -114,6 +114,18 @@ export default function InterviewPrep() {
   const [result, setResult] = useState(null);
   const [openAll, setOpenAll] = useState(false);
   const [usesLeft, setUsesLeft] = useState(2);
+  const [history, setHistory] = useState([]);
+
+  React.useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.get(`${API}/api/ai/my-interview-preps`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).then(res => {
+        if (res.data.sts === 0) setHistory(res.data.preps);
+      }).catch(err => console.error(err));
+    }
+  }, []);
 
   const handleGenerate = async (role = jobRole) => {
     const trimmedRole = role.trim();
@@ -132,8 +144,15 @@ export default function InterviewPrep() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.data.sts === 0) {
-        setResult(res.data);
+        const newPrep = {
+          jobRole: res.data.jobRole,
+          experienceLevel: res.data.experienceLevel,
+          questions: res.data.questions,
+          createdAt: new Date().toISOString()
+        };
+        setResult(newPrep);
         setJobRole(trimmedRole);
+        setHistory(prev => [newPrep, ...prev]);
         if (typeof res.data.usesLeft === "number") setUsesLeft(res.data.usesLeft);
       } else {
         setError(res.data.msg || "Something went wrong.");
@@ -275,6 +294,12 @@ export default function InterviewPrep() {
             {/* Stats header */}
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
+                <button 
+                  onClick={() => { setResult(null); setJobRole(""); }}
+                  className="text-xs font-bold text-slate-400 hover:text-[#0076BC] mb-2 flex items-center gap-1 transition-colors"
+                >
+                  ← Back to History
+                </button>
                 <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
                   <Star className="w-5 h-5 text-amber-500 fill-amber-400" />
                   {result.questions.length} Questions for "{result.jobRole}"
@@ -336,14 +361,46 @@ export default function InterviewPrep() {
           </div>
         )}
 
-        {/* ── Empty state ── */}
+        {/* ── Empty state / History ── */}
         {!result && !loading && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="w-8 h-8 text-[#0076BC]" />
+          <div className="space-y-8">
+            <div className="text-center py-8">
+              <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto mb-4">
+                <BookOpen className="w-8 h-8 text-[#0076BC]" />
+              </div>
+              <h3 className="font-bold text-slate-700 mb-1">Enter a role to get started</h3>
+              <p className="text-slate-400 text-sm">AI will generate 10 realistic questions with model answers.</p>
             </div>
-            <h3 className="font-bold text-slate-700 mb-1">Enter a role to get started</h3>
-            <p className="text-slate-400 text-sm">AI will generate 10 realistic questions with model answers.</p>
+            
+            {history.length > 0 && (
+              <div>
+                <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wide">
+                  <History className="w-4 h-4 text-[#0076BC]" /> Recent Preps
+                </h3>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {history.map((item, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setResult(item);
+                        setJobRole(item.jobRole);
+                        setExperienceLevel(item.experienceLevel);
+                      }}
+                      className="bg-white border border-slate-100 rounded-2xl p-4 text-left hover:border-[#0076BC] hover:shadow-md transition-all group"
+                    >
+                      <h4 className="font-bold text-slate-800 group-hover:text-[#0076BC] transition-colors line-clamp-1">{item.jobRole}</h4>
+                      <div className="flex items-center gap-3 text-xs text-slate-400 mt-2">
+                        <span className="capitalize bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-full">{item.experienceLevel}</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {new Date(item.createdAt).toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
