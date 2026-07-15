@@ -33,6 +33,7 @@
 - **Role-Based Questions** — Enter target job role and experience level (Fresher to Senior)
 - **AI-Generated Q&A** — 10 tailored interview questions with professional model answers and actionable tips
 - **Categorized** — Questions tagged as Behavioral, Technical, Situational, HR, or Role-Specific
+- **History & Revision** — Automatically saves past generated preps for easy review without spending limits
 - **Daily Limit** — 2 free generations per day (including regenerations), auto-resets at midnight
 - **Robust AI** — Automatic fallback to `gemini-1.5-flash` if `gemini-2.5-flash` is experiencing high demand
 
@@ -187,6 +188,7 @@ resume-builder/
 │   ├── models/
 │   │   ├── user.js          # User schema (with ATS daily usage tracking)
 │   │   ├── resume.js        # Resume schema
+│   │   ├── interviewPrep.js # Interview Prep history schema
 │   │   ├── token.js         # JWT session tokens
 │   │   └── pageVisit.js     # Daily site traffic tracking
 │   ├── routes/
@@ -237,6 +239,7 @@ resume-builder/
 | POST | `/api/ai/improve` | ✅ | AI improve resume text (3 uses) |
 | POST | `/api/ai/analyze-resume` | ✅ | Upload PDF + AI full analysis (2/day) |
 | POST | `/api/ai/interview-prep` | ✅ | AI generate interview questions (2/day) |
+| GET | `/api/ai/my-interview-preps` | ✅ | Fetch past interview prep history |
 | POST | `/api/admin/login` | — | Admin login |
 | GET | `/api/admin/stats` | Admin | Dashboard statistics |
 | POST | `/api/admin/track` | — | Record page visit |
