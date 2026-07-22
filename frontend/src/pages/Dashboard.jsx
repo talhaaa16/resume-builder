@@ -7,7 +7,7 @@ import {
   FileText, Zap, Shield, ArrowRight, Plus, Share2,
   Edit2, Clock, CheckCircle2, AlertCircle, User,
   Sparkles, Briefcase, Target, ExternalLink, Calendar,
-  Copy, Lock,
+  Copy, Lock, Loader2,
 } from "lucide-react";
 
 const API = process.env.REACT_APP_API_URL || "";
@@ -215,9 +215,9 @@ export default function Dashboard() {
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Navbar />
       <div className="flex-1 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0076BC] to-[#00A86B] animate-pulse" />
-          <p className="text-slate-500 text-sm font-medium">Loading your dashboard…</p>
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 text-[#0076BC] animate-spin" />
+          <p className="text-slate-500 text-sm font-semibold animate-pulse">Loading your dashboard…</p>
         </div>
       </div>
     </div>
