@@ -1,6 +1,6 @@
 # YuvaNaukri — AI-Powered Resume Builder & Career Platform
 
-> A full-stack MERN platform that helps students and professionals build ATS-optimized resumes, find jobs, and accelerate their careers — powered by **Google Gemini AI**.
+> A full-stack MERN platform that helps students and professionals build ATS-optimized resumes, find jobs, and accelerate their careers.
 
 🌐 **Live:** [yuvanaukri.onrender.com](https://yuvanaukri.onrender.com)
 
@@ -35,7 +35,6 @@
 - **Categorized** — Questions tagged as Behavioral, Technical, Situational, HR, or Role-Specific
 - **History & Revision** — Automatically saves past generated preps for easy review without spending limits
 - **Daily Limit** — 2 free generations per day (including regenerations), auto-resets at midnight
-- **Robust AI** — Automatic fallback to `gemini-1.5-flash` if `gemini-2.5-flash` is experiencing high demand
 
 ### 📊 User Dashboard *(New)*
 - **Centralized Hub** — Replaces basic navbar profile with a full dashboard page
@@ -46,8 +45,6 @@
 ### 💼 Jobs Board
 - Live job listings powered by **Adzuna API**
 - Search by keyword, location, category filters
-- API only called on manual search (no auto-fetch)
-- Skeleton loading states and premium card UI
 
 ### 🎓 Career Guidance
 - Curated career path recommendations
