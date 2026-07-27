@@ -53,7 +53,7 @@
 ### 🔐 Authentication & Security
 - JWT-based secure login, signup, and session management
 - **Password Policy**: min. 6 characters, must contain letters + numbers
-  - Enforced on both signup and password change (frontend + backend)
+- Enforced on both signup and password change (frontend + backend)
 - Profile picture upload with 5MB limit handled gracefully
 - Secure session invalidation on logout
 
@@ -63,9 +63,7 @@
 - **Traffic Analytics**: unique visitors + page views (tracked per day)
 - **7-day Bar Chart**: page views vs unique visitors
 - **Resume & ATS Stats**: total resumes created, total ATS checks done
-- **Recent Users Table**: last 10 registered users with usage data
 - Auto-refresh every 60 seconds
-- Client-side page tracking via `usePageTracker` hook — captures all React Router navigation
 
 ### 🎨 UI/UX
 - Fully responsive across mobile, tablet, desktop
@@ -87,11 +85,6 @@
 - Result counter showing matches
 - "Still have questions?" support CTA banner
 - Accessible from the Footer (Support column)
-
-### 📜 Legal Center
-- Redesigned Terms of Service and Privacy Policy
-- Sticky Table of Contents with scroll-spy
-- Plain-English "TL;DR" callouts and keyword search
 
 ---
 
