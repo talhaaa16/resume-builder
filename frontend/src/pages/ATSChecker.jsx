@@ -204,6 +204,22 @@ export default function ATSChecker() {
         setResult(res.data.data);
         setFileName(res.data.fileName || file.name);
         setUsesLeft(res.data.usesLeft ?? null);
+
+        // Build a meaningful success message based on score & verdict
+        const score = res.data.data?.overallScore ?? 0;
+        const verdict = res.data.data?.verdict || "Fair";
+        let headline;
+        if (score >= 80) {
+          headline = `🎉 AI ATS Check Complete — You scored ${score}/100! Your resume is ${verdict.toLowerCase()} and ready to impress recruiters.`;
+        } else if (score >= 60) {
+          headline = `✅ AI ATS Check Complete — You scored ${score}/100. A solid ${verdict.toLowerCase()} resume with room to level up.`;
+        } else if (score >= 40) {
+          headline = `⚡ AI ATS Check Complete — You scored ${score}/100. Fair start — follow the suggestions below to boost your chances.`;
+        } else {
+          headline = `🛠️ AI ATS Check Complete — You scored ${score}/100. Needs work, but the AI has a clear action plan for you below.`;
+        }
+        showToast(headline, "success");
+
         setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
       } else {
         showToast(res.data.msg || "Analysis failed.", "error");
