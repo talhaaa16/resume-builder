@@ -264,4 +264,66 @@ router.get('/my-interview-preps', auth, async (req, res) => {
     }
 });
 
+router.post('/linkedin-optimizer', auth, async (req, res) => {
+    try {
+        const { aboutText } = req.body;
+
+        if (!aboutText || aboutText.trim().length < 10) {
+            return res.status(400).json({ sts: 1, msg: "Please provide your LinkedIn 'About' section (at least 10 characters)." });
+        }
+
+        const user = await User.findById(req.user.userId);
+        if (!user) return res.status(404).json({ sts: 1, msg: "User not found." });
+
+        const DAILY_LIMIT = 2;
+        const todayStr = new Date().toISOString().slice(0, 10);
+
+        if (user.linkedinOptimizerLastResetDate !== todayStr) {
+            user.linkedinOptimizerCount = 0;
+            user.linkedinOptimizerLastResetDate = todayStr;
+        }
+
+        if (user.linkedinOptimizerCount >= DAILY_LIMIT) {
+            return res.status(429).json({
+                sts: 1,
+                limitReached: true,
+                msg: `Daily limit reached! You can optimize your LinkedIn profile ${DAILY_LIMIT} times per day. Come back tomorrow for more.`,
+                usesLeft: 0
+            });
+        }
+
+        const prompt = `You are an expert LinkedIn profile strategist and personal branding coach with 15+ years of experience helping professionals in the Indian job market.
+
+Rewrite the following LinkedIn "About" section to make it more compelling, keyword-rich, and engaging.
+
+ORIGINAL TEXT:
+"""${aboutText.trim()}"""
+
+Requirements:
+1. Create a strong hook in the first 2 lines (visible before "See more")
+2. Include relevant industry keywords for ATS/searchability
+3. Use professional but conversational tone
+4. Highlight achievements and impact with metrics where possible
+5. End with a clear call-to-action (connect, DM, visit portfolio, etc.)
+6. Keep it under 2600 characters (LinkedIn limit)
+7. Format with short paragraphs and bullet points for readability
+
+Return ONLY the optimized "About" section text — no explanations, no markdown, no extra commentary.`;
+
+        const result = await generateWithFallback(prompt);
+        let optimizedText = result.response.text().trim();
+
+        optimizedText = optimizedText.replace(/^```[\w]*\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
+
+        user.linkedinOptimizerCount += 1;
+        await user.save();
+
+        const usesLeft = Math.max(0, DAILY_LIMIT - user.linkedinOptimizerCount);
+        res.json({ sts: 0, optimizedText, usesLeft });
+    } catch (error) {
+        console.error("LinkedIn Optimizer Error:", error);
+        res.status(500).json({ sts: 1, msg: "Failed to optimize LinkedIn profile. Please try again." });
+    }
+});
+
 module.exports = router;
