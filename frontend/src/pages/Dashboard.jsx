@@ -7,7 +7,7 @@ import {
   FileText, Zap, Shield, ArrowRight, Plus, Share2,
   Edit2, Clock, CheckCircle2, AlertCircle, User,
   Sparkles, Briefcase, Target, ExternalLink, Calendar,
-  Copy, Lock, Loader2,
+  Copy, Lock, Loader2, Linkedin,
 } from "lucide-react";
 
 const API = process.env.REACT_APP_API_URL || "";
@@ -324,20 +324,22 @@ export default function Dashboard() {
           <h2 className="text-lg font-black text-slate-800 mb-4 flex items-center gap-2">
             <Target className="w-5 h-5 text-[#0076BC]" /> Quick Actions
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {[
               { label: "Build Resume", icon: Plus, href: "/resume-builder", color: "bg-[#0076BC] text-white hover:opacity-90" },
               { label: "ATS Checker", icon: Shield, href: "/ats-checker", color: "bg-violet-600 text-white hover:opacity-90" },
+              { label: "LinkedIn Optimizer", icon: Linkedin, href: "/linkedin-optimizer", color: "bg-blue-600 text-white hover:opacity-90", isNew: true },
               { label: "Interview Prep", icon: Sparkles, href: "/interview-prep", color: "bg-amber-500 text-white hover:opacity-90" },
               { label: "Browse Jobs", icon: Briefcase, href: "/jobs", color: "bg-emerald-600 text-white hover:opacity-90" },
-            ].map(({ label, icon: Icon, href, color }) => (
+            ].map(({ label, icon: Icon, href, color, isNew }) => (
               <button
                 key={label}
                 onClick={() => navigate(href)}
-                className={`${color} rounded-xl p-4 flex flex-col items-center gap-2 transition font-semibold text-sm shadow-sm`}
+                className={`relative ${color} rounded-xl p-4 flex flex-col items-center text-center gap-2 transition font-semibold text-sm shadow-sm`}
               >
+                {isNew && <span className="absolute top-2 right-2 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-wider">New</span>}
                 <Icon className="w-5 h-5" />
-                {label}
+                <span className="leading-tight">{label}</span>
               </button>
             ))}
           </div>
