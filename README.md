@@ -17,7 +17,6 @@
 - **🔗 Resume Share Link** — generate a public, read-only shareable URL for any saved resume
   - One-click share from the Resume Builder toolbar
   - One-click share from the **My Resumes** modal in the Navbar
-  - Unique 10-character alphanumeric share ID per resume
   - Anyone with the link can view the resume in its original template (no login required)
   - Toggle sharing on/off at any time from the same button
 
