@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
-import { FileText, Briefcase, Sparkles, CheckCircle } from "lucide-react";
+import { FileText, Briefcase, Sparkles, CheckCircle, Linkedin } from "lucide-react";
 
 const Regi = () => {
   const navigate = useNavigate();
@@ -158,7 +158,21 @@ const Regi = () => {
               Sign Up <Sparkles className="w-5 h-5" />
             </button>
 
-            <p className="text-center text-slate-600 mt-6 font-medium">
+            <div className="flex items-center my-2">
+              <div className="flex-1 border-t border-slate-200"></div>
+              <span className="px-3 text-xs text-slate-400 font-bold uppercase tracking-wide">Or</span>
+              <div className="flex-1 border-t border-slate-200"></div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => showToast("LinkedIn signup coming soon!", "info")}
+              className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white py-4 rounded-xl font-bold text-lg transition duration-200 shadow-md flex items-center justify-center gap-3"
+            >
+              <Linkedin className="w-5 h-5" /> Continue with LinkedIn
+            </button>
+
+            <p className="text-center text-slate-600 mt-4 font-medium">
               Already have an account?{" "}
               <a href="/login" className="text-[#0076BC] font-bold hover:underline">
                 Sign in here
