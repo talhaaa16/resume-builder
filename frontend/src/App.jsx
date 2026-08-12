@@ -19,6 +19,7 @@ import ResumeView from "./pages/ResumeView";
 import Dashboard from "./pages/Dashboard";
 import InterviewPrep from "./pages/InterviewPrep";
 import LinkedInOptimizer from "./pages/LinkedInOptimizer";
+import LinkedInCallback from "./pages/LinkedInCallback";
 import { usePageTracker } from "./hooks/usePageTracker";
 import { ToastProvider } from "./context/ToastContext";
 
@@ -41,6 +42,7 @@ function AppRoutes() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/linkedin-optimizer" element={<LinkedInOptimizer />} />
       <Route path="/interview-prep" element={<InterviewPrep />} />
+      <Route path="/linkedin-callback" element={<LinkedInCallback />} />
 
       <Route
         path="/resume-builder"

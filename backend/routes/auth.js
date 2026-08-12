@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken')
+const axios = require('axios')
 
 const SECRET_KEY = process.env.JWT_SECRET || "fallback_dev_secret";
 const User = require('../models/user');
@@ -223,6 +224,85 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
     } catch (error) {
         console.error("Dashboard error:", error);
         res.status(500).json({ sts: 1, msg: "Internal server error" });
+    }
+});
+
+router.post('/linkedin', async (req, res) => {
+    try {
+        const { code, redirectUri } = req.body;
+        if (!code) return res.status(400).json({ sts: 1, msg: "Authorization code missing" });
+
+        // 1. Exchange auth code for access token
+        const tokenRes = await axios.post('https://www.linkedin.com/oauth/v2/accessToken', null, {
+            params: {
+                grant_type: 'authorization_code',
+                code,
+                client_id: process.env.LINKEDIN_CLIENT_ID,
+                client_secret: process.env.LINKEDIN_CLIENT_SECRET,
+                redirect_uri: redirectUri
+            },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        });
+
+        const { access_token } = tokenRes.data;
+
+        // 2. Fetch user profile via OpenID connect
+        const userRes = await axios.get('https://api.linkedin.com/v2/userinfo', {
+            headers: { Authorization: `Bearer ${access_token}` }
+        });
+
+        const { name, email, picture } = userRes.data;
+        if (!email) return res.status(400).json({ sts: 1, msg: "Could not fetch email from LinkedIn" });
+
+        // 3. Find or Create User
+        let user = await User.findOne({ user_email: email });
+        let isNew = false;
+        if (!user) {
+            isNew = true;
+            // Generate random password for OAuth users since it's required in schema
+            const randomPassword = Math.random().toString(36).slice(-10) + "A1!"; 
+            user = new User({
+                user_name: name,
+                user_email: email,
+                password: await bcryptjs.hash(randomPassword, 12),
+                avatar: picture // Ensure frontend checks this or store it properly
+            });
+            await user.save();
+        } else if (picture && !user.avatar) {
+            // Optionally update avatar if missing
+            user.avatar = picture;
+            await user.save();
+        }
+
+        // 4. Generate Session Token
+        const jwtToken = jwt.sign(
+            { userId: user._id, email: user.user_email },
+            SECRET_KEY,
+            { expiresIn: '7d' } // Changed to 7d to match normal login
+        );
+
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7);
+
+        const newToken = new Token({ 
+            userId: user._id,
+            token: jwtToken,
+            expiresAt: expiresAt.toISOString()
+        });
+        await newToken.save();
+
+        res.json({
+            sts: 0,
+            msg: isNew ? "Account created successfully" : "Logged in successfully",
+            token: jwtToken,
+            uname: user.user_name,
+            uemail: user.user_email,
+            uprofilepic: user.avatar || null
+        });
+
+    } catch (error) {
+        console.error("LinkedIn Auth Error:", error.response?.data || error.message);
+        res.status(500).json({ sts: 1, msg: "LinkedIn authentication failed" });
     }
 });
 

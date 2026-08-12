@@ -166,7 +166,12 @@ const Regi = () => {
 
             <button
               type="button"
-              onClick={() => showToast("LinkedIn signup coming soon!", "info")}
+              onClick={() => {
+                const clientId = process.env.REACT_APP_LINKEDIN_CLIENT_ID || "";
+                const redirectUri = encodeURIComponent(`${window.location.origin}/linkedin-callback`);
+                const scope = encodeURIComponent("openid profile email");
+                window.location.href = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=signup&scope=${scope}`;
+              }}
               className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white py-4 rounded-xl font-bold text-lg transition duration-200 shadow-md flex items-center justify-center gap-3"
             >
               <Linkedin className="w-5 h-5" /> Continue with LinkedIn
