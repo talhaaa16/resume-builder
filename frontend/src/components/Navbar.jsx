@@ -55,7 +55,25 @@ const Navbar = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    // Sync avatar state if the picture was updated elsewhere (other tab, or
+    // by a different component in this tab).
+    const handleProfilePicUpdated = (e) => {
+      const fresh = localStorage.getItem("uprofilepic");
+      if (fresh) setProfilePic(fresh);
+    };
+    window.addEventListener("profile-pic-updated", handleProfilePicUpdated);
+    window.addEventListener("storage", (e) => {
+      if (e.key === "uprofilepic") {
+        const fresh = localStorage.getItem("uprofilepic");
+        if (fresh) setProfilePic(fresh);
+      }
+    });
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("profile-pic-updated", handleProfilePicUpdated);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -248,6 +266,9 @@ const Navbar = () => {
 
   const handleProfileImageUpload = async (e) => {
     const file = e.target.files[0];
+    // Always reset the input so picking the same file twice still fires onChange.
+    if (e.target) e.target.value = "";
+
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
@@ -263,6 +284,7 @@ const Navbar = () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const img = new Image();
+      img.onerror = () => showToast("Could not read that image. Try another file.", "error");
       img.onload = async () => {
         const canvas = document.createElement("canvas");
         const MAX_SIZE = 400;
@@ -295,17 +317,22 @@ const Navbar = () => {
           if (res.data.sts === 0) {
             setProfilePic(compressedBase64);
             localStorage.setItem("uprofilepic", compressedBase64);
+            // Notify other components in this tab (Dashboard hero) and other tabs
+            // (storage event) that the avatar changed.
+            window.dispatchEvent(new Event("profile-pic-updated"));
             showToast("Profile picture updated!");
             setShowDropdown(false);
+            setShowAccountSidebar(false);
           } else {
-            showToast(res.data.msg, "error");
+            showToast(res.data.msg || "Failed to update picture.", "error");
           }
         } catch (err) {
-          showToast("Failed to update profile picture.", "error");
+          showToast(err.response?.data?.msg || "Failed to update profile picture.", "error");
         }
       };
       img.src = event.target.result;
     };
+    reader.onerror = () => showToast("Failed to read file. Try again.", "error");
     reader.readAsDataURL(file);
   };
 
@@ -395,7 +422,7 @@ const Navbar = () => {
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="flex items-center justify-center rounded-full overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm w-10 h-10 bg-slate-100"
                 >
-                  <img src={profilePic || `https://api.dicebear.com/7.x/notionists/svg?seed=${username || 'dev'}`} alt="profile" className="w-10 h-10 object-cover" />
+                  <img key={profilePic || 'dicebear'} src={profilePic || `https://api.dicebear.com/7.x/notionists/svg?seed=${username || 'dev'}`} alt="profile" className="w-10 h-10 object-cover" />
                 </button>
 
                  {/* Profile Dropdown Menu */}
@@ -656,6 +683,7 @@ const Navbar = () => {
               <div className="text-center pb-6 border-b border-gray-100 flex flex-col items-center">
                 <div className="relative w-28 h-28 mb-3.5 group cursor-pointer" onClick={() => fileInputRef.current.click()}>
                   <img
+                    key={profilePic || 'dicebear'}
                     src={profilePic || `https://api.dicebear.com/7.x/notionists/svg?seed=${username || 'dev'}`}
                     alt="Profile"
                     className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md ring-2 ring-gray-100 group-hover:opacity-90 transition"

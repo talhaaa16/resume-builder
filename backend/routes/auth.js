@@ -137,7 +137,10 @@ router.post('/update-profile-pic', authMiddleware, async (req, res) => {
             return res.status(400).json({ sts: 1, msg: "Invalid file format. Please upload a valid image." });
         }
 
-        const sizeInBytes = (profile_pic.length * (3 / 4));
+        const commaIdx = profile_pic.indexOf(',');
+        const base64Payload = commaIdx >= 0 ? profile_pic.slice(commaIdx + 1) : profile_pic;
+        const padding = base64Payload.endsWith('==') ? 2 : base64Payload.endsWith('=') ? 1 : 0;
+        const sizeInBytes = Math.max(0, (base64Payload.length * 3) / 4 - padding);
         const sizeInMB = sizeInBytes / (1024 * 1024);
 
         if (sizeInMB > 5) {
@@ -261,7 +264,7 @@ router.post('/linkedin', async (req, res) => {
         if (!user) {
             isNew = true;
             // Generate random password for OAuth users since it's required in schema
-            const randomPassword = Math.random().toString(36).slice(-10) + "A1!"; 
+            const randomPassword = Math.random().toString(36).slice(-10) + "A1!";
             user = new User({
                 user_name: name,
                 user_email: email,
@@ -308,4 +311,4 @@ router.post('/linkedin', async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = router;

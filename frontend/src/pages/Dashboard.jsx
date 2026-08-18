@@ -154,6 +154,15 @@ export default function Dashboard() {
     const pic = localStorage.getItem("uprofilepic");
     if (pic) setLocalPic(pic);
     fetchDashboard(token);
+
+    // If the user updates their avatar from another tab or another component
+    // (e.g. the Navbar sidebar), refresh our local mirror of it.
+    const handleProfilePicUpdated = () => {
+      const fresh = localStorage.getItem("uprofilepic");
+      setLocalPic(fresh || "");
+    };
+    window.addEventListener("profile-pic-updated", handleProfilePicUpdated);
+    return () => window.removeEventListener("profile-pic-updated", handleProfilePicUpdated);
   }, []);
 
   const fetchDashboard = async (token) => {
@@ -269,8 +278,9 @@ export default function Dashboard() {
         <div className="relative z-10 max-w-5xl mx-auto flex items-center gap-5">
           <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/30 shadow-xl shrink-0">
             {(localPic || profile.avatar)
-              ? <img src={localPic || profile.avatar} alt="avatar" className="w-full h-full object-cover" />
+              ? <img key={localPic || profile.avatar} src={localPic || profile.avatar} alt="avatar" className="w-full h-full object-cover" />
               : <img
+                key={`dicebear-${profile.name || 'user'}`}
                 src={`https://api.dicebear.com/7.x/notionists/svg?seed=${profile.name || 'user'}`}
                 alt="avatar"
                 className="w-full h-full object-cover"
