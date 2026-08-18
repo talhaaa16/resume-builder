@@ -42,7 +42,7 @@ function UsageBar({ used, limit, label, color, icon: Icon }) {
   );
 }
 
-function ResumeCard({ resume, onEdit, onShare, onCopyLink }) {
+function ResumeCard({ resume, onEdit, onShare, onCopyLink, onHistory }) {
   const name = resume.personalInfo?.fullName || "Untitled Resume";
   const role = resume.personalInfo?.designation || "No designation";
   const template = resume.template || "professional";
@@ -94,6 +94,13 @@ function ResumeCard({ resume, onEdit, onShare, onCopyLink }) {
           className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-slate-600 bg-slate-50 hover:bg-[#0076BC] hover:text-white border border-slate-200 rounded-xl transition-all"
         >
           <Edit2 className="w-3.5 h-3.5" /> Edit
+        </button>
+        <button
+          onClick={() => onHistory(resume)}
+          className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border transition-all bg-slate-50 text-slate-500 border-slate-200 hover:bg-violet-50 hover:text-violet-600 hover:border-violet-200"
+          title="Version History"
+        >
+          <Clock className="w-3.5 h-3.5" />
         </button>
         {resume.isPublic ? (
           <>
@@ -166,6 +173,10 @@ export default function Dashboard() {
 
   const handleEdit = (resume) => {
     navigate("/resume-builder", { state: { resumeData: resume } });
+  };
+
+  const handleHistory = (resume) => {
+    navigate(`/resume-history/${resume._id}`);
   };
 
   const handleCopyLink = (resume) => {
@@ -382,6 +393,7 @@ export default function Dashboard() {
                   onEdit={handleEdit}
                   onShare={handleShare}
                   onCopyLink={handleCopyLink}
+                  onHistory={handleHistory}
                 />
               ))}
               {/* Add new card */}

@@ -58,6 +58,22 @@ const ResumeSchema = new mongoose.Schema({
         unique: true,
         sparse: true   // allow multiple nulls
     },
+    // ── Version history ───────────────────────────────────────────────────────
+    // Each entry is a snapshot of the resume at a point in time. Power users
+    // can compare, restore, or delete old versions. Capped to the most recent
+    // `MAX_VERSIONS` snapshots (oldest are dropped FIFO).
+    versions: [{
+        label: { type: String, default: 'Snapshot' },
+        personalInfo: Object,
+        experience: Array,
+        education: Array,
+        skills: Array,
+        projects: Array,
+        languages: Array,
+        template: String,
+        themeColor: String,
+        savedAt: { type: Date, default: Date.now }
+    }],
     createdAt: {
         type: Date,
         default: Date.now
