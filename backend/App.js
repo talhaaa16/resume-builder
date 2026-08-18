@@ -5,6 +5,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const authrouters = require("./routes/auth");
 const db = require("./db/db");
+const { scheduleWeeklyReset } = require("./utils/weeklyReset");
 
 const app = express();
 
@@ -61,6 +62,9 @@ app.use(express.static(path.join(__dirname, "../frontend/build")));
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
 });
+
+// Start the Monday session-reset job. Runs at boot and once per hour.
+scheduleWeeklyReset();
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {

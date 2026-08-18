@@ -14,7 +14,12 @@ axios.interceptors.response.use(
       localStorage.removeItem("user");
 
       if (!window.location.pathname.includes("/login")) {
-        window.location.href = "/login?expired=true";
+        const reason =
+          error.response.data && error.response.data.msg &&
+          /weekly session reset/i.test(error.response.data.msg)
+            ? "weekly"
+            : "expired";
+        window.location.href = `/login?${reason}=true`;
       }
     }
     return Promise.reject(error);

@@ -19,6 +19,8 @@ const Login = () => {
     const params = new URLSearchParams(location.search);
     if (params.get("expired") === "true") {
       setMsg("Your session has expired. Please login again.");
+    } else if (params.get("weekly") === "true") {
+      setMsg("Your session has expired. Please login again.");
     }
   }, [location]);
 

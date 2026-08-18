@@ -86,7 +86,8 @@ router.post('/userlogin', async (req, res) => {
         await new Token({
             userId: login._id,
             token: token,
-            expiresAt: expiresAt.toISOString()
+            expiresAt: expiresAt.toISOString(),
+            issuedAt: new Date()
         }).save();
 
         return res.json({
@@ -284,10 +285,11 @@ router.post('/linkedin', async (req, res) => {
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 7);
 
-        const newToken = new Token({ 
+        const newToken = new Token({
             userId: user._id,
             token: jwtToken,
-            expiresAt: expiresAt.toISOString()
+            expiresAt: expiresAt.toISOString(),
+            issuedAt: new Date()
         });
         await newToken.save();
 
