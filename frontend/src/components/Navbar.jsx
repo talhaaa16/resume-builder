@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image, BriefcaseBusiness, Sparkles, Menu, Settings, Camera, Check, Edit2, ChevronDown, ChevronUp, Share2, Copy, LayoutDashboard, Bell } from "lucide-react";
+import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image as ImageIcon, BriefcaseBusiness, Sparkles, Menu, Settings, Camera, Check, Edit2, ChevronDown, ChevronUp, Share2, Copy, LayoutDashboard, Bell } from "lucide-react";
 import axios from "axios";
 import { useToast } from "../context/ToastContext";
 
@@ -22,6 +22,8 @@ const Navbar = () => {
   const [editUsername, setEditUsername] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [isPasswordCollapsed, setIsPasswordCollapsed] = useState(true);
+  const [selectedImageStr, setSelectedImageStr] = useState(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const [passwordData, setPasswordData] = useState({ currentPassword: "", newPassword: "" });
   const [passwordMsg, setPasswordMsg] = useState("");
@@ -308,32 +310,36 @@ const Navbar = () => {
         ctx.drawImage(img, 0, 0, width, height);
 
         const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
-
-        try {
-          const token = localStorage.getItem("token");
-          const res = await axios.post(`${process.env.REACT_APP_API_URL || ""}/api/auth/update-profile-pic`, { profile_pic: compressedBase64 }, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          if (res.data.sts === 0) {
-            setProfilePic(compressedBase64);
-            localStorage.setItem("uprofilepic", compressedBase64);
-            // Notify other components in this tab (Dashboard hero) and other tabs
-            // (storage event) that the avatar changed.
-            window.dispatchEvent(new Event("profile-pic-updated"));
-            showToast("Profile picture updated!");
-            setShowDropdown(false);
-            setShowAccountSidebar(false);
-          } else {
-            showToast(res.data.msg || "Failed to update picture.", "error");
-          }
-        } catch (err) {
-          showToast(err.response?.data?.msg || "Failed to update profile picture.", "error");
-        }
+        setSelectedImageStr(compressedBase64);
       };
       img.src = event.target.result;
     };
     reader.onerror = () => showToast("Failed to read file. Try again.", "error");
     reader.readAsDataURL(file);
+  };
+
+  const confirmImageUpload = async () => {
+    if (!selectedImageStr) return;
+    setIsUploadingImage(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(`${process.env.REACT_APP_API_URL || ""}/api/auth/update-profile-pic`, { profile_pic: selectedImageStr }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data.sts === 0) {
+        setProfilePic(selectedImageStr);
+        localStorage.setItem("uprofilepic", selectedImageStr);
+        window.dispatchEvent(new Event("profile-pic-updated"));
+        showToast("Profile picture updated!");
+        setSelectedImageStr(null);
+      } else {
+        showToast(res.data.msg || "Failed to update picture.", "error");
+      }
+    } catch (err) {
+      showToast(err.response?.data?.msg || "Failed to update profile picture.", "error");
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   return (
@@ -683,8 +689,8 @@ const Navbar = () => {
               <div className="text-center pb-6 border-b border-gray-100 flex flex-col items-center">
                 <div className="relative w-28 h-28 mb-3.5 group cursor-pointer" onClick={() => fileInputRef.current.click()}>
                   <img
-                    key={profilePic || 'dicebear'}
-                    src={profilePic || `https://api.dicebear.com/7.x/notionists/svg?seed=${username || 'dev'}`}
+                    key={selectedImageStr || profilePic || 'dicebear'}
+                    src={selectedImageStr || profilePic || `https://api.dicebear.com/7.x/notionists/svg?seed=${username || 'dev'}`}
                     alt="Profile"
                     className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md ring-2 ring-gray-100 group-hover:opacity-90 transition"
                   />
@@ -699,12 +705,32 @@ const Navbar = () => {
                   onChange={handleProfileImageUpload}
                   className="hidden"
                 />
-                <button
-                  onClick={() => fileInputRef.current.click()}
-                  className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition"
-                >
-                  Change Profile Photo
-                </button>
+                
+                {selectedImageStr ? (
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      onClick={confirmImageUpload}
+                      disabled={isUploadingImage}
+                      className="px-4 py-1.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition disabled:opacity-70 flex items-center justify-center"
+                    >
+                      {isUploadingImage ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> : "Save"}
+                    </button>
+                    <button
+                      onClick={() => setSelectedImageStr(null)}
+                      disabled={isUploadingImage}
+                      className="px-4 py-1.5 bg-gray-100 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-200 transition disabled:opacity-70"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => fileInputRef.current.click()}
+                    className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition"
+                  >
+                    Change Profile Photo
+                  </button>
+                )}
               </div>
 
               {/* Username Section */}
