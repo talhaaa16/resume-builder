@@ -29,7 +29,7 @@ const VALUES = [
   {
     icon: Sparkles,
     title: "AI-First Approach",
-    desc: "Powered by Google Gemini 2.5, every feature — from resume writing to ATS checking — uses cutting-edge AI to give you an unfair advantage.",
+    desc: "Powered by Google Gemini, every feature — from resume writing to ATS checking — uses cutting-edge AI to give you an unfair advantage.",
     color: "from-emerald-500 to-green-500",
     bg: "bg-emerald-50",
     text: "text-emerald-700",
@@ -58,17 +58,21 @@ const FEATURES = [
   "4 premium ATS-friendly templates",
   "AI-powered content improvement",
   "PDF resume upload & full ATS analysis",
+  "AI Interview Prep with 10 Q&As per session",
+  "LinkedIn OAuth login & LinkedIn Profile Optimizer",
+  "Public resume sharing links",
   "Live job board",
   "Career guidance & roadmaps",
   "Secure JWT authentication",
-  "Daily ATS check limits (fair use)",
+  "Daily AI usage limits (fair use)",
 ];
 
 const TIMELINE = [
   { year: "2024", title: "Idea & Planning", desc: "Identified the gap — most free resume builders look terrible on ATS scanners. Started building." },
   { year: "Early 2025", title: "v1.0 Launch", desc: "Launched with core resume builder, 4 templates, PDF export, and user authentication." },
   { year: "Mid 2025", title: "AI Integration", desc: "Added Gemini AI for content improvement and the full ATS Checker with PDF upload." },
-  { year: "2025", title: "Growing Platform", desc: "Added Jobs Board, Career Guidance, Admin Panel, and continued improving the experience." },
+  { year: "Late 2025", title: "Growing Platform", desc: "Added Jobs Board, Career Guidance, Admin Panel, Interview Prep, and continued improving the experience." },
+  { year: "2026", title: "LinkedIn & Beyond", desc: "Launched LinkedIn OAuth login, LinkedIn Profile Optimizer, resume sharing links, and a fully redesigned User Dashboard." },
 ];
 
 // ─── Components ───────────────────────────────────────────────────────────────
