@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
-import { FileText, Briefcase, Sparkles, Linkedin } from "lucide-react";
+import { FileText, Briefcase, Sparkles, Linkedin, Eye, EyeOff } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,6 +14,7 @@ const Login = () => {
     user_email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   React.useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -144,15 +145,24 @@ const Login = () => {
 
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">Password</label>
-              <input
-                type="password"
-                name="password"
-                value={userlogin.password}
-                onChange={handleInputChange}
-                className="w-full border border-slate-300 rounded-xl p-4 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0076BC] focus:border-transparent transition-all bg-slate-50"
-                placeholder="Enter your password"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={userlogin.password}
+                  onChange={handleInputChange}
+                  className="w-full border border-slate-300 rounded-xl p-4 pr-12 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0076BC] focus:border-transparent transition-all bg-slate-50"
+                  placeholder="Enter your password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-[#0076BC] transition-colors"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
 
             {msg && (

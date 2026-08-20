@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
-import { FileText, Briefcase, Sparkles, CheckCircle, Linkedin } from "lucide-react";
+import { FileText, Briefcase, Sparkles, CheckCircle, Linkedin, Eye, EyeOff } from "lucide-react";
 
 const Regi = () => {
   const navigate = useNavigate();
@@ -12,6 +12,7 @@ const Regi = () => {
     user_email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -140,15 +141,24 @@ const Regi = () => {
 
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">Password</label>
-              <input
-                type="password"
-                name="password"
-                value={userregi.password}
-                onChange={handleInputChange}
-                className="w-full border border-slate-300 rounded-xl p-4 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00A86B] focus:border-transparent transition-all bg-slate-50"
-                placeholder="Create a strong password"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={userregi.password}
+                  onChange={handleInputChange}
+                  className="w-full border border-slate-300 rounded-xl p-4 pr-12 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#00A86B] focus:border-transparent transition-all bg-slate-50"
+                  placeholder="Create a strong password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-[#00A86B] transition-colors"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
 
             <button
