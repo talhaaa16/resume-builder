@@ -5,6 +5,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const auth = require('../middleware/auth');
 const User = require('../models/user');
 const InterviewPrep = require('../models/interviewPrep');
+const Resume = require('../models/resume');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
@@ -323,6 +324,73 @@ Return ONLY the optimized "About" section text — no explanations, no markdown,
     } catch (error) {
         console.error("LinkedIn Optimizer Error:", error);
         res.status(500).json({ sts: 1, msg: "Failed to optimize LinkedIn profile. Please try again." });
+    }
+});
+
+router.post('/job-match', auth, async (req, res) => {
+    try {
+        const { jobTitle, jobDescription } = req.body;
+        
+        if (!jobTitle || !jobDescription) {
+            return res.status(400).json({ sts: 1, msg: "Job Title and Description are required." });
+        }
+
+        const user = await User.findById(req.user.userId);
+        if (!user) return res.status(404).json({ sts: 1, msg: "User not found" });
+
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const DAILY_LIMIT = 5;
+
+        if (user.jobMatchLastResetDate !== todayStr) {
+            user.jobMatchCount = 0;
+            user.jobMatchLastResetDate = todayStr;
+        }
+
+        if (user.jobMatchCount >= DAILY_LIMIT) {
+            return res.status(403).json({
+                sts: 1, 
+                msg: "✨ AI Match Limit Reached! You have used your 5 free job matches for today. Please come back tomorrow."
+            });
+        }
+
+        const resume = await Resume.findOne({ userId: req.user.userId }).sort({ updatedAt: -1 });
+        if (!resume) {
+            return res.status(404).json({ sts: 1, msg: "Please build and save a resume first to see your match score." });
+        }
+
+        const prompt = `
+            Act as an expert ATS (Applicant Tracking System) and Career Coach.
+            Analyze how well this candidate's resume matches the provided Job Description.
+
+            Job Title: ${jobTitle}
+            Job Description: ${jobDescription}
+
+            Candidate Skills: ${resume.skills?.join(', ') || 'None'}
+            Candidate Experience: ${resume.experience?.map(e => e.role + ' at ' + e.company + ': ' + e.description).join(' | ') || 'None'}
+            Candidate Summary: ${resume.personalInfo?.summary || 'None'}
+
+            Output MUST be exactly in the following JSON format (no markdown, no extra text, just raw parseable JSON):
+            {
+                "matchScore": <number between 0 and 100>,
+                "missingSkills": ["skill1", "skill2"],
+                "matchedSkills": ["skill3", "skill4"],
+                "recommendation": "<1 short sentence on how to improve>"
+            }
+        `;
+
+        const result = await generateWithFallback([{ text: prompt }]);
+        let rawText = result.response.text().trim();
+        rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+        
+        const analysis = JSON.parse(rawText);
+
+        user.jobMatchCount += 1;
+        await user.save();
+
+        res.json({ sts: 0, analysis, usesLeft: DAILY_LIMIT - user.jobMatchCount });
+    } catch (error) {
+        console.error("AI Job Match Error:", error);
+        res.status(500).json({ sts: 1, msg: "Failed to analyze job match." });
     }
 });
 

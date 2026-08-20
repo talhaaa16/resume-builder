@@ -13,7 +13,9 @@ import {
   X,
   Loader2,
   FileSearch,
+  Sparkles,
 } from "lucide-react";
+import axios from "axios";
 
 async function fetchJobsAdzuna(query = "", location = "") {
   const APP_ID = process.env.REACT_APP_ADZUNA_ID;
@@ -82,6 +84,7 @@ export default function Jobs() {
   const [loc, setLoc] = useState("");
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [matchScores, setMatchScores] = useState({});
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -96,6 +99,31 @@ export default function Jobs() {
       showToast("Failed to load jobs. Check your connection.", "error");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCheckMatch = async (job) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      showToast("Please login to check AI Match Score.", "info");
+      return;
+    }
+    setMatchScores(prev => ({ ...prev, [job.id]: { loading: true } }));
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL || ""}/api/ai/job-match`,
+        { jobTitle: job.title, jobDescription: job.description || job.title },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.sts === 0) {
+        setMatchScores(prev => ({ ...prev, [job.id]: { loading: false, data: res.data.analysis } }));
+      } else {
+        showToast(res.data.msg, "error");
+        setMatchScores(prev => ({ ...prev, [job.id]: { loading: false } }));
+      }
+    } catch (error) {
+      showToast(error.response?.data?.msg || "Failed to calculate match score", "error");
+      setMatchScores(prev => ({ ...prev, [job.id]: { loading: false } }));
     }
   };
 
@@ -266,14 +294,38 @@ export default function Jobs() {
                   )}
                 </div>
 
-                {/* Apply Button */}
-                <button
-                  onClick={() => handleApply(job.applyUrl)}
-                  className="mt-auto w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#0076BC] to-[#00A86B] text-white font-semibold py-2.5 rounded-xl hover:opacity-90 transition shadow-sm text-sm"
-                >
-                  Apply Now
-                  <ExternalLink className="w-4 h-4" />
-                </button>
+                {/* Apply Button & Match Button */}
+                <div className="mt-auto flex flex-col gap-3">
+                  {matchScores[job.id]?.data ? (
+                    <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 text-sm">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-bold text-orange-700 flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-orange-500" /> Match Score</span>
+                        <span className="font-black text-lg text-orange-600">{matchScores[job.id].data.matchScore}%</span>
+                      </div>
+                      <p className="text-orange-800/80 text-xs leading-relaxed font-medium">{matchScores[job.id].data.recommendation}</p>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => handleCheckMatch(job)}
+                      disabled={matchScores[job.id]?.loading}
+                      className="w-full flex items-center justify-center gap-2 bg-orange-50 text-orange-600 hover:bg-orange-100 border border-orange-200 font-semibold py-2.5 rounded-xl transition shadow-sm text-sm"
+                    >
+                      {matchScores[job.id]?.loading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <><Sparkles className="w-4 h-4" /> Check AI Match Score</>
+                      )}
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => handleApply(job.applyUrl)}
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#0076BC] to-[#00A86B] text-white font-semibold py-2.5 rounded-xl hover:opacity-90 transition shadow-sm text-sm"
+                  >
+                    Apply Now
+                    <ExternalLink className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
