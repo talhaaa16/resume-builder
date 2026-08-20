@@ -129,6 +129,16 @@ router.post('/update-profile-pic', authMiddleware, async (req, res) => {
     try {
         const { profile_pic } = req.body;
 
+        if (profile_pic === "" || profile_pic === null) {
+            // If empty string is passed, it means we are deleting the profile picture
+            const user = await User.findById(req.user.userId);
+            if (!user) return res.status(404).json({ sts: 1, msg: "User not found" });
+            
+            user.profile_pic = "";
+            await user.save();
+            return res.json({ sts: 0, msg: "Profile picture removed" });
+        }
+
         if (!profile_pic) {
             return res.status(400).json({ sts: 1, msg: "No image provided" });
         }

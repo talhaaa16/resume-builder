@@ -14,7 +14,7 @@ const Navbar = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showBell, setShowBell] = useState(false);
   const [shareState, setShareState] = useState({ resumeId: null, loading: false, link: "", copied: false });
-  
+
   // Account Sidebar state
   const [showAccountSidebar, setShowAccountSidebar] = useState(false);
   const [isEditingUsername, setIsEditingUsername] = useState(false);
@@ -200,7 +200,7 @@ const Navbar = () => {
     try {
       const token = localStorage.getItem("token");
       const payload = {};
-      
+
       if (field === "username") {
         if (!editUsername.trim()) {
           showToast("Username cannot be empty", "error");
@@ -342,6 +342,27 @@ const Navbar = () => {
     }
   };
 
+  const removeProfileImage = async (e) => {
+    e.stopPropagation();
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(`${process.env.REACT_APP_API_URL || ""}/api/auth/update-profile-pic`, { profile_pic: "" }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data.sts === 0) {
+        setProfilePic("");
+        localStorage.setItem("uprofilepic", "");
+        window.dispatchEvent(new Event("profile-pic-updated"));
+        showToast("Profile picture removed.");
+        setSelectedImageStr(null);
+      } else {
+        showToast(res.data.msg || "Failed to remove picture.", "error");
+      }
+    } catch (err) {
+      showToast(err.response?.data?.msg || "Failed to remove profile picture.", "error");
+    }
+  };
+
   return (
     <>
       <nav className="bg-white shadow-sm relative z-40">
@@ -431,7 +452,7 @@ const Navbar = () => {
                   <img key={profilePic || 'dicebear'} src={profilePic || `https://api.dicebear.com/7.x/notionists/svg?seed=${username || 'dev'}`} alt="profile" className="w-10 h-10 object-cover" />
                 </button>
 
-                 {/* Profile Dropdown Menu */}
+                {/* Profile Dropdown Menu */}
                 {showDropdown && (
                   <div className="absolute right-0 top-12 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 py-2 z-50 transform origin-top-right transition-all">
                     <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 rounded-t-xl mb-1">
@@ -511,9 +532,9 @@ const Navbar = () => {
             <a href="/ats-checker" className="text-gray-700 font-semibold hover:text-blue-600 transition flex items-center gap-2">ATS Checker</a>
             <a href="/jobs" className="text-gray-700 font-semibold hover:text-blue-600 transition">Jobs</a>
             <a href="/about" className="text-gray-700 font-semibold hover:text-blue-600 transition">About Us</a>
-            
+
             <div className="h-px bg-gray-200 my-2"></div>
-            
+
             {username ? (
               <div className="flex flex-col space-y-4">
                 <div className="flex items-center space-x-3 mb-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
@@ -602,9 +623,8 @@ const Navbar = () => {
                           <span className="flex-1 text-xs text-slate-600 truncate font-mono">{shareState.link}</span>
                           <button
                             onClick={handleCopyShareLink}
-                            className={`shrink-0 flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-md transition ${
-                              shareState.copied ? "bg-emerald-500 text-white" : "bg-[#0076BC] text-white hover:opacity-90"
-                            }`}
+                            className={`shrink-0 flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-md transition ${shareState.copied ? "bg-emerald-500 text-white" : "bg-[#0076BC] text-white hover:opacity-90"
+                              }`}
                           >
                             {shareState.copied ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
                           </button>
@@ -625,11 +645,10 @@ const Navbar = () => {
                           onClick={() => handleShareResume(resume._id)}
                           disabled={shareState.loading && shareState.resumeId === resume._id}
                           title={resume.isPublic ? "Disable sharing" : "Share this resume"}
-                          className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold border transition ${
-                            resume.isPublic
+                          className={`flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold border transition ${resume.isPublic
                               ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
                               : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-blue-50 hover:text-[#0076BC] hover:border-blue-200"
-                          }`}
+                            }`}
                         >
                           {shareState.loading && shareState.resumeId === resume._id
                             ? <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
@@ -697,6 +716,15 @@ const Navbar = () => {
                   <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-200">
                     <Camera className="w-6 h-6 text-white" />
                   </div>
+                  {profilePic && !selectedImageStr && (
+                    <button
+                      onClick={removeProfileImage}
+                      className="absolute top-0 right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md border-2 border-white hover:bg-red-600 hover:scale-110 transition-all z-10"
+                      title="Remove profile picture"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
                 <input
                   type="file"
@@ -705,7 +733,7 @@ const Navbar = () => {
                   onChange={handleProfileImageUpload}
                   className="hidden"
                 />
-                
+
                 {selectedImageStr ? (
                   <div className="flex gap-2 mt-2">
                     <button
@@ -894,7 +922,7 @@ const Navbar = () => {
       {confirmModal.isOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 animate-fadeIn">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center transform transition-all scale-100">
-            
+
             {/* Warning Icon */}
             <div className="mx-auto w-[72px] h-[72px] border-4 border-[#F8BB86] rounded-full flex items-center justify-center mb-6">
               <span className="text-[#F8BB86] text-5xl font-light leading-none -mt-1">!</span>
