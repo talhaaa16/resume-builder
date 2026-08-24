@@ -23,6 +23,21 @@ import LinkedInCallback from "./pages/LinkedInCallback";
 import ResumeVersionHistory from "./pages/ResumeVersionHistory";
 import { usePageTracker } from "./hooks/usePageTracker";
 import { ToastProvider } from "./context/ToastContext";
+import axios from "axios";
+
+// Global interceptor for auto-logout when session expires
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userEmail");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
 
 function AppRoutes() {
   usePageTracker();
