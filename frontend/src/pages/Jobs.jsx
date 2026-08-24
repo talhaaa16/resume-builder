@@ -105,7 +105,11 @@ export default function Jobs() {
   const handleCheckMatch = async (job) => {
     const token = localStorage.getItem("token");
     if (!token) {
+      localStorage.removeItem("uname");
+      localStorage.removeItem("uemail");
+      localStorage.removeItem("uprofilepic");
       showToast("Please login to check AI Match Score.", "info");
+      navigate("/login");
       return;
     }
     setMatchScores(prev => ({ ...prev, [job.id]: { loading: true } }));
@@ -132,6 +136,9 @@ export default function Jobs() {
     if (token) {
       window.open(url, "_blank");
     } else {
+      localStorage.removeItem("uname");
+      localStorage.removeItem("uemail");
+      localStorage.removeItem("uprofilepic");
       showToast("Please login to apply for jobs.", "info");
       navigate("/login");
     }

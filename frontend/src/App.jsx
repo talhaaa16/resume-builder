@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -31,8 +32,9 @@ axios.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem("token");
-      localStorage.removeItem("userName");
-      localStorage.removeItem("userEmail");
+      localStorage.removeItem("uname");
+      localStorage.removeItem("uemail");
+      localStorage.removeItem("uprofilepic");
       window.location.href = "/login";
     }
     return Promise.reject(error);
@@ -41,6 +43,30 @@ axios.interceptors.response.use(
 
 function AppRoutes() {
   usePageTracker();
+  const location = useLocation();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.exp * 1000 < Date.now()) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("uname");
+          localStorage.removeItem("uemail");
+          localStorage.removeItem("uprofilepic");
+          window.location.href = "/login";
+        }
+      } catch (e) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("uname");
+        localStorage.removeItem("uemail");
+        localStorage.removeItem("uprofilepic");
+        window.location.href = "/login";
+      }
+    }
+  }, [location.pathname]);
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />
