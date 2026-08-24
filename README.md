@@ -44,6 +44,11 @@
 ### 💼 Jobs Board
 - Live job listings powered by **Adzuna API**
 - Search by keyword, location, category filters
+- **✨ AI Job Match Score *(New)***
+  - Instantly compares your latest saved resume against any job description
+  - Generates a Match Percentage (e.g. 🔥 85% Match)
+  - Provides a 1-sentence personalized recommendation on how to improve your fit (e.g., "Add AWS to your skills.")
+  - **Daily Limit** — 5 free match checks per day per user, auto-resets at midnight
 
 ### 🎓 Career Guidance
 - Curated career path recommendations
@@ -183,7 +188,7 @@ resume-builder/
 │   ├── routes/
 │   │   ├── auth.js          # Signup, login, password change
 │   │   ├── resume.js        # Resume CRUD
-│   │   ├── ai.js            # Gemini AI: improve text + ATS resume analysis
+│   │   ├── ai.js            # Gemini AI: improve text, ATS analysis, job matching
 │   │   └── admin.js         # Admin stats, login, visit tracking
 │   ├── middleware/
 │   │   └── auth.js          # JWT verification middleware
@@ -227,6 +232,7 @@ resume-builder/
 | GET | `/api/resume/public/:shareId` | — | Fetch a public shared resume (no auth) |
 | POST | `/api/ai/improve` | ✅ | AI improve resume text (3 uses) |
 | POST | `/api/ai/analyze-resume` | ✅ | Upload PDF + AI full analysis (2/day) |
+| POST | `/api/ai/job-match` | ✅ | AI checks resume vs job description (5/day) |
 | POST | `/api/ai/interview-prep` | ✅ | AI generate interview questions (2/day) |
 | GET | `/api/ai/my-interview-preps` | ✅ | Fetch past interview prep history |
 | POST | `/api/admin/login` | — | Admin login |
