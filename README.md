@@ -238,7 +238,6 @@ resume-builder/
 | POST | `/api/admin/login` | — | Admin login |
 | GET | `/api/admin/stats` | Admin | Dashboard statistics |
 | POST | `/api/admin/track` | — | Record page visit |
-| GET | `/ping` | — | Keep-alive health check |
 
 ---
 
