@@ -35,6 +35,11 @@
 - **History & Revision** — Automatically saves past generated preps for easy review without spending limits
 - **Daily Limit** — 2 free generations per day (including regenerations), auto-resets at midnight
 
+### 🌐 LinkedIn About Optimizer *(New)*
+- **AI-Powered Optimization** — Paste your LinkedIn "About" summary and get a keyword-rich version tailored for visibility and engagement
+- **Professional Tone** — Rewrites content to be more professional and appealing to recruiters
+- **Daily Limit** — 2 free optimizations per day per user, auto-resets at midnight
+
 ### 📊 User Dashboard *(New)*
 - **Centralized Hub** — Replaces basic navbar profile with a full dashboard page
 - **Quick Stats** — Track total resumes, shared links, ATS daily checks, and AI improvements
@@ -201,6 +206,7 @@ resume-builder/
     │   ├── ResumeView.jsx     # Public read-only resume view (shareable link)
     │   ├── ATSChecker.jsx    # Full AI resume analysis with file upload
     │   ├── InterviewPrep.jsx # AI-generated interview questions and answers
+    │   ├── LinkedInOptimizer.jsx # AI-powered LinkedIn About optimizer
     │   ├── Dashboard.jsx     # User dashboard with stats and saved resumes
     │   ├── Jobs.jsx
     │   ├── About.jsx
@@ -234,6 +240,7 @@ resume-builder/
 | POST | `/api/ai/analyze-resume` | ✅ | Upload PDF + AI full analysis (2/day) |
 | POST | `/api/ai/job-match` | ✅ | AI checks resume vs job description (5/day) |
 | POST | `/api/ai/interview-prep` | ✅ | AI generate interview questions (2/day) |
+| POST | `/api/ai/linkedin-optimizer` | ✅ | AI optimize LinkedIn About section (2/day) |
 | GET | `/api/ai/my-interview-preps` | ✅ | Fetch past interview prep history |
 | POST | `/api/admin/login` | — | Admin login |
 | GET | `/api/admin/stats` | Admin | Dashboard statistics |
