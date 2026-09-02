@@ -374,26 +374,21 @@ const Navbar = () => {
             <span className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-[#00A86B]">YuvaNaukri</span>
           </div>
 
-          <div className="hidden md:flex space-x-8 text-gray-700 font-medium">
-            <a href="/" className="relative group transition-colors duration-300 hover:text-blue-600">
+          <div className="hidden md:flex space-x-1 text-sm">
+            <a href="/" className="px-4 py-2 rounded-full font-bold text-slate-600 hover:text-[#0076BC] hover:bg-blue-50 transition-all duration-300">
               Home
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </a>
-            <a href="/resume-builder" className="relative group transition-colors duration-300 hover:text-blue-600">
+            <a href="/resume-builder" className="px-4 py-2 rounded-full font-bold text-slate-600 hover:text-[#0076BC] hover:bg-blue-50 transition-all duration-300">
               Resume Builder
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </a>
-            <a href="/ats-checker" className="relative group transition-colors duration-300 hover:text-blue-600 flex items-center gap-1">
+            <a href="/ats-checker" className="px-4 py-2 rounded-full font-bold text-slate-600 hover:text-[#0076BC] hover:bg-blue-50 transition-all duration-300 flex items-center gap-1">
               ATS Checker
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </a>
-            <a href="/jobs" className="relative group transition-colors duration-300 hover:text-blue-600">
+            <a href="/jobs" className="px-4 py-2 rounded-full font-bold text-slate-600 hover:text-[#0076BC] hover:bg-blue-50 transition-all duration-300">
               Jobs
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </a>
-            <a href="/about" className="relative group transition-colors duration-300 hover:text-blue-600">
+            <a href="/about" className="px-4 py-2 rounded-full font-bold text-slate-600 hover:text-[#0076BC] hover:bg-blue-50 transition-all duration-300">
               About Us
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </a>
           </div>
 
