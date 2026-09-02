@@ -60,6 +60,7 @@
 - Skill roadmaps and industry insights
 
 ### 🔐 Authentication & Security
+- **LinkedIn Social Login *(New)*** — 1-click seamless signup/login using LinkedIn OAuth (fetches name, email, and profile picture automatically).
 - JWT-based secure login, signup, and session management
 - **Password Policy**: min. 6 characters, must contain letters + numbers
 - Enforced on both signup and password change (frontend + backend)
@@ -149,6 +150,8 @@ MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
 GEMINI_API_KEY=your_gemini_api_key
 ADMIN_SECRET=your_admin_panel_password
+LINKEDIN_CLIENT_ID=your_linkedin_client_id
+LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
 ```
 
 Start the backend:
@@ -166,6 +169,7 @@ npm install
 Create a `.env` file in `frontend/`:
 ```env
 REACT_APP_API_URL=http://localhost:6001
+REACT_APP_LINKEDIN_CLIENT_ID=your_linkedin_client_id
 ```
 
 Start the frontend:
@@ -228,6 +232,7 @@ resume-builder/
 |---|---|---|---|
 | POST | `/api/auth/adduser` | — | Register new user |
 | POST | `/api/auth/userlogin` | — | Login |
+| POST | `/api/auth/linkedin` | — | LinkedIn Social Login / Signup |
 | POST | `/api/auth/logout` | ✅ | Logout |
 | POST | `/api/auth/change-password` | ✅ | Change password |
 | GET | `/api/auth/dashboard` | ✅ | Fetch user profile, usage stats, and resumes |
