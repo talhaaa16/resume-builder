@@ -128,8 +128,8 @@
 
 ### Prerequisites
 - Node.js v18+
-- MongoDB connection string (MongoDB Atlas free tier works)
-- Google Gemini API key (free at [aistudio.google.com](https://aistudio.google.com))
+- MongoDB connection string
+- Google Gemini API key
 
 ### 1. Clone the repository
 ```bash
