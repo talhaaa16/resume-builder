@@ -140,7 +140,8 @@ async function fetchJobsAdzuna(query = "", location = "") {
   const APP_KEY = process.env.REACT_APP_ADZUNA_KEY;
   if (!APP_ID || !APP_KEY) return [];
 
-  const url = `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=3&what=${encodeURIComponent(query)}&where=${encodeURIComponent(location)}`;
+  // sort_by=relevance and max_days_old=3 ensures highly matched, fresh jobs daily
+  const url = `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=3&what=${encodeURIComponent(query)}&where=${encodeURIComponent(location)}&max_days_old=3&sort_by=relevance`;
 
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch jobs");
@@ -200,10 +201,16 @@ export default function Dashboard() {
           const latestResume = res.data.resumes[0];
           const designation = latestResume.personalInfo?.designation;
           const location = latestResume.personalInfo?.address || "";
+
           if (designation) {
             setReferenceResumeName(latestResume.personalInfo?.fullName || "Untitled Resume");
             setJobsLoading(true);
-            fetchJobsAdzuna(designation, location)
+
+            const skills = latestResume.skills || [];
+            const topSkills = skills.slice(0, 3).join(" ");
+            const enhancedQuery = topSkills ? `${designation} ${topSkills}` : designation;
+
+            fetchJobsAdzuna(enhancedQuery, location)
               .then(jobs => setRecommendedJobs(jobs))
               .catch(err => console.error(err))
               .finally(() => setJobsLoading(false));
@@ -479,7 +486,7 @@ export default function Dashboard() {
                 View all jobs <ArrowRight className="w-4 h-4" />
               </button>
             </div>
-            
+
             {jobsLoading ? (
               <div className="flex gap-4 overflow-x-auto pb-4 snap-x hide-scrollbar">
                 {[1, 2, 3].map(i => (

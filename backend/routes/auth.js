@@ -216,7 +216,7 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
 
         // Fetch resume stats
         const resumes = await Resume.find({ userId: req.user.userId })
-            .select('personalInfo template themeColor isPublic shareId createdAt')
+            .select('personalInfo template themeColor isPublic shareId createdAt skills')
             .sort({ createdAt: -1 });
 
         res.json({
