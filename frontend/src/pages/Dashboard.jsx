@@ -135,12 +135,12 @@ function ResumeCard({ resume, onEdit, onShare, onCopyLink, onHistory }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-async function fetchJobsAdzuna(query = "") {
+async function fetchJobsAdzuna(query = "", location = "") {
   const APP_ID = process.env.REACT_APP_ADZUNA_ID;
   const APP_KEY = process.env.REACT_APP_ADZUNA_KEY;
   if (!APP_ID || !APP_KEY) return [];
 
-  const url = `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=5&what=${encodeURIComponent(query)}`;
+  const url = `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=3&what=${encodeURIComponent(query)}&where=${encodeURIComponent(location)}`;
 
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch jobs");
@@ -164,6 +164,7 @@ export default function Dashboard() {
   const [shareToast, setShareToast] = useState("");
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [jobsLoading, setJobsLoading] = useState(false);
+  const [referenceResumeName, setReferenceResumeName] = useState("");
 
   const [localPic, setLocalPic] = useState("");
 
@@ -196,10 +197,13 @@ export default function Dashboard() {
       if (res.data.sts === 0) {
         setData(res.data);
         if (res.data.resumes && res.data.resumes.length > 0) {
-          const designation = res.data.resumes[0].personalInfo?.designation;
+          const latestResume = res.data.resumes[0];
+          const designation = latestResume.personalInfo?.designation;
+          const location = latestResume.personalInfo?.address || "";
           if (designation) {
+            setReferenceResumeName(latestResume.personalInfo?.fullName || "Untitled Resume");
             setJobsLoading(true);
-            fetchJobsAdzuna(designation)
+            fetchJobsAdzuna(designation, location)
               .then(jobs => setRecommendedJobs(jobs))
               .catch(err => console.error(err))
               .finally(() => setJobsLoading(false));
@@ -385,7 +389,7 @@ export default function Dashboard() {
             {[
               { label: "Build Resume", icon: Plus, href: "/resume-builder", color: "bg-[#0076BC] text-white hover:opacity-90" },
               { label: "ATS Checker", icon: Shield, href: "/ats-checker", color: "bg-violet-600 text-white hover:opacity-90" },
-              { label: "LinkedIn Optimizer", icon: Linkedin, href: "/linkedin-optimizer", color: "bg-blue-600 text-white hover:opacity-90", isNew: true },
+              { label: "LinkedIn Optimizer", icon: Linkedin, href: "/linkedin-optimizer", color: "bg-blue-600 text-white hover:opacity-90" },
               { label: "Interview Prep", icon: Sparkles, href: "/interview-prep", color: "bg-amber-500 text-white hover:opacity-90" },
               { label: "Browse Jobs", icon: Briefcase, href: "/jobs", color: "bg-emerald-600 text-white hover:opacity-90" },
             ].map(({ label, icon: Icon, href, color, isNew }) => (
@@ -458,9 +462,16 @@ export default function Dashboard() {
         {(jobsLoading || recommendedJobs.length > 0) && (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-amber-500" /> For You: Top Matches
-              </h2>
+              <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-amber-500" /> For You: Top Matches
+                </h2>
+                {referenceResumeName && (
+                  <span className="text-[10px] md:text-xs font-semibold bg-blue-50 text-[#0076BC] px-2.5 py-1 rounded-full border border-blue-100 flex items-center gap-1.5 w-fit">
+                    <FileText className="w-3 h-3" /> Based on: {referenceResumeName}
+                  </span>
+                )}
+              </div>
               <button
                 onClick={() => navigate("/jobs")}
                 className="flex items-center gap-1.5 text-sm font-semibold text-[#0076BC] hover:underline"
