@@ -24,10 +24,13 @@ const LinkedInCallback = () => {
 
     if (code) {
       // Send code to backend
+      const token = localStorage.getItem("token");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
       axios.post(`${API}/api/auth/linkedin`, {
         code,
         redirectUri: `${window.location.origin}/linkedin-callback`
-      })
+      }, { headers })
       .then((res) => {
         if (res.data.sts === 0) {
           localStorage.setItem("token", res.data.token);

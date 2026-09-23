@@ -225,7 +225,8 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
                 name: user.user_name,
                 email: user.user_email,
                 avatar: user.profile_pic,
-                memberSince: user._id.getTimestamp()
+                memberSince: user._id.getTimestamp(),
+                isLinkedInConnected: !!user.linkedinId
             },
             usage: {
                 aiUsed: user.aiUsageCount,
@@ -265,27 +266,56 @@ router.post('/linkedin', async (req, res) => {
             headers: { Authorization: `Bearer ${access_token}` }
         });
 
-        const { name, email, picture } = userRes.data;
+        const { name, email, picture, sub } = userRes.data;
         if (!email) return res.status(400).json({ sts: 1, msg: "Could not fetch email from LinkedIn" });
 
+        // Check if an authorization token is provided (Connect flow)
+        let existingUserId = null;
+        if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+            const token = req.headers.authorization.split(" ")[1];
+            try {
+                const decoded = jwt.verify(token, SECRET_KEY);
+                existingUserId = decoded.userId;
+            } catch (e) {
+                // Invalid token, ignore
+            }
+        }
+
         // 3. Find or Create User
-        let user = await User.findOne({ user_email: email });
+        let user;
         let isNew = false;
-        if (!user) {
-            isNew = true;
-            // Generate random password for OAuth users since it's required in schema
-            const randomPassword = Math.random().toString(36).slice(-10) + "A1!";
-            user = new User({
-                user_name: name,
-                user_email: email,
-                password: await bcryptjs.hash(randomPassword, 12),
-                avatar: picture // Ensure frontend checks this or store it properly
-            });
-            await user.save();
-        } else if (picture && !user.avatar) {
-            // Optionally update avatar if missing
-            user.avatar = picture;
-            await user.save();
+        let isConnect = false;
+
+        if (existingUserId) {
+            // User is connecting their account
+            user = await User.findById(existingUserId);
+            if (user) {
+                user.linkedinId = sub;
+                if (picture && !user.profile_pic) user.profile_pic = picture;
+                await user.save();
+                isConnect = true;
+            } else {
+                return res.status(404).json({ sts: 1, msg: "User not found for connection" });
+            }
+        } else {
+            // Login or Signup Flow
+            user = await User.findOne({ $or: [{ linkedinId: sub }, { user_email: email }] });
+            if (!user) {
+                isNew = true;
+                const randomPassword = Math.random().toString(36).slice(-10) + "A1!";
+                user = new User({
+                    user_name: name,
+                    user_email: email,
+                    password: await bcryptjs.hash(randomPassword, 12),
+                    profile_pic: picture,
+                    linkedinId: sub
+                });
+                await user.save();
+            } else {
+                if (!user.linkedinId) user.linkedinId = sub;
+                if (picture && !user.profile_pic) user.profile_pic = picture;
+                await user.save();
+            }
         }
 
         // 4. Generate Session Token
@@ -308,11 +338,11 @@ router.post('/linkedin', async (req, res) => {
 
         res.json({
             sts: 0,
-            msg: isNew ? "Account created successfully" : "Logged in successfully",
+            msg: isConnect ? "LinkedIn connected successfully" : (isNew ? "Account created successfully" : "Logged in successfully"),
             token: jwtToken,
             uname: user.user_name,
             uemail: user.user_email,
-            uprofilepic: user.avatar || null
+            uprofilepic: user.profile_pic || null
         });
 
     } catch (error) {

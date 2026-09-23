@@ -18,6 +18,10 @@ const Userschema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    linkedinId: {
+        type: String,
+        default: null
+    },
     aiUsageCount: {
         type: Number,
         default: 0

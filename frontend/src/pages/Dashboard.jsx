@@ -278,6 +278,18 @@ export default function Dashboard() {
     setTimeout(() => setShareToast(""), 3500);
   };
 
+  const handleConnectLinkedIn = () => {
+    const clientId = process.env.REACT_APP_LINKEDIN_CLIENT_ID || "";
+    if (!clientId) {
+      setShareToast("LinkedIn integration is not configured.");
+      setTimeout(() => setShareToast(""), 3500);
+      return;
+    }
+    const redirectUri = encodeURIComponent(`${window.location.origin}/linkedin-callback`);
+    const scope = encodeURIComponent("openid profile email");
+    window.location.href = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=connect&scope=${scope}`;
+  };
+
   if (loading) return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Navbar />
@@ -322,22 +334,33 @@ export default function Dashboard() {
       <div className="bg-gradient-to-br from-[#003f6b] via-[#0076BC] to-[#00A86B] px-6 py-12 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
-        <div className="relative z-10 max-w-5xl mx-auto flex items-center gap-5">
-          <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/30 shadow-xl shrink-0">
-            {(localPic || profile.avatar)
-              ? <img key={localPic || profile.avatar} src={localPic || profile.avatar} alt="avatar" className="w-full h-full object-cover" />
-              : <img
-                key={`dicebear-${profile.name || 'user'}`}
-                src={`https://api.dicebear.com/7.x/notionists/svg?seed=${profile.name || 'user'}`}
-                alt="avatar"
-                className="w-full h-full object-cover"
-              />
-            }
+        <div className="relative z-10 max-w-5xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="flex items-center gap-5">
+            <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-white/30 shadow-xl shrink-0 bg-white">
+              {(localPic || profile.avatar)
+                ? <img key={localPic || profile.avatar} src={localPic || profile.avatar} alt="avatar" className="w-full h-full object-cover" />
+                : <img
+                  key={`dicebear-${profile.name || 'user'}`}
+                  src={`https://api.dicebear.com/7.x/notionists/svg?seed=${profile.name || 'user'}`}
+                  alt="avatar"
+                  className="w-full h-full object-cover"
+                />
+              }
+            </div>
+            <div>
+              <p className="text-white/70 text-sm font-medium">Welcome back 👋</p>
+              <h1 className="text-2xl md:text-3xl font-black text-white">{profile.name}</h1>
+            </div>
           </div>
-          <div>
-            <p className="text-white/70 text-sm font-medium">Welcome back 👋</p>
-            <h1 className="text-2xl md:text-3xl font-black text-white">{profile.name}</h1>
-          </div>
+          
+          {!profile.isLinkedInConnected && (
+            <button
+              onClick={handleConnectLinkedIn}
+              className="flex items-center justify-center gap-2 bg-[#0A66C2] hover:bg-[#004182] text-white px-5 py-2.5 rounded-xl transition shadow-lg font-bold text-sm"
+            >
+              <Linkedin className="w-4 h-4" /> Connect LinkedIn
+            </button>
+          )}
         </div>
       </div>
 
