@@ -44,7 +44,8 @@
 - **Centralized Hub** — Replaces basic navbar profile with a full dashboard page
 - **Quick Stats** — Track total resumes, shared links, ATS daily checks, and AI improvements
 - **My Resumes Grid** — View all saved resumes with template badges, plus inline Edit and Share buttons
-- **Quick Actions** — One-click access to Build Resume, ATS Checker, Interview Prep, and Jobs
+- **✨ For You: Smart Job Feed** — Automatically extracts the designation and top 3 skills from your latest resume to fetch highly accurate (80-90% match) jobs. Refreshes daily showing only jobs posted in the last 3 days.
+- **Quick Actions** — One-click access to Build Resume, ATS Checker, LinkedIn Optimizer, Interview Prep, and Jobs
 
 ### 💼 Jobs Board
 - Live job listings powered by **Adzuna API**
@@ -60,7 +61,7 @@
 - Skill roadmaps and industry insights
 
 ### 🔐 Authentication & Security
-- **LinkedIn Social Login *(New)*** — 1-click seamless signup/login using LinkedIn OAuth (fetches name, email, and profile picture automatically).
+- **LinkedIn Social Login & Account Linking *(New)*** — 1-click seamless signup/login using LinkedIn OAuth (fetches name, email, and profile picture). Existing email/password users can securely link their LinkedIn account from the Dashboard to enable 1-click logins.
 - JWT-based secure login, signup, and session management
 - **Password Policy**: min. 6 characters, must contain letters + numbers
 - Enforced on both signup and password change (frontend + backend)
