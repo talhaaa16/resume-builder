@@ -58,6 +58,17 @@ const Navbar = () => {
     };
     document.addEventListener("mousedown", handleClickOutside);
 
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setShowDropdown(false);
+        setShowResumesModal(false);
+        setShowAccountSidebar(false);
+        setShowBell(false);
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+
     // Sync avatar state if the picture was updated elsewhere (other tab, or
     // by a different component in this tab).
     const handleProfilePicUpdated = (e) => {
@@ -74,6 +85,7 @@ const Navbar = () => {
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("profile-pic-updated", handleProfilePicUpdated);
     };
   }, []);
