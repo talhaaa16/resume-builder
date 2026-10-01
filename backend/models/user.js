@@ -50,6 +50,14 @@ const Userschema = new mongoose.Schema({
     jobMatchLastResetDate: {
         type: String,
         default: ''
+    },
+    chatCount: {
+        type: Number,
+        default: 0
+    },
+    chatLastResetDate: {
+        type: String,
+        default: ''
     }
 })
 
