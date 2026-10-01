@@ -40,6 +40,17 @@
 - **Professional Tone** — Rewrites content to be more professional and appealing to recruiters
 - **Daily Limit** — 2 free optimizations per day per user, auto-resets at midnight
 
+### 💬 Yuva Assistant — AI Chatbot *(New)*
+- **Personal AI Helper** — Floating chat button on every page for logged-in users
+- **Knows Your Profile** — Answers questions about your account, saved resumes (skills, experience, education, projects), interview prep history, and today's feature usage
+- **Career Guidance** — Gives resume improvement tips, suitable job roles, and interview advice based on your own data
+- **Grounded Answers** — Only uses facts from your saved data; never invents resume details
+- **Quick Suggestions** — One-click starter questions like "Summarize my resume" and "What skills do I have?"
+- **In-App Links** — Mentions of features (e.g. `/ats-checker`) become clickable links
+- **Secure** — User data is loaded server-side from the JWT, so users can only ask about their own data
+- **Conversation Memory** — Chat persists while navigating between pages in the same session
+- **Daily Limit** — 30 messages per day per user, auto-resets at midnight
+
 ### 📊 User Dashboard *(New)*
 - **Centralized Hub** — Replaces basic navbar profile with a full dashboard page
 - **Quick Stats** — Track total resumes, shared links, ATS daily checks, and AI improvements
@@ -79,6 +90,8 @@
 ### 🎨 UI/UX
 - Fully responsive across mobile, tablet, desktop
 - Premium Navbar with gradient branding and smooth hover animations
+- **My Account Sidebar** — edit username, email, password, and profile photo; close with the ✕ button, by clicking outside, or with the `Esc` key
+- `Esc` key also closes the profile dropdown, notifications panel, My Resumes modal, and chatbot
 - GSAP animations throughout (ATS Checker, 404 page)
 - Modern glassmorphism and gradient design language
 - Toast notification system
@@ -190,7 +203,7 @@ Visit `http://localhost:3000/admin` and enter your `ADMIN_SECRET` password.
 resume-builder/
 ├── backend/
 │   ├── models/
-│   │   ├── user.js          # User schema (with ATS daily usage tracking)
+│   │   ├── user.js          # User schema (with daily usage tracking for AI features)
 │   │   ├── resume.js        # Resume schema
 │   │   ├── interviewPrep.js # Interview Prep history schema
 │   │   ├── token.js         # JWT session tokens
@@ -198,7 +211,7 @@ resume-builder/
 │   ├── routes/
 │   │   ├── auth.js          # Signup, login, password change
 │   │   ├── resume.js        # Resume CRUD
-│   │   ├── ai.js            # Gemini AI: improve text, ATS analysis, job matching
+│   │   ├── ai.js            # Gemini AI: improve text, ATS analysis, job matching, chatbot
 │   │   └── admin.js         # Admin stats, login, visit tracking
 │   ├── middleware/
 │   │   └── auth.js          # JWT verification middleware
@@ -220,7 +233,8 @@ resume-builder/
     │   ├── AdminDashboard.jsx
     │   └── NotFound.jsx      # GSAP animated 404
     ├── components/
-    │   └── Navbar.jsx
+    │   ├── Navbar.jsx        # Navbar, profile dropdown, My Account sidebar
+    │   └── ChatBot.jsx       # Floating AI assistant (Yuva Assistant)
     └── hooks/
         └── usePageTracker.js  # Client-side visit tracking hook
 ```
@@ -248,6 +262,7 @@ resume-builder/
 | POST | `/api/ai/interview-prep` | ✅ | AI generate interview questions (2/day) |
 | POST | `/api/ai/linkedin-optimizer` | ✅ | AI optimize LinkedIn About section (2/day) |
 | GET | `/api/ai/my-interview-preps` | ✅ | Fetch past interview prep history |
+| POST | `/api/ai/chat` | ✅ | Chat with Yuva Assistant about your profile & resumes (30/day) |
 | POST | `/api/admin/login` | — | Admin login |
 | GET | `/api/admin/stats` | Admin | Dashboard statistics |
 | POST | `/api/admin/track` | — | Record page visit |
