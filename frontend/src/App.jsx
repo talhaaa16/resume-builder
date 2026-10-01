@@ -6,6 +6,7 @@ import Signup from "./pages/Signup";
 import Jobs from "./pages/Jobs";
 import ResumeBuilder from "./pages/ResumeBuilder";
 import PrivateRoute from "./components/PrivateRoute";
+import ChatBot from "./components/ChatBot";
 import CareerGuidance from "./pages/carrer-guidance";
 import Contact from "./pages/contact";
 import Privacy from "./pages/privacy";
@@ -111,6 +112,7 @@ function App() {
         <main className="container">
           <AppRoutes />
         </main>
+        <ChatBot />
       </div>
     </ToastProvider>
   );
