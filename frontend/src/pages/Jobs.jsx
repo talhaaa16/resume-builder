@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useToast } from "../context/ToastContext";
@@ -87,6 +87,19 @@ export default function Jobs() {
   const [matchScores, setMatchScores] = useState({});
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Run a search straight away when opened with ?q=...&loc=... (e.g. from the chatbot)
+  useEffect(() => {
+    const initialQ = searchParams.get("q") || "";
+    const initialLoc = searchParams.get("loc") || "";
+    if (initialQ) {
+      setQ(initialQ);
+      setLoc(initialLoc);
+      load(initialQ, initialLoc);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const load = async (searchQ = q, searchLoc = loc) => {
     try {
