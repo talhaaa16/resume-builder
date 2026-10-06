@@ -23,6 +23,7 @@ app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 const resumeRouters = require("./routes/resume");
 const aiRouters = require("./routes/ai");
 const adminRouters = require("./routes/admin");
+const chatRouters = require("./routes/chat");
 const PageVisit = require("./models/pageVisit");
 
 app.use(async (req, res, next) => {
@@ -49,6 +50,7 @@ app.use("/api/auth", authrouters);
 app.use("/api/resume", resumeRouters);
 app.use("/api/ai", aiRouters);
 app.use("/api/admin", adminRouters);
+app.use("/api/chat", chatRouters);
 
 app.get("/", (req, res) => {
   res.send("Hello World from Backend ");
