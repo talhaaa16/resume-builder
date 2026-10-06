@@ -41,14 +41,15 @@
 - **Daily Limit** — 2 free optimizations per day per user, auto-resets at midnight
 
 ### 💬 Yuva Assistant — AI Chatbot *(New)*
-- **Personal AI Helper** — Floating chat button on every page for logged-in users
+- **Personal AI Helper** — Floating chat button on every page; guests are invited to log in
 - **Knows Your Profile** — Answers questions about your account, saved resumes (skills, experience, education, projects), interview prep history, and today's feature usage
+- **💼 Job Search in Chat** — Ask "find React jobs in Pune" or "find jobs for me" and live Adzuna listings appear as cards with Apply buttons. Uses Gemini function calling; with no role given, it searches using your resume's designation and skills. Supports location, job type, and "posted this week" filters, plus a "View all on Jobs page" link
 - **Career Guidance** — Gives resume improvement tips, suitable job roles, and interview advice based on your own data
-- **Grounded Answers** — Only uses facts from your saved data; never invents resume details
-- **Quick Suggestions** — One-click starter questions like "Summarize my resume" and "What skills do I have?"
-- **In-App Links** — Mentions of features (e.g. `/ats-checker`) become clickable links
-- **Secure** — User data is loaded server-side from the JWT, so users can only ask about their own data
-- **Conversation Memory** — Chat persists while navigating between pages in the same session
+- **Grounded Answers** — Only uses facts from your saved data; never invents resume details or job listings
+- **Chat History Saved in DB** — Every message is stored in MongoDB (`ChatConversation` + `ChatMessage`); reopen, continue, or delete past chats from the history panel
+- **Chat Functions** — quick-action cards, job follow-up chips, copy reply, 👍/👎 feedback (saved), retry on failure, new chat, message timestamps, remaining-messages counter
+- **Animations** — spring open/close panel, launcher wiggle + greeting bubble on first visit each session, pulse ring until first open, animated messages, staggered job cards, typing indicator (respects the OS "reduce motion" setting)
+- **Secure** — User data and chat history are loaded server-side from the JWT, so users can only access their own data
 - **Daily Limit** — 30 messages per day per user, auto-resets at midnight
 
 ### 📊 User Dashboard *(New)*
@@ -166,6 +167,8 @@ GEMINI_API_KEY=your_gemini_api_key
 ADMIN_SECRET=your_admin_panel_password
 LINKEDIN_CLIENT_ID=your_linkedin_client_id
 LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
+ADZUNA_APP_ID=your_adzuna_app_id      # used by the chatbot's job search
+ADZUNA_APP_KEY=your_adzuna_app_key
 ```
 
 Start the backend:
@@ -206,15 +209,21 @@ resume-builder/
 │   │   ├── user.js          # User schema (with daily usage tracking for AI features)
 │   │   ├── resume.js        # Resume schema
 │   │   ├── interviewPrep.js # Interview Prep history schema
+│   │   ├── chatConversation.js # Chatbot conversation (thread) schema
+│   │   ├── chatMessage.js   # Chatbot messages (text, job results, feedback)
 │   │   ├── token.js         # JWT session tokens
 │   │   └── pageVisit.js     # Daily site traffic tracking
 │   ├── routes/
 │   │   ├── auth.js          # Signup, login, password change
 │   │   ├── resume.js        # Resume CRUD
-│   │   ├── ai.js            # Gemini AI: improve text, ATS analysis, job matching, chatbot
+│   │   ├── ai.js            # Gemini AI: improve text, ATS analysis, job matching
+│   │   ├── chat.js          # Yuva Assistant chatbot: messages, job search, history, feedback
 │   │   └── admin.js         # Admin stats, login, visit tracking
 │   ├── middleware/
 │   │   └── auth.js          # JWT verification middleware
+│   ├── utils/
+│   │   ├── gemini.js        # Shared Gemini client with fallback model
+│   │   └── jobSearch.js     # Server-side Adzuna job search
 │   └── App.js               # Express app, routes, visit middleware
 │
 └── frontend/src/
@@ -234,7 +243,7 @@ resume-builder/
     │   └── NotFound.jsx      # GSAP animated 404
     ├── components/
     │   ├── Navbar.jsx        # Navbar, profile dropdown, My Account sidebar
-    │   └── ChatBot.jsx       # Floating AI assistant (Yuva Assistant)
+    │   └── chatbot/          # Yuva Assistant: ChatBot, ChatMessage, ChatJobCard, ChatHistory, chatApi
     └── hooks/
         └── usePageTracker.js  # Client-side visit tracking hook
 ```
@@ -262,7 +271,12 @@ resume-builder/
 | POST | `/api/ai/interview-prep` | ✅ | AI generate interview questions (2/day) |
 | POST | `/api/ai/linkedin-optimizer` | ✅ | AI optimize LinkedIn About section (2/day) |
 | GET | `/api/ai/my-interview-preps` | ✅ | Fetch past interview prep history |
-| POST | `/api/ai/chat` | ✅ | Chat with Yuva Assistant about your profile & resumes (30/day) |
+| POST | `/api/chat/message` | ✅ | Send a message to Yuva Assistant; may return job cards (30/day) |
+| GET | `/api/chat/status` | ✅ | Messages left today, job search availability |
+| GET | `/api/chat/conversations` | ✅ | List your saved chats |
+| GET | `/api/chat/conversations/:id` | ✅ | Load all messages of a chat |
+| DELETE | `/api/chat/conversations/:id` | ✅ | Delete a chat and its messages |
+| PATCH | `/api/chat/messages/:id/feedback` | ✅ | 👍/👎 feedback on a reply (`up`, `down`, or `null`) |
 | POST | `/api/admin/login` | — | Admin login |
 | GET | `/api/admin/stats` | Admin | Dashboard statistics |
 | POST | `/api/admin/track` | — | Record page visit |
