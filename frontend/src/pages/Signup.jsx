@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
-import { FileText, Briefcase, Sparkles, CheckCircle, Linkedin, Eye, EyeOff } from "lucide-react";
+import { FileText, Briefcase, Sparkles, CheckCircle, Linkedin, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useSlowRequest } from "../hooks/useSlowRequest";
 
 const Regi = () => {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ const Regi = () => {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const isSlow = useSlowRequest(loading);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -38,6 +41,9 @@ const Regi = () => {
       return;
     }
 
+    if (loading) return;
+    setLoading(true);
+
     try {
       await axios.post(
         `${finalApiUrl}/api/auth/adduser`,
@@ -49,6 +55,7 @@ const Regi = () => {
       console.error(error);
       const errorMsg = error.response?.data?.msg || "Signup failed. Please try again.";
       showToast(errorMsg, "error");
+      setLoading(false);
     }
   };
 
@@ -163,10 +170,25 @@ const Regi = () => {
 
             <button
               type="submit"
-              className="w-full bg-[#00A86B] hover:bg-emerald-600 text-white py-4 rounded-xl font-bold text-lg transition duration-200 mt-2 shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2"
+              disabled={loading}
+              className="w-full bg-[#00A86B] hover:bg-emerald-600 text-white py-4 rounded-xl font-bold text-lg transition duration-200 mt-2 shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-wait disabled:hover:bg-[#00A86B]"
             >
-              Sign Up <Sparkles className="w-5 h-5" />
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" /> Creating account...
+                </>
+              ) : (
+                <>
+                  Sign Up <Sparkles className="w-5 h-5" />
+                </>
+              )}
             </button>
+
+            {isSlow && (
+              <p className="-mt-2 text-center text-xs text-slate-500 animate-pulse">
+                Waking up the server, this can take up to a minute on first use...
+              </p>
+            )}
 
             <div className="flex items-center my-2">
               <div className="flex-1 border-t border-slate-200"></div>
@@ -182,7 +204,8 @@ const Regi = () => {
                 const scope = encodeURIComponent("openid profile email");
                 window.location.href = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=signup&scope=${scope}`;
               }}
-              className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white py-4 rounded-xl font-bold text-lg transition duration-200 shadow-md flex items-center justify-center gap-3"
+              disabled={loading}
+              className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white py-4 rounded-xl font-bold text-lg transition duration-200 shadow-md flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <Linkedin className="w-5 h-5" /> Continue with LinkedIn
             </button>

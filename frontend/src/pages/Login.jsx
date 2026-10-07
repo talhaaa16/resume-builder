@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "../context/ToastContext";
-import { FileText, Briefcase, Sparkles, Linkedin, Eye, EyeOff } from "lucide-react";
+import { FileText, Briefcase, Sparkles, Linkedin, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useSlowRequest } from "../hooks/useSlowRequest";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const Login = () => {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const isSlow = useSlowRequest(loading);
 
   React.useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -38,6 +41,10 @@ const Login = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
     const finalApiUrl = (apiUrl && apiUrl !== "undefined") ? apiUrl : "";
 
+    if (loading) return;
+    setLoading(true);
+    setMsg(null);
+
     try {
       const res = await axios.post(
         `${finalApiUrl}/api/auth/userlogin`,
@@ -54,10 +61,10 @@ const Login = () => {
         setTimeout(() => {
           navigate("/");
         }, 2000);
-      } else {
-        setMsg(res.data.msg);
+        // Keep the loader on until the redirect happens.
+        return;
       }
-
+      setMsg(res.data.msg);
     } catch (error) {
       console.error(error);
       if (error.response && error.response.data && error.response.data.msg) {
@@ -66,6 +73,7 @@ const Login = () => {
         setMsg("Login failed. Please try again.");
       }
     }
+    setLoading(false);
   };
 
   return (
@@ -174,10 +182,25 @@ const Login = () => {
 
             <button
               type="submit"
-              className="w-full bg-[#0076BC] hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg transition duration-200 mt-2 shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
+              disabled={loading}
+              className="w-full bg-[#0076BC] hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-lg transition duration-200 mt-2 shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-wait disabled:hover:bg-[#0076BC]"
             >
-              Sign In <Sparkles className="w-5 h-5" />
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" /> Signing in...
+                </>
+              ) : (
+                <>
+                  Sign In <Sparkles className="w-5 h-5" />
+                </>
+              )}
             </button>
+
+            {isSlow && (
+              <p className="-mt-2 text-center text-xs text-slate-500 animate-pulse">
+                Waking up the server, this can take up to a minute on first use...
+              </p>
+            )}
 
             <div className="flex items-center my-2">
               <div className="flex-1 border-t border-slate-200"></div>
@@ -193,7 +216,8 @@ const Login = () => {
                 const scope = encodeURIComponent("openid profile email");
                 window.location.href = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=login&scope=${scope}`;
               }}
-              className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white py-4 rounded-xl font-bold text-lg transition duration-200 shadow-md flex items-center justify-center gap-3"
+              disabled={loading}
+              className="w-full bg-[#0A66C2] hover:bg-[#004182] text-white py-4 rounded-xl font-bold text-lg transition duration-200 shadow-md flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <Linkedin className="w-5 h-5" /> Continue with LinkedIn
             </button>
