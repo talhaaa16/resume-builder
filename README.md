@@ -26,19 +26,19 @@
 - **Keyword Match** — matched vs missing keywords when job description is provided
 - **Section-by-Section Feedback** — Contact Info, Summary, Skills, Experience, Education with individual scores
 - **Top 5 Actionable Suggestions** — specific improvements ranked by impact
-- **Daily Limit** — 2 free analyses per day per user, auto-resets at midnight
+- **Daily Limit** — 2 free analyses per day per user, resets daily at 5:30 AM IST (00:00 UTC)
 
 ### 🎤 Interview Prep *(New)*
 - **Role-Based Questions** — Enter target job role and experience level (Fresher to Senior)
 - **AI-Generated Q&A** — 10 tailored interview questions with professional model answers and actionable tips
 - **Categorized** — Questions tagged as Behavioral, Technical, Situational, HR, or Role-Specific
 - **History & Revision** — Automatically saves past generated preps for easy review without spending limits
-- **Daily Limit** — 2 free generations per day (including regenerations), auto-resets at midnight
+- **Daily Limit** — 2 free generations per day (including regenerations), resets daily at 5:30 AM IST (00:00 UTC)
 
 ### 🌐 LinkedIn About Optimizer *(New)*
 - **AI-Powered Optimization** — Paste your LinkedIn "About" summary and get a keyword-rich version tailored for visibility and engagement
 - **Professional Tone** — Rewrites content to be more professional and appealing to recruiters
-- **Daily Limit** — 2 free optimizations per day per user, auto-resets at midnight
+- **Daily Limit** — 2 free optimizations per day per user, resets daily at 5:30 AM IST (00:00 UTC)
 
 ### 💬 Yuva Assistant — AI Chatbot *(New)*
 - **Personal AI Helper** — Floating chat button on every page; guests are invited to log in
@@ -50,7 +50,7 @@
 - **Chat Functions** — quick-action cards, job follow-up chips, copy reply, 👍/👎 feedback (saved), retry on failure, new chat, message timestamps, remaining-messages counter
 - **Animations** — spring open/close panel, launcher wiggle + greeting bubble on first visit each session, pulse ring until first open, animated messages, staggered job cards, typing indicator (respects the OS "reduce motion" setting)
 - **Secure** — User data and chat history are loaded server-side from the JWT, so users can only access their own data
-- **Daily Limit** — 30 messages per day per user, auto-resets at midnight
+- **Daily Limit** — 30 messages per day per user, resets daily at 5:30 AM IST (00:00 UTC)
 
 ### 📊 User Dashboard *(New)*
 - **Centralized Hub** — Replaces basic navbar profile with a full dashboard page
@@ -66,7 +66,7 @@
   - Instantly compares your latest saved resume against any job description
   - Generates a Match Percentage (e.g. 🔥 85% Match)
   - Provides a 1-sentence personalized recommendation on how to improve your fit (e.g., "Add AWS to your skills.")
-  - **Daily Limit** — 5 free match checks per day per user, auto-resets at midnight
+  - **Daily Limit** — 5 free match checks per day per user, resets daily at 5:30 AM IST (00:00 UTC)
 
 ### 🎓 Career Guidance
 - Curated career path recommendations
@@ -103,7 +103,7 @@
 - Direct CTA into the Resume Builder
 
 ### ❓ FAQ
-- 26 questions across 6 categories: General, Resume Builder, ATS Checker, Account, Jobs & Career, Pricing & Limits
+- 40 questions across 8 categories: General, Resume Builder, ATS Checker, AI Tools, Yuva Assistant, Account, Jobs & Career, Pricing & Limits
 - Live search across all questions and categories
 - Category tab filter with icons
 - Accordion UI (one question open at a time) with smooth expand animation
