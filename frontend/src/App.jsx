@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -26,17 +26,17 @@ import ResumeVersionHistory from "./pages/ResumeVersionHistory";
 import { usePageTracker } from "./hooks/usePageTracker";
 import { ToastProvider } from "./context/ToastContext";
 import axios from "axios";
+import { isTokenExpired, logoutAndRedirect } from "./utils/session";
 
-// Global interceptor for auto-logout when session expires
+// Single global handler for expired / invalid sessions. Admin requests are
+// skipped: a wrong admin password must not log the normal user out.
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("uname");
-      localStorage.removeItem("uemail");
-      localStorage.removeItem("uprofilepic");
-      window.location.href = "/login";
+    const isAdminRequest = error.config?.url?.includes("/api/admin");
+    if (error.response?.status === 401 && !isAdminRequest) {
+      const weekly = /weekly session reset/i.test(error.response.data?.msg || "");
+      logoutAndRedirect(weekly ? "weekly" : "expired");
     }
     return Promise.reject(error);
   }
@@ -48,23 +48,8 @@ function AppRoutes() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload.exp * 1000 < Date.now()) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("uname");
-          localStorage.removeItem("uemail");
-          localStorage.removeItem("uprofilepic");
-          window.location.href = "/login";
-        }
-      } catch (e) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("uname");
-        localStorage.removeItem("uemail");
-        localStorage.removeItem("uprofilepic");
-        window.location.href = "/login";
-      }
+    if (token && isTokenExpired(token)) {
+      logoutAndRedirect("expired");
     }
   }, [location.pathname]);
 
@@ -74,7 +59,8 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/jobs" element={<Jobs />} />
-      <Route path="/carrier" element={<CareerGuidance />} />
+      <Route path="/career-guidance" element={<CareerGuidance />} />
+      <Route path="/carrier" element={<Navigate to="/career-guidance" replace />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/terms" element={<Terms />} />
@@ -97,10 +83,10 @@ function AppRoutes() {
         }
       />
 
-      <Route path="*" element={<NotFound />} />
-
       <Route path="/admin" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

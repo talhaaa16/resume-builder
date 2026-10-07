@@ -21,7 +21,7 @@ const Login = () => {
     if (params.get("expired") === "true") {
       setMsg("Your session has expired. Please login again.");
     } else if (params.get("weekly") === "true") {
-      setMsg("Your session has expired. Please login again.");
+      setMsg("For your security, everyone is logged out every Monday. Please login again.");
     }
   }, [location]);
 

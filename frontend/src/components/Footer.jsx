@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -11,7 +11,7 @@ export default function Footer() {
             <div className="w-10 h-10 bg-[#0076BC] rounded-md flex items-center justify-center">
               <span className="text-white font-bold">YN</span>
             </div>
-            <h1 className="text-xl font-bold text-white">YuvaNaukri</h1>
+            <span className="text-xl font-bold text-white">YuvaNaukri</span>
           </div>
           <p>
             Empowering India's youth with tools and opportunities for successful
@@ -23,10 +23,13 @@ export default function Footer() {
           <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
           <ul className="space-y-2">
             <li><Link to="/" className="hover:text-white">Home</Link></li>
+            <li><Link to="/dashboard" className="hover:text-white">Dashboard</Link></li>
             <li><Link to="/resume-builder" className="hover:text-white">Resume Builder</Link></li>
             <li><Link to="/jobs" className="hover:text-white">Job Listings</Link></li>
             <li><Link to="/ats-checker" className="hover:text-white">ATS Checker</Link></li>
-            <li><Link to="/carrier" className="hover:text-white">Career Guidance</Link></li>
+            <li><Link to="/interview-prep" className="hover:text-white">Interview Prep</Link></li>
+            <li><Link to="/linkedin-optimizer" className="hover:text-white">LinkedIn Optimizer</Link></li>
+            <li><Link to="/career-guidance" className="hover:text-white">Career Guidance</Link></li>
           </ul>
         </div>
 
@@ -46,11 +49,7 @@ export default function Footer() {
           <ul className="space-y-3">
             <li className="flex items-center space-x-2">
               <Mail className="w-5 h-5 text-orange-400" />
-              <span>support@yuvanaukri.org</span>
-            </li>
-            <li className="flex items-center space-x-2">
-              <Phone className="w-5 h-5 text-orange-400" />
-              <span>+91 99999 00000</span>
+              <a href="mailto:support@yuvanaukri.org" className="hover:text-white">support@yuvanaukri.org</a>
             </li>
             <li className="flex items-center space-x-2">
               <MapPin className="w-5 h-5 text-orange-400" />
@@ -61,7 +60,7 @@ export default function Footer() {
       </div>
 
       <div className="flex flex-col md:flex-row justify-between items-center mt-6 text-sm text-gray-400">
-        <p>© 2026 YuvaNaukri. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} YuvaNaukri. All rights reserved.</p>
         <p>Contributing to SDG 4 & SDG 8 • Viksit Bharat @2047</p>
       </div>
     </footer>

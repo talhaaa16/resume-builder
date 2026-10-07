@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useToast } from "../context/ToastContext";
+import { openChatbot } from "../components/chatbot/chatEvents";
 import {
   FileText, Zap, Shield, ArrowRight, Plus, Share2,
-  Edit2, Clock, CheckCircle2, AlertCircle, User,
+  Edit2, Clock, AlertCircle,
   Sparkles, Briefcase, Target, ExternalLink, Calendar,
   Copy, Lock, Loader2, Linkedin, MapPin, Building2,
+  Bot, Compass,
 } from "lucide-react";
 
 const API = process.env.REACT_APP_API_URL || "";
@@ -42,7 +45,7 @@ function UsageBar({ used, limit, label, color, icon: Icon }) {
   );
 }
 
-function ResumeCard({ resume, onEdit, onShare, onCopyLink, onHistory }) {
+function ResumeCard({ resume, onEdit, onShare, onCopyLink, onHistory, editing }) {
   const name = resume.personalInfo?.fullName || "Untitled Resume";
   const role = resume.personalInfo?.designation || "No designation";
   const template = resume.template || "professional";
@@ -91,9 +94,10 @@ function ResumeCard({ resume, onEdit, onShare, onCopyLink, onHistory }) {
       <div className="flex gap-2">
         <button
           onClick={() => onEdit(resume)}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-slate-600 bg-slate-50 hover:bg-[#0076BC] hover:text-white border border-slate-200 rounded-xl transition-all"
+          disabled={editing}
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-slate-600 bg-slate-50 hover:bg-[#0076BC] hover:text-white border border-slate-200 rounded-xl transition-all disabled:opacity-60"
         >
-          <Edit2 className="w-3.5 h-3.5" /> Edit
+          {editing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Edit2 className="w-3.5 h-3.5" />} Edit
         </button>
         <button
           onClick={() => onHistory(resume)}
@@ -159,10 +163,11 @@ async function fetchJobsAdzuna(query = "", location = "") {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [shareToast, setShareToast] = useState("");
+  const [editingId, setEditingId] = useState(null);
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [jobsLoading, setJobsLoading] = useState(false);
   const [referenceResumeName, setReferenceResumeName] = useState("");
@@ -188,7 +193,7 @@ export default function Dashboard() {
     };
     window.addEventListener("profile-pic-updated", handleProfilePicUpdated);
     return () => window.removeEventListener("profile-pic-updated", handleProfilePicUpdated);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchDashboard = async (token) => {
     try {
@@ -219,16 +224,36 @@ export default function Dashboard() {
       } else {
         setError("Failed to load dashboard.");
       }
-    } catch {
-      setError("Session expired. Please login again.");
-      setTimeout(() => navigate("/login"), 2000);
+    } catch (err) {
+      // 401s are handled globally (logout + redirect); show the real error otherwise.
+      if (err.response?.status === 401) {
+        setError("Session expired. Please login again.");
+      } else {
+        setError(err.response?.data?.msg || "Failed to load dashboard. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEdit = (resume) => {
-    navigate("/resume-builder", { state: { resumeData: resume } });
+  // Dashboard resumes only carry a few fields, so load the full resume before editing.
+  const handleEdit = async (resume) => {
+    setEditingId(resume._id);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${API}/api/resume/${resume._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.data.sts === 0 && res.data.resume) {
+        navigate("/resume-builder", { state: { resumeData: res.data.resume } });
+      } else {
+        showToast(res.data.msg || "Failed to open resume.", "error");
+      }
+    } catch (err) {
+      showToast(err.response?.data?.msg || "Failed to open resume. Please try again.", "error");
+    } finally {
+      setEditingId(null);
+    }
   };
 
   const handleHistory = (resume) => {
@@ -239,8 +264,7 @@ export default function Dashboard() {
     if (resume.shareId) {
       const link = `${window.location.origin}/r/${resume.shareId}`;
       navigator.clipboard.writeText(link);
-      setShareToast("Link copied to clipboard!");
-      setTimeout(() => setShareToast(""), 3500);
+      showToast("Link copied to clipboard!");
     }
   };
 
@@ -255,7 +279,7 @@ export default function Dashboard() {
       if (res.data.sts === 0 && res.data.shared) {
         const link = `${window.location.origin}/r/${res.data.shareId}`;
         await navigator.clipboard.writeText(link);
-        setShareToast("Link copied! Anyone with the link can view your resume.");
+        showToast("Link copied! Anyone with the link can view your resume.");
         // update local state
         setData(prev => ({
           ...prev,
@@ -264,7 +288,7 @@ export default function Dashboard() {
           ),
         }));
       } else if (res.data.sts === 0 && !res.data.shared) {
-        setShareToast("Sharing disabled. Resume is now private.");
+        showToast("Sharing disabled. Resume is now private.", "info");
         setData(prev => ({
           ...prev,
           resumes: prev.resumes.map(r =>
@@ -273,16 +297,14 @@ export default function Dashboard() {
         }));
       }
     } catch {
-      setShareToast("Failed to toggle sharing.");
+      showToast("Failed to toggle sharing.", "error");
     }
-    setTimeout(() => setShareToast(""), 3500);
   };
 
   const handleConnectLinkedIn = () => {
     const clientId = process.env.REACT_APP_LINKEDIN_CLIENT_ID || "";
     if (!clientId) {
-      setShareToast("LinkedIn integration is not configured.");
-      setTimeout(() => setShareToast(""), 3500);
+      showToast("LinkedIn integration is not configured.", "error");
       return;
     }
     const redirectUri = encodeURIComponent(`${window.location.origin}/linkedin-callback`);
@@ -315,20 +337,11 @@ export default function Dashboard() {
   );
 
   const { profile, usage, resumes } = data;
-  const joinDate = new Date(profile.memberSince).toLocaleDateString("en-IN", { month: "long", year: "numeric" });
   const sharedCount = resumes.filter(r => r.isPublic).length;
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
       <Navbar />
-
-      {/* ── Toast ── */}
-      {shareToast && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-sm font-medium px-5 py-3 rounded-xl shadow-xl flex items-center gap-2 animate-fadeIn">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-          {shareToast}
-        </div>
-      )}
 
       {/* ── Hero Header ── */}
       <div className="bg-gradient-to-br from-[#003f6b] via-[#0076BC] to-[#00A86B] px-6 py-12 relative overflow-hidden">
@@ -406,7 +419,7 @@ export default function Dashboard() {
             />
           </div>
           <p className="text-xs text-slate-400 mt-3 flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5" /> ATS limit resets daily at midnight. AI improvements are lifetime credits.
+            <Clock className="w-3.5 h-3.5" /> ATS limit resets daily at 5:30 AM IST. AI improvements are lifetime credits.
           </p>
         </div>
 
@@ -415,17 +428,19 @@ export default function Dashboard() {
           <h2 className="text-lg font-black text-slate-800 mb-4 flex items-center gap-2">
             <Target className="w-5 h-5 text-[#0076BC]" /> Quick Actions
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
             {[
               { label: "Build Resume", icon: Plus, href: "/resume-builder", color: "bg-[#0076BC] text-white hover:opacity-90" },
               { label: "ATS Checker", icon: Shield, href: "/ats-checker", color: "bg-violet-600 text-white hover:opacity-90" },
               { label: "LinkedIn Optimizer", icon: Linkedin, href: "/linkedin-optimizer", color: "bg-blue-600 text-white hover:opacity-90" },
               { label: "Interview Prep", icon: Sparkles, href: "/interview-prep", color: "bg-amber-500 text-white hover:opacity-90" },
               { label: "Browse Jobs", icon: Briefcase, href: "/jobs", color: "bg-emerald-600 text-white hover:opacity-90" },
-            ].map(({ label, icon: Icon, href, color, isNew }) => (
+              { label: "AI Assistant", icon: Bot, onClick: () => openChatbot(), color: "bg-indigo-600 text-white hover:opacity-90", isNew: true },
+              { label: "Career Guidance", icon: Compass, href: "/career-guidance", color: "bg-teal-600 text-white hover:opacity-90" },
+            ].map(({ label, icon: Icon, href, onClick, color, isNew }) => (
               <button
                 key={label}
-                onClick={() => navigate(href)}
+                onClick={onClick || (() => navigate(href))}
                 className={`relative ${color} rounded-xl p-4 flex flex-col items-center text-center gap-2 transition font-semibold text-sm shadow-sm`}
               >
                 {isNew && <span className="absolute top-2 right-2 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-wider">New</span>}
@@ -474,6 +489,7 @@ export default function Dashboard() {
                   onShare={handleShare}
                   onCopyLink={handleCopyLink}
                   onHistory={handleHistory}
+                  editing={editingId === resume._id}
                 />
               ))}
               {/* Add new card */}

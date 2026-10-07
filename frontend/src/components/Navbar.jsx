@@ -1,8 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { UserCircle, FileText, LogOut, X, Trash2, ExternalLink, Key, Image as ImageIcon, BriefcaseBusiness, Sparkles, Menu, Settings, Camera, Check, Edit2, ChevronDown, ChevronUp, Share2, Copy, LayoutDashboard, Bell } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { FileText, LogOut, X, Trash2, Key, BriefcaseBusiness, Menu, Settings, Camera, Check, Edit2, ChevronDown, ChevronUp, Share2, Copy, LayoutDashboard, Bell } from "lucide-react";
 import axios from "axios";
 import { useToast } from "../context/ToastContext";
+import { clearSession } from "../utils/session";
+
+const NAV_LINKS = [
+  { to: "/", label: "Home" },
+  { to: "/resume-builder", label: "Resume Builder" },
+  { to: "/ats-checker", label: "ATS Checker" },
+  { to: "/jobs", label: "Jobs" },
+  { to: "/about", label: "About Us" },
+];
 
 const Navbar = () => {
   const [username, setUsername] = useState(null);
@@ -11,7 +20,6 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showResumesModal, setShowResumesModal] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showBell, setShowBell] = useState(false);
   const [shareState, setShareState] = useState({ resumeId: null, loading: false, link: "", copied: false });
 
@@ -71,22 +79,21 @@ const Navbar = () => {
 
     // Sync avatar state if the picture was updated elsewhere (other tab, or
     // by a different component in this tab).
-    const handleProfilePicUpdated = (e) => {
-      const fresh = localStorage.getItem("uprofilepic");
-      if (fresh) setProfilePic(fresh);
+    // An empty value means the picture was removed.
+    const handleProfilePicUpdated = () => {
+      setProfilePic(localStorage.getItem("uprofilepic") || "");
+    };
+    const handleStorage = (e) => {
+      if (e.key === "uprofilepic") handleProfilePicUpdated();
     };
     window.addEventListener("profile-pic-updated", handleProfilePicUpdated);
-    window.addEventListener("storage", (e) => {
-      if (e.key === "uprofilepic") {
-        const fresh = localStorage.getItem("uprofilepic");
-        if (fresh) setProfilePic(fresh);
-      }
-    });
+    window.addEventListener("storage", handleStorage);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("profile-pic-updated", handleProfilePicUpdated);
+      window.removeEventListener("storage", handleStorage);
     };
   }, []);
 
@@ -107,10 +114,7 @@ const Navbar = () => {
           console.error("Logout error:", error);
         }
 
-        localStorage.removeItem("token");
-        localStorage.removeItem("uname");
-        localStorage.removeItem("uemail");
-        localStorage.removeItem("uprofilepic");
+        clearSession();
         setUsername(null);
         setUseremail(null);
         setProfilePic("");
@@ -148,7 +152,7 @@ const Navbar = () => {
           await axios.delete(`${process.env.REACT_APP_API_URL || ""}/api/resume/${resumeId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          setResumes(resumes.filter((r) => r._id !== resumeId));
+          setResumes(prev => prev.filter((r) => r._id !== resumeId));
           showToast("Resume deleted.");
           setConfirmModal(prev => ({ ...prev, isOpen: false }));
         } catch (error) {
@@ -266,10 +270,10 @@ const Navbar = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.data.sts === 0) {
-        alert("Password changed successfully!");
-        setShowPasswordModal(false);
+        showToast("Password changed successfully!");
         setPasswordData({ currentPassword: "", newPassword: "" });
         setPasswordMsg("");
+        setIsPasswordCollapsed(true);
       } else {
         setPasswordMsg(res.data.msg);
       }
@@ -387,21 +391,11 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex space-x-1 text-sm">
-            <a href="/" className="px-4 py-2 rounded-full font-bold text-slate-600 hover:text-[#0076BC] hover:bg-blue-50 transition-all duration-300">
-              Home
-            </a>
-            <a href="/resume-builder" className="px-4 py-2 rounded-full font-bold text-slate-600 hover:text-[#0076BC] hover:bg-blue-50 transition-all duration-300">
-              Resume Builder
-            </a>
-            <a href="/ats-checker" className="px-4 py-2 rounded-full font-bold text-slate-600 hover:text-[#0076BC] hover:bg-blue-50 transition-all duration-300 flex items-center gap-1">
-              ATS Checker
-            </a>
-            <a href="/jobs" className="px-4 py-2 rounded-full font-bold text-slate-600 hover:text-[#0076BC] hover:bg-blue-50 transition-all duration-300">
-              Jobs
-            </a>
-            <a href="/about" className="px-4 py-2 rounded-full font-bold text-slate-600 hover:text-[#0076BC] hover:bg-blue-50 transition-all duration-300">
-              About Us
-            </a>
+            {NAV_LINKS.map(({ to, label }) => (
+              <Link key={to} to={to} className="px-4 py-2 rounded-full font-bold text-slate-600 hover:text-[#0076BC] hover:bg-blue-50 transition-all duration-300">
+                {label}
+              </Link>
+            ))}
           </div>
 
           <div className="hidden md:flex items-center space-x-4 relative" ref={dropdownRef}>
@@ -415,7 +409,6 @@ const Navbar = () => {
                     className="relative w-9 h-9 flex items-center justify-center rounded-full text-gray-500 hover:text-[#0076BC] hover:bg-blue-50 transition"
                   >
                     <Bell className="w-5 h-5" />
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white animate-pulse" />
                   </button>
 
                   {/* Notification Dropdown */}
@@ -505,11 +498,9 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <a href="/login">
-                  <button className="text-gray-700 hover:text-blue-600 font-medium">
-                    Login
-                  </button>
-                </a>
+                <Link to="/login" className="text-gray-700 hover:text-blue-600 font-medium">
+                  Login
+                </Link>
                 <button
                   onClick={() => navigate("/signup")}
                   className="bg-gradient-to-r from-green-400 to-blue-500 text-white px-4 py-2 rounded-lg shadow hover:opacity-90 transition"
@@ -534,11 +525,11 @@ const Navbar = () => {
         {/* Mobile Dropdown Menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-xl border-t border-gray-100 z-50 flex flex-col py-4 px-6 space-y-4">
-            <a href="/" className="text-gray-700 font-semibold hover:text-blue-600 transition">Home</a>
-            <a href="/resume-builder" className="text-gray-700 font-semibold hover:text-blue-600 transition">Resume Builder</a>
-            <a href="/ats-checker" className="text-gray-700 font-semibold hover:text-blue-600 transition flex items-center gap-2">ATS Checker</a>
-            <a href="/jobs" className="text-gray-700 font-semibold hover:text-blue-600 transition">Jobs</a>
-            <a href="/about" className="text-gray-700 font-semibold hover:text-blue-600 transition">About Us</a>
+            {NAV_LINKS.map(({ to, label }) => (
+              <Link key={to} to={to} onClick={() => setIsMobileMenuOpen(false)} className="text-gray-700 font-semibold hover:text-blue-600 transition">
+                {label}
+              </Link>
+            ))}
 
             <div className="h-px bg-gray-200 my-2"></div>
 

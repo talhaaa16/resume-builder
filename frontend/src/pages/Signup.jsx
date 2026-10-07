@@ -39,7 +39,7 @@ const Regi = () => {
     }
 
     try {
-      const res = await axios.post(
+      await axios.post(
         `${finalApiUrl}/api/auth/adduser`,
         userregi
       );

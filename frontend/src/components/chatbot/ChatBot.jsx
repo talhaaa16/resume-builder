@@ -8,6 +8,7 @@ import {
 import ChatMessage from "./ChatMessage";
 import ChatHistory from "./ChatHistory";
 import * as chatApi from "./chatApi";
+import { OPEN_CHATBOT_EVENT } from "./chatEvents";
 
 const HIDDEN_PATHS = ["/admin", "/r/", "/login", "/signup", "/linkedin-callback"];
 const MAX_LENGTH = 1000;
@@ -69,6 +70,7 @@ const ChatBot = () => {
   const [attention, setAttention] = useState(false);
   const [hasUnread, setHasUnread] = useState(false);
   const [hasOpenedChat, setHasOpenedChat] = useState(() => session.get("chatbot:opened") === "1");
+  const [pendingPrompt, setPendingPrompt] = useState(null);
 
   const isOpenRef = useRef(isOpen);
   const messagesEndRef = useRef(null);
@@ -166,15 +168,31 @@ const ChatBot = () => {
     el.style.height = `${Math.min(el.scrollHeight, 112)}px`;
   }, [input]);
 
-  const openChat = () => {
+  const openChat = useCallback(() => {
     setIsOpen(true);
     setShowTeaser(false);
     setHasUnread(false);
-    if (!hasOpenedChat) {
-      setHasOpenedChat(true);
-      session.set("chatbot:opened", "1");
-    }
-  };
+    setHasOpenedChat(true);
+    session.set("chatbot:opened", "1");
+  }, []);
+
+  // Other pages open the assistant through openChatbot() in chatEvents.js.
+  useEffect(() => {
+    const handleOpen = (event) => {
+      openChat();
+      setView("chat");
+      const prompt = event.detail?.prompt;
+      if (prompt) {
+        // A prompt from another page starts a fresh conversation.
+        setConversationId(null);
+        setLoadedConversationId(null);
+        setMessages([]);
+        setPendingPrompt(prompt);
+      }
+    };
+    window.addEventListener(OPEN_CHATBOT_EVENT, handleOpen);
+    return () => window.removeEventListener(OPEN_CHATBOT_EVENT, handleOpen);
+  }, [openChat]);
 
   const toggleChat = () => (isOpen ? setIsOpen(false) : openChat());
 
@@ -240,6 +258,12 @@ const ChatBot = () => {
       setIsSending(false);
     }
   }, [input, isSending, isLoggedIn, messages, conversationId]);
+
+  useEffect(() => {
+    if (!pendingPrompt || !isOpen || isSending || conversationId) return;
+    if (isLoggedIn) sendMessage(pendingPrompt);
+    setPendingPrompt(null);
+  }, [pendingPrompt, isOpen, isSending, conversationId, isLoggedIn, sendMessage]);
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {

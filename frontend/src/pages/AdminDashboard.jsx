@@ -2,8 +2,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
-  Users, FileText, Zap, Eye, LogOut, TrendingUp, RefreshCw,
-  Shield, Activity, UserCheck, BarChart2, Calendar, Loader2, AlertCircle,
+  Users, FileText, Zap, Eye, LogOut, RefreshCw,
+  Shield, Activity, UserCheck, BarChart2, Loader2, AlertCircle,
 } from "lucide-react";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

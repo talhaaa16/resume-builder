@@ -3,18 +3,17 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import {
-  Target, Sparkles, Heart, Code2,
-  Briefcase, FileSearch, ArrowRight,
+  Target, Sparkles, Heart,
+  FileSearch, ArrowRight,
   CheckCircle2, Zap, Shield,
 } from "lucide-react";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const STATS = [
-  { value: "4+", label: "Resume Templates", icon: FileSearch, color: "text-blue-600", bg: "bg-blue-50" },
+  { value: "4", label: "Resume Templates", icon: FileSearch, color: "text-blue-600", bg: "bg-blue-50" },
   { value: "AI", label: "Gemini Powered", icon: Sparkles, color: "text-emerald-600", bg: "bg-emerald-50" },
   { value: "Free", label: "Always Free Core", icon: Heart, color: "text-rose-500", bg: "bg-rose-50" },
-  { value: "100%", label: "Open Source", icon: Code2, color: "text-violet-600", bg: "bg-violet-50" },
 ];
 
 const VALUES = [
@@ -29,7 +28,7 @@ const VALUES = [
   {
     icon: Sparkles,
     title: "AI-First Approach",
-    desc: "Powered by Google Gemini, every feature — from resume writing to ATS checking — uses cutting-edge AI to give you an unfair advantage.",
+    desc: "Google Gemini powers our smart tools — AI content improvement, ATS checking, Interview Prep, LinkedIn optimization, AI Job Match and Yuva Assistant — to help you stand out.",
     color: "from-emerald-500 to-green-500",
     bg: "bg-emerald-50",
     text: "text-emerald-700",
@@ -37,7 +36,7 @@ const VALUES = [
   {
     icon: Shield,
     title: "Privacy by Default",
-    desc: "Your resume data is yours. We never sell your data, never show your personal info to employers without your consent, and store everything securely.",
+    desc: "Your resume data is yours. We never sell your data and store it securely. AI features are processed by Google Gemini, and resume share links are public only if you enable them.",
     color: "from-violet-500 to-purple-500",
     bg: "bg-violet-50",
     text: "text-violet-700",
@@ -55,13 +54,16 @@ const VALUES = [
 
 const FEATURES = [
   "Real-time resume builder with live preview",
-  "4 premium ATS-friendly templates",
+  "4 ATS-friendly templates with a theme color picker",
+  "Resume version history (save, restore & delete snapshots)",
   "AI-powered content improvement",
   "PDF resume upload & full ATS analysis",
   "AI Interview Prep with 10 Q&As per session",
   "LinkedIn OAuth login & LinkedIn Profile Optimizer",
   "Public resume sharing links",
-  "Live job board",
+  "Live job board with AI Job Match scores",
+  "Yuva Assistant — AI chatbot with live job search",
+  "User Dashboard with a \"For You\" job feed",
   "Career guidance & roadmaps",
   "Secure JWT authentication",
   "Daily AI usage limits (fair use)",
@@ -72,7 +74,7 @@ const TIMELINE = [
   { year: "Early 2025", title: "v1.0 Launch", desc: "Launched with core resume builder, 4 templates, PDF export, and user authentication." },
   { year: "Mid 2025", title: "AI Integration", desc: "Added Gemini AI for content improvement and the full ATS Checker with PDF upload." },
   { year: "Late 2025", title: "Growing Platform", desc: "Added Jobs Board, Career Guidance, Admin Panel, Interview Prep, and continued improving the experience." },
-  { year: "2026", title: "LinkedIn & Beyond", desc: "Launched LinkedIn OAuth login, LinkedIn Profile Optimizer, resume sharing links, and a fully redesigned User Dashboard." },
+  { year: "2026", title: "LinkedIn & Beyond", desc: "Launched LinkedIn OAuth login, LinkedIn Profile Optimizer, resume sharing links, resume version history, AI Job Match, a fully redesigned User Dashboard, and Yuva Assistant — an AI chatbot that can search live jobs." },
 ];
 
 // ─── Components ───────────────────────────────────────────────────────────────
@@ -149,7 +151,7 @@ export default function AboutUs() {
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-16 space-y-20">
 
         {/* ── Stats ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {STATS.map((s, i) => <StatCard key={i} {...s} />)}
         </div>
 
@@ -244,7 +246,7 @@ export default function AboutUs() {
               Ready to Land Your Dream Job?
             </h2>
             <p className="text-blue-100 text-lg mb-8 max-w-xl mx-auto">
-              Join students across India who are using YuvaNaukri to build ATS-optimized resumes and find better opportunities.
+              Build an ATS-friendly resume, check it with AI, prepare for interviews and find better opportunities — all for free.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <button

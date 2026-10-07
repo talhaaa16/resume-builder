@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import {
   HelpCircle, ChevronDown, ChevronUp, Search, FileText,
-  Shield, Zap, Briefcase, CreditCard, User, ArrowRight,
+  Shield, Zap, Briefcase, CreditCard, User, ArrowRight, Bot,
 } from "lucide-react";
 
 // ─── FAQ Data ─────────────────────────────────────────────────────────────────
@@ -13,6 +13,8 @@ const CATEGORIES = [
   { id: "general",   label: "General",         icon: HelpCircle },
   { id: "resume",    label: "Resume Builder",   icon: FileText   },
   { id: "ats",       label: "ATS Checker",      icon: Shield     },
+  { id: "ai",        label: "AI Tools",         icon: Zap        },
+  { id: "assistant", label: "Yuva Assistant",   icon: Bot        },
   { id: "account",   label: "Account",          icon: User       },
   { id: "jobs",      label: "Jobs & Career",    icon: Briefcase  },
   { id: "billing",   label: "Pricing & Limits", icon: CreditCard },
@@ -23,34 +25,34 @@ const FAQS = [
   {
     cat: "general",
     q: "What is YuvaNaukri?",
-    a: "YuvaNaukri is a free, AI-powered career platform built for Indian students and freshers. It lets you build professional resumes, check ATS compatibility, find live job listings, and get career guidance — all in one place.",
+    a: "YuvaNaukri is a free, AI-powered career platform built for Indian students and freshers. It lets you build professional resumes, check ATS compatibility, prepare for interviews, optimize your LinkedIn About section, find live job listings, chat with Yuva Assistant, and get career guidance — all in one place.",
   },
   {
     cat: "general",
     q: "Is YuvaNaukri completely free to use?",
-    a: "Yes! The core features — resume builder, PDF export, job board, and career guidance — are 100% free. Some AI-powered features have daily usage limits to keep the platform sustainable.",
+    a: "Yes! YuvaNaukri is free to use — there are no paid plans. AI-powered features have usage limits (mostly daily) to keep the platform available for everyone.",
   },
   {
     cat: "general",
     q: "Do I need to create an account to use the platform?",
-    a: "You can browse the platform without an account, but you'll need to sign up (free) to save resumes, use the AI features, and access the ATS Checker.",
+    a: "You can browse the platform without an account, but you'll need to sign up (free) to save resumes, use the AI tools (ATS Checker, Interview Prep, LinkedIn Optimizer, AI Job Match, Yuva Assistant) and access your Dashboard.",
   },
   {
     cat: "general",
     q: "Is my data safe on YuvaNaukri?",
-    a: "Absolutely. Your resume data is stored securely in an encrypted MongoDB database. We never sell your personal data or share it with third parties without your consent. You can delete your resumes at any time.",
+    a: "We take protecting your data seriously. Passwords are hashed (never stored in plain text) and your data is stored securely. We never sell your personal data. When you use an AI feature, the relevant content — for example your resume text, a job description, your LinkedIn About text or a chat message — is sent to Google Gemini for processing. You can delete your resumes and chat conversations at any time. See our Privacy Policy for full details.",
   },
   {
     cat: "general",
     q: "Which technology powers YuvaNaukri's AI features?",
-    a: "YuvaNaukri uses Google Gemini 2.5 Flash — one of the most advanced AI models available — for both the AI Content Improve feature and the full ATS resume analysis.",
+    a: "All AI features on YuvaNaukri are powered by Google Gemini:\n• AI Content Improve\n• ATS Checker\n• Interview Prep\n• LinkedIn About Optimizer\n• AI Job Match\n• Yuva Assistant (AI chatbot)",
   },
 
   // ── Resume Builder ──
   {
     cat: "resume",
     q: "How many resume templates are available?",
-    a: "We currently offer 4 premium ATS-friendly templates: Professional (classic corporate), Modern (two-column dark sidebar), Creative Top (centered avatar banner), and Creative Split (high-contrast with skill progress bars). More templates are coming soon.",
+    a: "We offer 4 ATS-friendly templates: Professional (classic corporate), Modern (two-column dark sidebar), Creative Top (centered avatar banner), and Creative Split (high-contrast with skill progress bars).",
   },
   {
     cat: "resume",
@@ -65,34 +67,39 @@ const FAQS = [
   {
     cat: "resume",
     q: "Can I save multiple versions of my resume?",
-    a: "Yes! You can save as many resumes as you like. Access all your saved resumes from the Navbar by clicking your profile avatar → 'My Resumes'.",
+    a: "Yes! You can save as many resumes as you like, and each resume has its own version history. Save a snapshot of the current version at any time, then restore or delete snapshots later. Open a resume's version history from your Dashboard.",
   },
   {
     cat: "resume",
     q: "What does the AI Content Improve feature do?",
-    a: "The AI improve button (✨) appears next to text fields like your job descriptions and summary. It uses Gemini AI to rewrite your content with stronger action verbs, better structure, and more professional tone. You get 3 free AI improvements per account.",
+    a: "The AI improve button (✨) appears next to text fields like your job descriptions and summary. It uses Google Gemini to rewrite your content with stronger action verbs, better structure, and a more professional tone. You get 3 AI improvements per account in total — this is a lifetime limit and does not reset.",
   },
   {
     cat: "resume",
     q: "Can I change the color theme of my resume?",
     a: "Yes! Each template supports a live color picker that lets you customize the accent color in real time. Pick any color that fits your personal brand.",
   },
+  {
+    cat: "resume",
+    q: "How do public share links work? Who can see my resume?",
+    a: "You can create a public share link for any saved resume from your Dashboard. Anyone with the link can view that resume without logging in, so only share it with people you trust. You can turn sharing off at any time to disable the link.",
+  },
 
   // ── ATS Checker ──
   {
     cat: "ats",
     q: "What is an ATS and why does it matter?",
-    a: "ATS stands for Applicant Tracking System — software used by companies to automatically filter resumes before a human ever reads them. Studies show 75% of resumes are rejected by ATS before reaching a recruiter. A high ATS score significantly improves your chances of getting an interview.",
+    a: "ATS stands for Applicant Tracking System — software many companies use to filter and rank resumes before a human reads them. A well-structured resume with relevant keywords improves your chances of getting through to a recruiter.",
   },
   {
     cat: "ats",
     q: "How does the ATS Checker work?",
-    a: "Upload your resume as a PDF. Our AI (Google Gemini) reads the actual PDF directly — including layout, fonts, and structure — and gives you a full score breakdown: Overall Score, ATS Compatibility, Content Quality, Formatting, section-by-section analysis, matched/missing keywords (if you provide a job description), and top 5 actionable suggestions.",
+    a: "Upload your resume as a PDF. Google Gemini reads the PDF — including layout and structure — and gives you a score breakdown: Overall Score, ATS Compatibility, Content Quality, Formatting, section-by-section analysis, matched/missing keywords (if you provide a job description), and top actionable suggestions. Your uploaded PDF is sent to Google Gemini for analysis and is not stored by us.",
   },
   {
     cat: "ats",
     q: "Why is there a 2 checks per day limit?",
-    a: "The ATS Checker uses Google Gemini AI, which has processing costs. The 2 daily limit keeps the tool free for everyone while ensuring fair access. Your limit resets automatically at midnight every day.",
+    a: "The ATS Checker uses Google Gemini AI, which has processing costs. The limit of 2 checks per day keeps the tool free for everyone while ensuring fair access. Your limit resets every day at 00:00 UTC (5:30 AM IST).",
   },
   {
     cat: "ats",
@@ -105,51 +112,110 @@ const FAQS = [
     a: "Currently, only PDF files are supported (max 5MB). PDF is the standard format for ATS systems, so this ensures the most accurate analysis.",
   },
 
+  // ── AI Tools ──
+  {
+    cat: "ai",
+    q: "What is Interview Prep?",
+    a: "Interview Prep generates 10 tailored interview questions for the job role and experience level you enter, each with a model answer and tips. You can run 2 sessions per day, and your past sessions are saved so you can review them later.",
+  },
+  {
+    cat: "ai",
+    q: "What does the LinkedIn About Optimizer do?",
+    a: "Paste your current LinkedIn 'About' section and the optimizer rewrites it into a clearer, keyword-rich version using Google Gemini. You can use it 2 times per day.",
+  },
+  {
+    cat: "ai",
+    q: "What is AI Job Match?",
+    a: "On the Jobs page, click 'Check AI Match Score' on any listing to see how well your resume fits that job, along with a short recommendation. You can check up to 5 jobs per day.",
+  },
+  {
+    cat: "ai",
+    q: "Is AI-generated content always accurate?",
+    a: "No. AI suggestions can contain mistakes or generic wording. Always review and edit AI-generated text before using it in your resume, LinkedIn profile or interviews.",
+  },
+
+  // ── Yuva Assistant ──
+  {
+    cat: "assistant",
+    q: "What is Yuva Assistant?",
+    a: "Yuva Assistant is our AI chatbot, powered by Google Gemini. Open it with the floating button at the bottom-right of any page. It can answer questions about your profile and saved resumes, give resume, career and interview tips, and search live jobs for you. You need to be logged in to use it.",
+  },
+  {
+    cat: "assistant",
+    q: "Can Yuva Assistant find jobs for me?",
+    a: "Yes! Ask something like \"Find frontend developer jobs in Bengaluru\" and it searches live job listings and shows them as job cards right in the chat. Applying happens on the employer's or job board's website.",
+  },
+  {
+    cat: "assistant",
+    q: "Are my chats saved, and can I delete them?",
+    a: "Yes, your conversations are saved to our database so you can pick them up again from the chat history panel. You can delete any conversation from the history panel at any time. If you rate a reply with thumbs up or down, that feedback is saved too, to help us improve the assistant.",
+  },
+  {
+    cat: "assistant",
+    q: "How many messages can I send?",
+    a: "You can send up to 30 messages per day to Yuva Assistant. The limit resets every day at 00:00 UTC (5:30 AM IST).",
+  },
+
   // ── Account ──
   {
     cat: "account",
     q: "How do I sign up?",
-    a: "Click 'Get Started' on the homepage or go to /signup. You only need your name, email, and a password (min. 6 characters with letters and numbers). No credit card required.",
+    a: "Click 'Get Started' on the homepage or go to /signup. Sign up with your name, email, and a password (min. 6 characters with letters and numbers), or simply click 'Continue with LinkedIn'. No credit card required.",
+  },
+  {
+    cat: "account",
+    q: "Can I sign in with LinkedIn?",
+    a: "Yes. Use 'Continue with LinkedIn' on the login or sign-up page. When you sign in with LinkedIn, we receive your name, email address and profile photo from LinkedIn. If you already have an account with email and password, you can link your LinkedIn account from your Dashboard.",
   },
   {
     cat: "account",
     q: "Can I change my profile picture?",
-    a: "Yes! Click your avatar in the Navbar → 'My Account' → tap the profile image to upload a new one. Images are compressed automatically and stored securely.",
+    a: "Yes! Click your avatar in the Navbar → 'My Account' → tap the profile image to upload a new one (max 5MB). Images are compressed automatically and stored with your account. You can also change your username and email there.",
   },
   {
     cat: "account",
     q: "How do I change my password?",
-    a: "Go to Navbar → Your profile avatar → 'My Account' → 'Change Password'. You'll need to enter your current password and a new one that meets the security policy.",
+    a: "Go to Navbar → Your profile avatar → 'My Account' → 'Change Password'. Enter your current password and a new one. Use a strong password with letters and numbers.",
   },
   {
     cat: "account",
     q: "How do I delete a resume?",
     a: "Open 'My Resumes' from the Navbar, find the resume you want to delete, and click the trash icon. Deletion is permanent.",
   },
+  {
+    cat: "account",
+    q: "Why was I logged out?",
+    a: "Login sessions last up to 7 days. In addition, for security, all users are automatically logged out every Monday (a weekly session reset). Just log in again — your resumes and data are not affected.",
+  },
+  {
+    cat: "account",
+    q: "How do I delete my account?",
+    a: "There is no self-service account deletion in the app. To delete your account and its data, email support@yuvanaukri.org and we'll handle your request. You can delete individual resumes and Yuva Assistant conversations yourself at any time.",
+  },
 
   // ── Jobs & Career ──
   {
     cat: "jobs",
     q: "Where do the job listings come from?",
-    a: "Job listings are powered by the Adzuna API, which aggregates jobs from thousands of Indian companies and job boards in real time.",
+    a: "Job listings are powered by the Adzuna API, which aggregates live listings from many companies and job boards. YuvaNaukri does not verify employers, so always review a listing carefully before applying.",
   },
   {
     cat: "jobs",
     q: "How do I search for jobs?",
-    a: "Go to the Jobs page, enter a keyword (e.g. 'Python Developer'), choose a location and category, then click the Search button. The API is only called when you actively search — this keeps results relevant and avoids unnecessary calls.",
+    a: "Go to the Jobs page, enter a keyword (e.g. 'Python Developer'), choose a location and category, then click the Search button. Use 'Check AI Match Score' on a listing to see how well your resume fits it. You can also ask Yuva Assistant to find jobs for you, or check the 'For You' job feed on your Dashboard, which is based on your latest resume.",
   },
   {
     cat: "jobs",
-    q: "Can I save or apply for jobs on YuvaNaukri?",
-    a: "Currently, clicking 'Apply Now' redirects you to the original job posting on the employer's site. A saved jobs / application tracker feature is planned for a future update.",
+    q: "Can I apply for jobs on YuvaNaukri?",
+    a: "Applications happen on the employer's or job board's website, not inside YuvaNaukri. Clicking 'Apply Now' takes you to the original job posting, where you complete your application.",
   },
   {
     cat: "jobs",
     q: "What is the Career Guidance section?",
-    a: "Career Guidance offers curated career path recommendations, skill roadmaps, and industry insights tailored for Indian students and freshers entering the job market.",
+    a: "Career Guidance has a short quiz that suggests a career path based on your answers, plus step-by-step roadmaps and key skills for popular career paths. Salary and growth figures shown there are indicative estimates.",
   },
 
-  // ── Billing & Limits ──
+  // ── Pricing & Limits ──
   {
     cat: "billing",
     q: "How many resumes can I create?",
@@ -158,17 +224,17 @@ const FAQS = [
   {
     cat: "billing",
     q: "What are the AI usage limits?",
-    a: "• AI Content Improve: 3 uses per account (lifetime) — use them wisely!\n• ATS Checker: 2 full analyses per day, resets at midnight.\n• More usage may be available in future plans.",
+    a: "• AI Content Improve: 3 uses per account (lifetime — does not reset)\n• ATS Checker: 2 analyses per day\n• Interview Prep: 2 sessions per day\n• LinkedIn About Optimizer: 2 per day\n• AI Job Match: 5 checks per day\n• Yuva Assistant: 30 messages per day\nDaily limits reset every day at 00:00 UTC (5:30 AM IST).",
   },
   {
     cat: "billing",
     q: "Will YuvaNaukri always be free?",
-    a: "The core features (resume builder, PDF export, job board) will always be free. Premium AI features may move to optional paid tiers in the future, but existing free limits will be maintained.",
+    a: "YuvaNaukri is free to use and there are no paid plans. Usage limits on AI features keep the service available for everyone; these limits may be adjusted over time.",
   },
   {
     cat: "billing",
     q: "Is there a mobile app?",
-    a: "Not yet — YuvaNaukri is a fully responsive web app that works great on mobile browsers. A native app may come in the future based on user demand.",
+    a: "There is no native app. YuvaNaukri is a fully responsive web app that works great on mobile browsers.",
   },
 ];
 
@@ -215,7 +281,7 @@ export default function FAQ() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filtered = FAQS.filter((faq) => {
-    const matchesCat = activeCategory === "all" || faq.cat === activeCategory;
+    const matchesCat = faq.cat === activeCategory;
     const matchesSearch =
       searchQuery.trim() === "" ||
       faq.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -323,7 +389,7 @@ export default function FAQ() {
             </div>
             <h2 className="text-2xl md:text-3xl font-black text-white mb-3">Still have questions?</h2>
             <p className="text-blue-100 mb-7 max-w-md mx-auto">
-              Can't find what you're looking for? Send us a message and we'll get back to you within 24 hours.
+              Can't find what you're looking for? Send us a message and we'll get back to you as soon as possible.
             </p>
             <button
               onClick={() => navigate("/contact")}

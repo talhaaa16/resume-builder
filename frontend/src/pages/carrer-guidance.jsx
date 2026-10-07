@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import {
   Brain, Palette, BarChart, BadgeDollarSign, PenTool, Code,
-  Sparkles, Award, ArrowRight, BookOpen, Compass, ChevronRight, X, Loader2
+  Sparkles, ArrowRight, BookOpen, Compass, ChevronRight, X, Loader2,
+  Target, Mic, Bot
 } from "lucide-react";
 import { useToast } from "../context/ToastContext";
+import { openChatbot } from "../components/chatbot/chatEvents";
 
 const CareerGuidance = () => {
   const { showToast } = useToast();
@@ -163,7 +166,7 @@ const CareerGuidance = () => {
       setQuizResult(recommended);
       setIsAnalyzing(false);
       setQuizStep(4);
-      showToast("✨ AI Career Recommendation generated!");
+      showToast("Career recommendation ready!");
     }, 1800);
   };
 
@@ -217,14 +220,14 @@ const CareerGuidance = () => {
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-6 text-[#00A86B]">
                 <Sparkles className="w-5 h-5" />
-                <span className="text-sm font-black tracking-widest uppercase">Smart Assistant</span>
+                <span className="text-sm font-black tracking-widest uppercase">Career Quiz</span>
               </div>
 
               {quizStep === 0 && (
                 <div>
                   <h2 className="text-3xl font-extrabold mb-4 leading-tight">Not sure where to begin?</h2>
                   <p className="text-slate-400 mb-8 text-base leading-relaxed">
-                    Take our 45-second Interactive Career Assessment. Our advisor tool will analyze your primary interests, ideal working environment, and educational style to output the perfect career roadmap recommendation.
+                    Take our 45-second Interactive Career Assessment. Answer three quick questions about your interests, ideal working environment, and preferred study path, and we'll suggest a career path with a step-by-step roadmap to explore.
                   </p>
                   <button
                     onClick={() => setQuizStep(1)}
@@ -305,7 +308,7 @@ const CareerGuidance = () => {
                       className="bg-[#00A86B] hover:bg-emerald-600 disabled:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold transition flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
                     >
                       {isAnalyzing ? (
-                        <>Analyzing Profile... <Loader2 className="w-5 h-5 animate-spin" /></>
+                        <>Finding your path... <Loader2 className="w-5 h-5 animate-spin" /></>
                       ) : (
                         <>Generate Recommendation <Sparkles className="w-5 h-5" /></>
                       )}
@@ -318,7 +321,7 @@ const CareerGuidance = () => {
               {quizStep === 4 && quizResult && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                   <h3 className="text-2xl font-bold mb-2">🎉 Recommended Career Path</h3>
-                  <p className="text-slate-400 mb-8 text-sm">Based on your interests, we found the perfect professional match!</p>
+                  <p className="text-slate-400 mb-8 text-sm">Based on your answers, here's a career path worth exploring.</p>
 
                   <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="flex items-center gap-4">
@@ -328,6 +331,7 @@ const CareerGuidance = () => {
                       <div>
                         <h4 className="text-xl font-extrabold mb-1">{quizResult.title}</h4>
                         <p className="text-[#00A86B] text-sm font-bold">{quizResult.growth} • {quizResult.salary}</p>
+                        <p className="text-slate-500 text-[11px] font-medium mt-1">Figures are indicative estimates.</p>
                       </div>
                     </div>
                     <button
@@ -355,6 +359,7 @@ const CareerGuidance = () => {
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Popular Career Paths</h2>
             <p className="text-slate-500 font-medium">Explore high-demand career sectors and get detailed roadmap steps.</p>
+            <p className="text-slate-400 text-xs font-medium mt-2">Salary and growth figures are indicative estimates and vary by city, company and experience.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -416,26 +421,63 @@ const CareerGuidance = () => {
                 Skill Up Today
               </span>
               <h2 className="text-3xl font-extrabold text-slate-900 mb-4 leading-tight">
-                Unlock Free Professional Career Learning Resources
+                Take the Next Step on Your Career Path
               </h2>
               <p className="text-slate-500 font-medium leading-relaxed">
-                Take the next professional step. Use our industry resume builder tools to format, customize layout components, and apply directly to matching company listings.
+                Turn your roadmap into action. Build a resume for your chosen path, then search live job listings and apply on the employer's site.
               </p>
             </div>
             <div className="flex flex-wrap gap-4 shrink-0">
-              <a
-                href="/resume-builder"
+              <Link
+                to="/resume-builder"
                 className="bg-[#0076BC] hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold transition shadow-lg shadow-blue-500/20 text-sm"
               >
                 Launch Resume Builder
-              </a>
-              <a
-                href="/jobs"
+              </Link>
+              <Link
+                to="/jobs"
                 className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-xl font-bold transition text-sm"
               >
                 Search Current Jobs
-              </a>
+              </Link>
             </div>
+          </div>
+
+          {/* Next Steps */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-10 pt-8 border-t border-slate-100">
+            <Link
+              to="/ats-checker"
+              className="bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-2xl p-5 transition group"
+            >
+              <Target className="w-6 h-6 text-[#00A86B] mb-3" />
+              <h4 className="font-bold text-slate-800 text-sm mb-1 flex items-center gap-1">ATS Checker <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" /></h4>
+              <p className="text-xs text-slate-500 font-medium">Score your resume and get AI feedback.</p>
+            </Link>
+            <Link
+              to="/interview-prep"
+              className="bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-2xl p-5 transition group"
+            >
+              <Mic className="w-6 h-6 text-[#0076BC] mb-3" />
+              <h4 className="font-bold text-slate-800 text-sm mb-1 flex items-center gap-1">Interview Prep <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" /></h4>
+              <p className="text-xs text-slate-500 font-medium">Practise 10 tailored questions for your role.</p>
+            </Link>
+            <Link
+              to="/linkedin-optimizer"
+              className="bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-2xl p-5 transition group"
+            >
+              <Sparkles className="w-6 h-6 text-violet-600 mb-3" />
+              <h4 className="font-bold text-slate-800 text-sm mb-1 flex items-center gap-1">LinkedIn Optimizer <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" /></h4>
+              <p className="text-xs text-slate-500 font-medium">Polish your LinkedIn About section.</p>
+            </Link>
+            <button
+              type="button"
+              onClick={() => openChatbot("Suggest a career path based on my resume")}
+              className="text-left bg-slate-50 hover:bg-slate-100 border border-slate-100 rounded-2xl p-5 transition group cursor-pointer"
+            >
+              <Bot className="w-6 h-6 text-amber-600 mb-3" />
+              <h4 className="font-bold text-slate-800 text-sm mb-1 flex items-center gap-1">Ask Yuva Assistant <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" /></h4>
+              <p className="text-xs text-slate-500 font-medium">Get a career path suggestion based on your resume.</p>
+            </button>
           </div>
         </section>
 
@@ -469,7 +511,7 @@ const CareerGuidance = () => {
                     Roadmap Guidelines
                   </span>
                   <h3 className="text-2xl font-black">{activeRoadmap.title}</h3>
-                  <p className="text-white/80 text-xs font-semibold mt-1">Average Entry Range: {activeRoadmap.salary}</p>
+                  <p className="text-white/80 text-xs font-semibold mt-1">Indicative Salary Range: {activeRoadmap.salary}</p>
                 </div>
                 <button
                   onClick={() => setActiveRoadmap(null)}
@@ -512,10 +554,7 @@ const CareerGuidance = () => {
                     </div>
                   </div>
                   <button
-                    onClick={() => {
-                      setActiveRoadmap(null);
-                      showToast("Roadmap applied! Ready to format layout.");
-                    }}
+                    onClick={() => setActiveRoadmap(null)}
                     className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-bold text-xs transition"
                   >
                     Close Roadmap

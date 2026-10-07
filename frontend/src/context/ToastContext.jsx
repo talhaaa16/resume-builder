@@ -4,11 +4,13 @@ import { FaCheckCircle, FaExclamationCircle, FaInfoCircle, FaTimes } from 'react
 
 const ToastContext = createContext();
 
+let nextToastId = 0;
+
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
   const showToast = useCallback((message, type = 'success') => {
-    const id = Date.now();
+    const id = ++nextToastId;
     setToasts((prev) => [...prev, { id, message, type }]);
 
     setTimeout(() => {
@@ -32,7 +34,7 @@ export const ToastProvider = ({ children }) => {
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.2 } }}
               className={`
-                pointer-events-auto
+                pointer-events-auto relative overflow-hidden
                 flex items-center gap-3 px-5 py-4 rounded-2xl shadow-2xl min-w-[300px]
                 backdrop-blur-md border border-white/20
                 ${toast.type === 'success' ? 'bg-gradient-to-r from-emerald-500/90 to-teal-600/90 text-white' : ''}

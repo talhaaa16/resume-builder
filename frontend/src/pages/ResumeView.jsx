@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
-  Loader2, AlertCircle, FileText, ArrowLeft, Download, ExternalLink,
+  Loader2, AlertCircle, FileText, ArrowLeft, ExternalLink,
 } from "lucide-react";
 import ProfessionalTemplate from "../components/templates/ProfessionalTemplate";
 import ModernTemplate from "../components/templates/ModernTemplate";

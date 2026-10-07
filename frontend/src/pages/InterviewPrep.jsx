@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useToast } from "../context/ToastContext";
 import {
   Sparkles, ChevronDown, ChevronUp, Copy, Check,
-  Briefcase, Brain, Heart, Users, HelpCircle,
+  Briefcase, Brain, Heart, Users,
   BookOpen, Lightbulb, Search, ArrowRight, RefreshCw,
   Star, MessageSquare, Target, History, Clock,
 } from "lucide-react";
@@ -33,8 +34,13 @@ const POPULAR_ROLES = [
   "UI/UX Designer", "DevOps Engineer", "Business Analyst", "Marketing Executive",
 ];
 
-function QuestionCard({ q, index }) {
-  const [open, setOpen] = useState(false);
+function QuestionCard({ q, index, forceOpen = false }) {
+  const [open, setOpen] = useState(forceOpen);
+
+  // "Expand All" / "Collapse All" overrides every card; each card can still be toggled on its own.
+  useEffect(() => {
+    setOpen(forceOpen);
+  }, [forceOpen]);
   const [copied, setCopied] = useState(false);
   const cfg = CATEGORY_CONFIG[q.category] || CATEGORY_CONFIG["HR"];
   const Icon = cfg.icon;
@@ -107,16 +113,18 @@ function QuestionCard({ q, index }) {
 
 export default function InterviewPrep() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [jobRole, setJobRole] = useState("");
   const [experienceLevel, setExperienceLevel] = useState("fresher");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
   const [openAll, setOpenAll] = useState(false);
-  const [usesLeft, setUsesLeft] = useState(2);
+  // Unknown until the API tells us (there's no endpoint to fetch it on page load).
+  const [usesLeft, setUsesLeft] = useState(null);
   const [history, setHistory] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       axios.get(`${API}/api/ai/my-interview-preps`, {
@@ -131,7 +139,11 @@ export default function InterviewPrep() {
     const trimmedRole = role.trim();
     if (!trimmedRole) { setError("Please enter a job role."); return; }
     const token = localStorage.getItem("token");
-    if (!token) { navigate("/login"); return; }
+    if (!token) {
+      showToast("Please login to use Interview Prep.", "info");
+      navigate("/login");
+      return;
+    }
 
     setLoading(true);
     setError("");
@@ -169,6 +181,8 @@ export default function InterviewPrep() {
       setLoading(false);
     }
   };
+
+  const limitReached = usesLeft !== null && usesLeft <= 0;
 
   const categoryCount = result
     ? Object.entries(
@@ -262,9 +276,11 @@ export default function InterviewPrep() {
             {/* Daily usage indicator */}
             <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
               <span>Daily limit: 2 generations (includes regenerate)</span>
-              <span className={`font-bold ${usesLeft === 0 ? "text-red-500" : "text-emerald-600"}`}>
-                {usesLeft} use{usesLeft !== 1 ? "s" : ""} left today
-              </span>
+              {usesLeft !== null && (
+                <span className={`font-bold ${usesLeft === 0 ? "text-red-500" : "text-emerald-600"}`}>
+                  {usesLeft} use{usesLeft !== 1 ? "s" : ""} left today
+                </span>
+              )}
             </div>
 
             {error && (
@@ -275,12 +291,12 @@ export default function InterviewPrep() {
 
             <button
               onClick={() => handleGenerate()}
-              disabled={loading || usesLeft <= 0}
+              disabled={loading || limitReached}
               className="w-full py-3.5 bg-gradient-to-r from-[#0076BC] to-[#005a8e] text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
             >
               {loading
                 ? <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> Generating with AI…</>
-                : usesLeft <= 0
+                : limitReached
                 ? <>Limit Reached — Come Back Tomorrow</>
                 : <><Sparkles className="w-4 h-4" /> Generate 10 Questions</>
               }
@@ -316,11 +332,11 @@ export default function InterviewPrep() {
                 </button>
                 <button
                   onClick={() => handleGenerate()}
-                  disabled={loading || usesLeft <= 0}
-                  title={usesLeft <= 0 ? "Daily limit reached" : "Generate new questions"}
+                  disabled={loading || limitReached}
+                  title={limitReached ? "Daily limit reached" : "Generate new questions"}
                   className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 bg-[#0076BC] text-white rounded-xl hover:opacity-90 transition disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <RefreshCw className="w-3.5 h-3.5" /> Regenerate {usesLeft <= 0 ? "(Limit Reached)" : `(${usesLeft} left)`}
+                  <RefreshCw className="w-3.5 h-3.5" /> Regenerate {limitReached ? "(Limit Reached)" : usesLeft !== null ? `(${usesLeft} left)` : ""}
                 </button>
               </div>
             </div>

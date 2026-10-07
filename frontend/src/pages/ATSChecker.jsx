@@ -281,7 +281,7 @@ export default function ATSChecker() {
             <div>
               <p className="font-bold text-amber-800 text-base">Daily Limit Reached</p>
               <p className="text-amber-700 text-sm mt-1">
-                You've used all <strong>2 free ATS analyses</strong> for today. Your limit will reset automatically at midnight.
+                You've used all <strong>2 free ATS analyses</strong> for today. Your limit resets daily at 5:30 AM IST.
                 Come back tomorrow for more! 🚀
               </p>
             </div>

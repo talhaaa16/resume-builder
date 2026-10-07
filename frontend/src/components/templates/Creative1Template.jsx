@@ -1,5 +1,5 @@
 import React from "react";
-import { FaFacebook, FaTwitter, FaLinkedin, FaGithub, FaExternalLinkAlt } from "react-icons/fa";
+import { FaLinkedin, FaGithub, FaExternalLinkAlt } from "react-icons/fa";
 
 export default function Creative1Template({ form, resumeRef }) {
   const themeColor = form.themeColor || "#FFB000";
@@ -9,7 +9,6 @@ export default function Creative1Template({ form, resumeRef }) {
   const projects      = form.projects      || [];
   const education     = form.education     || [];
   const experience    = form.experience    || [];
-  const languages     = form.languages     || [];
   const certifications = form.certifications || [];
   const interests     = form.interests     || [];
   const personalInfo  = form.personalInfo  || {};

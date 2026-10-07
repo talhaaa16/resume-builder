@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Sparkles, Copy, Check, Edit2 } from "lucide-react";
+import { useToast } from "../context/ToastContext";
+import { Sparkles, Copy, Check } from "lucide-react";
 
 const API = process.env.REACT_APP_API_URL || "";
 
 export default function LinkedInOptimizer() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [aboutText, setAboutText] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [optimized, setOptimized] = useState("");
-  const [usesLeft, setUsesLeft] = useState(2);
+  // Unknown until the API tells us (there's no endpoint to fetch it on page load).
+  const [usesLeft, setUsesLeft] = useState(null);
+  const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    // no-op for now; could fetch usage/history later
-  }, []);
+  const limitReached = usesLeft !== null && usesLeft <= 0;
 
   const handleSubmit = async () => {
     setError("");
@@ -27,7 +29,11 @@ export default function LinkedInOptimizer() {
     }
 
     const token = localStorage.getItem("token");
-    if (!token) { navigate("/login"); return; }
+    if (!token) {
+      showToast("Please login to use the LinkedIn Optimizer.", "info");
+      navigate("/login");
+      return;
+    }
 
     setLoading(true);
     setOptimized("");
@@ -60,6 +66,8 @@ export default function LinkedInOptimizer() {
   const handleCopy = () => {
     if (!optimized) return;
     navigator.clipboard.writeText(optimized);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -92,7 +100,9 @@ export default function LinkedInOptimizer() {
 
             <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
               <span>Daily limit: 2 optimizations</span>
-              <span className={`font-bold ${usesLeft === 0 ? "text-red-500" : "text-emerald-600"}`}>{usesLeft} use{usesLeft !== 1 ? "s" : ""} left today</span>
+              {usesLeft !== null && (
+                <span className={`font-bold ${usesLeft === 0 ? "text-red-500" : "text-emerald-600"}`}>{usesLeft} use{usesLeft !== 1 ? "s" : ""} left today</span>
+              )}
             </div>
 
             {error && <div className="border text-sm px-4 py-3 rounded-xl font-medium bg-red-50 border-red-200 text-red-700">{error}</div>}
@@ -100,7 +110,7 @@ export default function LinkedInOptimizer() {
             <div className="flex gap-3">
               <button
                 onClick={handleSubmit}
-                disabled={loading || usesLeft <= 0}
+                disabled={loading || limitReached}
                 className="flex-1 py-3.5 bg-gradient-to-r from-[#0076BC] to-[#005a8e] text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Sparkles className="w-4 h-4" />} {loading ? "Optimizing…" : "Optimize"}
@@ -117,10 +127,14 @@ export default function LinkedInOptimizer() {
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
             <div className="flex items-start justify-between mb-3">
               <h3 className="font-black text-slate-800">Optimized About</h3>
-              <div className="flex items-center gap-2">
-                <button onClick={handleCopy} className="text-xs px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition">{/**/}Copy</button>
-                <button onClick={() => { navigator.clipboard.writeText(optimized); }} className="text-xs px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition">Copy</button>
-              </div>
+              <button
+                onClick={handleCopy}
+                className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition ${
+                  copied ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                {copied ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
+              </button>
             </div>
 
             <pre className="whitespace-pre-wrap text-sm text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-100">{optimized}</pre>

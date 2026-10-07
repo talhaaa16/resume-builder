@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaArrowLeft, FaArrowRight, FaSave, FaPlus, FaTrash, FaDownload, FaUser, FaGraduationCap, FaBriefcase, FaCode, FaProjectDiagram, FaMagic, FaGripVertical, FaShare, FaCopy, FaCheck } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaSave, FaPlus, FaTrash, FaDownload, FaUser, FaMagic, FaGripVertical, FaShare, FaCopy, FaCheck } from "react-icons/fa";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ProfessionalTemplate from "../components/templates/ProfessionalTemplate";
@@ -39,8 +39,25 @@ const MOCK_DATA = {
   languages: ["English", "Spanish"]
 };
 
+// Empty shapes used to fill in any fields missing from a loaded resume.
+const EMPTY_EDUCATION = { school: "", degree: "", startDate: "", endDate: "", description: "" };
+const EMPTY_EXPERIENCE = { company: "", role: "", startDate: "", endDate: "", description: "" };
+const EMPTY_PROJECT = { title: "", link: "", description: "" };
+const EMPTY_CERTIFICATION = { title: "", issuer: "", date: "" };
+
+// Drops null/undefined values so they don't overwrite defaults (inputs need strings).
+const withoutNulls = (obj) =>
+  Object.fromEntries(Object.entries(obj || {}).filter(([, v]) => v !== null && v !== undefined));
+
+// Uses the loaded list when it has items, otherwise keeps the default list.
+// Object items are merged over `emptyItem` so every field is defined.
+const mergeList = (loaded, fallback, emptyItem) => {
+  if (!Array.isArray(loaded) || loaded.length === 0) return fallback;
+  if (!emptyItem) return loaded.map((item) => (item === null || item === undefined ? "" : item));
+  return loaded.map((item) => ({ ...emptyItem, ...withoutNulls(item) }));
+};
+
 export default function ResumeBuilder() {
-  const navigate = useNavigate();
   const location = useLocation();
   const { showToast } = useToast();
   const [step, setStep] = useState(0);
@@ -112,10 +129,23 @@ export default function ResumeBuilder() {
   useEffect(() => {
     if (location.state && location.state.resumeData) {
       const data = location.state.resumeData;
-      setForm({
-        ...data,
-        resumeId: data._id
-      });
+      // The passed resume may be partial (or contain nulls), so merge it over
+      // the default empty form to keep every field the templates use defined.
+      setForm(prev => ({
+        ...prev,
+        personalInfo: { ...prev.personalInfo, ...withoutNulls(data.personalInfo) },
+        education: mergeList(data.education, prev.education, EMPTY_EDUCATION),
+        experience: mergeList(data.experience, prev.experience, EMPTY_EXPERIENCE),
+        skills: mergeList(data.skills, prev.skills),
+        projects: mergeList(data.projects, prev.projects, EMPTY_PROJECT),
+        certifications: mergeList(data.certifications, prev.certifications, EMPTY_CERTIFICATION),
+        interests: mergeList(data.interests, prev.interests),
+        languages: mergeList(data.languages, prev.languages),
+        template: data.template || prev.template,
+        themeColor: data.themeColor || prev.themeColor,
+        fontFamily: data.fontFamily || prev.fontFamily,
+        resumeId: data._id || prev.resumeId
+      }));
       setStep(1);
     }
   }, [location]);
@@ -212,12 +242,17 @@ export default function ResumeBuilder() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.data.sts === 0) {
+        // Keep the saved id so later saves update this resume (instead of
+        // creating duplicates) and Share works straight away.
+        const savedId = res.data.resume?._id;
+        if (savedId) setForm(prev => ({ ...prev, resumeId: savedId }));
         showToast("Resume saved successfully!");
-        navigate("/");
+      } else {
+        showToast(res.data.msg || "Failed to save resume.", "error");
       }
     } catch (error) {
       console.error(error);
-      showToast("Failed to save resume. Please login again.", "error");
+      showToast(error.response?.data?.msg || "Failed to save resume. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -465,7 +500,7 @@ export default function ResumeBuilder() {
                       <div className="flex items-center gap-4 mb-4">
                         <div className="w-20 h-20 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center overflow-hidden bg-slate-50 relative group">
                           {form.personalInfo.profilePhoto ? (
-                            <img src={form.personalInfo.profilePhoto} className="w-full h-full object-cover" />
+                            <img src={form.personalInfo.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
                           ) : (
                             <FaUser className="text-slate-300 text-2xl" />
                           )}
@@ -520,7 +555,7 @@ export default function ResumeBuilder() {
                     <div className="space-y-6 animate-fadeIn">
                       <div className="flex justify-between items-center">
                         <h3 className="font-bold text-slate-700">Educational History</h3>
-                        <button onClick={() => addArrayItem("education", { school: "", degree: "", startDate: "", endDate: "" })} className="bg-[#00A86B] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+                        <button onClick={() => addArrayItem("education", { ...EMPTY_EDUCATION })} className="bg-[#00A86B] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
                           <FaPlus /> Add
                         </button>
                       </div>
@@ -546,6 +581,19 @@ export default function ResumeBuilder() {
                           <div className="pt-4">
                             <Input label="School/Univ" value={edu.school} onChange={(e) => handleArrayChange(index, "school", e.target.value, "education")} />
                             <Input label="Degree" value={edu.degree} onChange={(e) => handleArrayChange(index, "degree", e.target.value, "education")} />
+                            <div className="grid grid-cols-2 gap-2 mt-2">
+                              <Input label="Start" value={edu.startDate} onChange={(e) => handleArrayChange(index, "startDate", e.target.value, "education")} />
+                              <Input label="End" value={edu.endDate} onChange={(e) => handleArrayChange(index, "endDate", e.target.value, "education")} />
+                            </div>
+                            <div className="mt-4">
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Description</label>
+                              <textarea
+                                value={edu.description}
+                                onChange={(e) => handleArrayChange(index, "description", e.target.value, "education")}
+                                className="w-full p-3 bg-slate-50 border-b-2 border-transparent focus:border-[#0076BC] outline-none rounded-t-lg h-24 text-sm"
+                                placeholder="Grades, honours, relevant coursework..."
+                              />
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -556,7 +604,7 @@ export default function ResumeBuilder() {
                     <div className="space-y-6 animate-fadeIn">
                       <div className="flex justify-between items-center">
                         <h3 className="font-bold text-slate-700">Work Experience</h3>
-                        <button onClick={() => addArrayItem("experience", { company: "", role: "", startDate: "", endDate: "", description: "" })} className="bg-[#00A86B] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+                        <button onClick={() => addArrayItem("experience", { ...EMPTY_EXPERIENCE })} className="bg-[#00A86B] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
                           <FaPlus /> Add
                         </button>
                       </div>
@@ -647,7 +695,7 @@ export default function ResumeBuilder() {
                     <div className="space-y-6 animate-fadeIn">
                       <div className="flex justify-between items-center">
                         <h3 className="font-bold text-slate-700">Key Projects</h3>
-                        <button onClick={() => addArrayItem("projects", { title: "", link: "", description: "" })} className="bg-[#00A86B] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+                        <button onClick={() => addArrayItem("projects", { ...EMPTY_PROJECT })} className="bg-[#00A86B] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
                           <FaPlus /> Add
                         </button>
                       </div>
@@ -673,6 +721,15 @@ export default function ResumeBuilder() {
                           <div className="pt-4">
                             <Input label="Title" value={proj.title} onChange={(e) => handleArrayChange(index, "title", e.target.value, "projects")} />
                             <Input label="Link" value={proj.link} onChange={(e) => handleArrayChange(index, "link", e.target.value, "projects")} />
+                            <div className="mt-4">
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Description</label>
+                              <textarea
+                                value={proj.description}
+                                onChange={(e) => handleArrayChange(index, "description", e.target.value, "projects")}
+                                className="w-full p-3 bg-slate-50 border-b-2 border-transparent focus:border-[#0076BC] outline-none rounded-t-lg h-24 text-sm"
+                                placeholder="What did you build, and what was the impact?"
+                              />
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -684,7 +741,7 @@ export default function ResumeBuilder() {
                       <div className="space-y-4">
                         <div className="flex justify-between items-center">
                           <h3 className="font-bold text-slate-700">Certifications</h3>
-                          <button onClick={() => addArrayItem("certifications", { title: "", issuer: "", date: "" })} className="bg-[#00A86B] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+                          <button onClick={() => addArrayItem("certifications", { ...EMPTY_CERTIFICATION })} className="bg-[#00A86B] text-white px-3 py-1 rounded text-sm flex items-center gap-1">
                             <FaPlus /> Add
                           </button>
                         </div>

@@ -3,11 +3,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useToast } from "../context/ToastContext";
+import { clearSession } from "../utils/session";
 import {
   Search,
   MapPin,
   Building2,
-  Briefcase,
   BadgeDollarSign,
   ExternalLink,
   X,
@@ -17,31 +17,39 @@ import {
 } from "lucide-react";
 import axios from "axios";
 
-async function fetchJobsAdzuna(query = "", location = "") {
-  const APP_ID = process.env.REACT_APP_ADZUNA_ID;
-  const APP_KEY = process.env.REACT_APP_ADZUNA_KEY;
+const ADZUNA_APP_ID = process.env.REACT_APP_ADZUNA_ID;
+const ADZUNA_APP_KEY = process.env.REACT_APP_ADZUNA_KEY;
+const isAdzunaConfigured = Boolean(ADZUNA_APP_ID && ADZUNA_APP_KEY);
 
-  const url = `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=12&what=${encodeURIComponent(query)}&where=${encodeURIComponent(location)}`;
+// Max characters of the job description sent to the AI match endpoint.
+const MATCH_DESCRIPTION_LIMIT = 4000;
+const JOB_MATCH_DAILY_LIMIT = 5;
+
+async function fetchJobsAdzuna(query = "", location = "") {
+  const url = `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&results_per_page=12&what=${encodeURIComponent(query)}&where=${encodeURIComponent(location)}`;
 
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch jobs");
   const data = await res.json();
 
-  return data.results.map((job) => ({
-    id: job.id,
-    title: job.title,
-    company: job.company?.display_name || "Not disclosed",
-    location: job.location?.display_name || "Not specified",
-    contract: job.contract_time || null,
-    salary: job.salary_min
-      ? `₹${Math.round(job.salary_min).toLocaleString()} – ₹${Math.round(job.salary_max || job.salary_min).toLocaleString()}`
-      : null,
-    description: job.description
-      ? job.description.replace(/<[^>]+>/g, "").slice(0, 130) + "…"
-      : "",
-    applyUrl: job.redirect_url,
-    category: job.category?.label || "",
-  }));
+  return data.results.map((job) => {
+    const fullDescription = job.description ? job.description.replace(/<[^>]+>/g, "").trim() : "";
+    return {
+      id: job.id,
+      title: job.title,
+      company: job.company?.display_name || "Not disclosed",
+      location: job.location?.display_name || "Not specified",
+      contract: job.contract_time || null,
+      salary: job.salary_min
+        ? `₹${Math.round(job.salary_min).toLocaleString()} – ₹${Math.round(job.salary_max || job.salary_min).toLocaleString()}`
+        : null,
+      // Short version for the card; the full text is used for AI matching.
+      description: fullDescription ? fullDescription.slice(0, 130) + "…" : "",
+      fullDescription,
+      applyUrl: job.redirect_url,
+      category: job.category?.label || "",
+    };
+  });
 }
 
 function SkeletonCard() {
@@ -85,6 +93,7 @@ export default function Jobs() {
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [matchScores, setMatchScores] = useState({});
+  const [matchesLeft, setMatchesLeft] = useState(null);
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -102,6 +111,10 @@ export default function Jobs() {
   }, [searchParams]);
 
   const load = async (searchQ = q, searchLoc = loc) => {
+    if (!isAdzunaConfigured) {
+      showToast("Job search is not configured.", "error");
+      return;
+    }
     try {
       setLoading(true);
       setHasSearched(true);
@@ -118,9 +131,7 @@ export default function Jobs() {
   const handleCheckMatch = async (job) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      localStorage.removeItem("uname");
-      localStorage.removeItem("uemail");
-      localStorage.removeItem("uprofilepic");
+      clearSession();
       showToast("Please login to check AI Match Score.", "info");
       navigate("/login");
       return;
@@ -129,16 +140,21 @@ export default function Jobs() {
     try {
       const res = await axios.post(
         `${process.env.REACT_APP_API_URL || ""}/api/ai/job-match`,
-        { jobTitle: job.title, jobDescription: job.description || job.title },
+        {
+          jobTitle: job.title,
+          jobDescription: (job.fullDescription || job.description || job.title).slice(0, MATCH_DESCRIPTION_LIMIT),
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.data.sts === 0) {
         setMatchScores(prev => ({ ...prev, [job.id]: { loading: false, data: res.data.analysis } }));
+        if (typeof res.data.usesLeft === "number") setMatchesLeft(res.data.usesLeft);
       } else {
         showToast(res.data.msg, "error");
         setMatchScores(prev => ({ ...prev, [job.id]: { loading: false } }));
       }
     } catch (error) {
+      if (error.response?.status === 403) setMatchesLeft(0);
       showToast(error.response?.data?.msg || "Failed to calculate match score", "error");
       setMatchScores(prev => ({ ...prev, [job.id]: { loading: false } }));
     }
@@ -149,9 +165,7 @@ export default function Jobs() {
     if (token) {
       window.open(url, "_blank");
     } else {
-      localStorage.removeItem("uname");
-      localStorage.removeItem("uemail");
-      localStorage.removeItem("uprofilepic");
+      clearSession();
       showToast("Please login to apply for jobs.", "info");
       navigate("/login");
     }
@@ -244,11 +258,24 @@ export default function Jobs() {
         {/* Results header */}
         {(jobs.length > 0 || hasSearched) && !loading && (
           <div className="flex items-center justify-between mb-6">
-            <p className="text-slate-600 font-medium">
-              {jobs.length > 0
-                ? <><span className="text-slate-900 font-bold">{jobs.length}</span> jobs found{q ? ` for "${q}"` : ""}{loc ? ` in ${loc}` : ""}</>
-                : "No results found"}
-            </p>
+            <div>
+              <p className="text-slate-600 font-medium">
+                {jobs.length > 0
+                  ? <><span className="text-slate-900 font-bold">{jobs.length}</span> jobs found{q ? ` for "${q}"` : ""}{loc ? ` in ${loc}` : ""}</>
+                  : "No results found"}
+              </p>
+              {jobs.length > 0 && (
+                <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-orange-500" />
+                  AI Match Score: {JOB_MATCH_DAILY_LIMIT} per day
+                  {matchesLeft !== null && (
+                    <span className={`font-semibold ${matchesLeft === 0 ? "text-red-500" : "text-emerald-600"}`}>
+                      · {matchesLeft} AI match{matchesLeft !== 1 ? "es" : ""} left today
+                    </span>
+                  )}
+                </p>
+              )}
+            </div>
             {hasSearched && (
               <button
                 onClick={handleClear}

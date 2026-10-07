@@ -11,8 +11,15 @@ import {
   Info, 
   Check, 
   AlertOctagon,
-  ArrowRight
+  ArrowRight,
+  Bot,
+  Gauge,
+  Briefcase,
+  Link2,
+  AlertTriangle,
+  RefreshCw
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -38,32 +45,44 @@ const SECTIONS = [
     id: "service",
     title: "1. Description of Service",
     icon: Sparkles,
-    tldr: "We provide resume building, job searching, and career guidance tools to help Indian youth.",
-    searchText: "description service platform resume builder job listings career guidance viksit bharat sdg",
+    tldr: "A free platform with a resume builder, AI career tools, Yuva Assistant, live job listings from third parties, and career guidance.",
+    searchText: "description service platform resume builder templates pdf version history share links ai tools ats checker interview prep linkedin optimizer job match yuva assistant chatbot job listings career guidance viksit bharat sdg",
     content: (
       <div className="space-y-4">
         <p>
-          YuvaNaukri provides an online platform that empowers users to create professional resumes, explore entry-level job listings, and receive tailored career guidance. These services are provided "as is" and "as available" to support educational, skill-building, and career advancement initiatives.
+          YuvaNaukri is a free online career platform for students and freshers. The Service includes:
+        </p>
+        <ul className="list-disc pl-6 space-y-2">
+          <li>A Resume Builder with 4 templates, live preview, theme colors, PDF export, version history and optional public share links.</li>
+          <li>AI tools powered by Google Gemini: AI Content Improve, ATS Checker, Interview Prep, LinkedIn About Optimizer and AI Job Match.</li>
+          <li>Yuva Assistant, an AI chatbot that answers career questions and can search live job listings.</li>
+          <li>Live job listings provided by a third party (Adzuna), a personal Dashboard, and Career Guidance roadmaps.</li>
+        </ul>
+        <p>
+          YuvaNaukri does not submit job applications for you. When you apply for a job, you do so on the employer's or job board's own website.
         </p>
         <p>
-          We continuously update and enhance our features. We reserve the right to modify, suspend, or discontinue any aspect of the service at any time without prior notice or liability.
+          These services are provided "as is" and "as available" to support educational, skill-building, and career advancement initiatives. We continuously update and enhance our features, and we reserve the right to modify, suspend, or discontinue any aspect of the service at any time without prior notice or liability.
         </p>
       </div>
     )
   },
   {
     id: "accounts",
-    title: "2. User Accounts",
+    title: "2. Accounts & Sessions",
     icon: ShieldCheck,
-    tldr: "You need an account for features like the Resume Builder. Keep your login secure. You're responsible for your account's activity.",
-    searchText: "user accounts profile resume builder credentials password register login secure confidentiality",
+    tldr: "You need an account for most features. Keep your login secure. Sessions last up to 7 days and everyone is logged out every Monday.",
+    searchText: "user accounts sessions profile resume builder credentials password register login linkedin secure confidentiality logout monday weekly 7 days",
     content: (
       <div className="space-y-4">
         <p>
-          To use certain features like the Resume Builder and apply for jobs, you must create a user account. You must provide accurate, current, and complete information during registration.
+          To use features like saving resumes, the AI tools and Yuva Assistant, you must create an account — either with your email and a password, or with "Continue with LinkedIn". You must provide accurate, current, and complete information.
         </p>
         <p>
-          You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You must notify us immediately at <span className="font-semibold text-slate-800">support@yuvanaukri.org</span> if you suspect any unauthorized access or breach of security.
+          You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You must notify us immediately at <a href="mailto:support@yuvanaukri.org" className="font-semibold text-slate-800 hover:underline">support@yuvanaukri.org</a> if you suspect any unauthorized access or breach of security.
+        </p>
+        <p>
+          Login sessions last up to 7 days. For security, all users are automatically logged out every Monday (a weekly session reset), after which you simply log in again.
         </p>
       </div>
     )
@@ -77,7 +96,7 @@ const SECTIONS = [
     content: (
       <div className="space-y-4">
         <p>
-          When you create a resume or post content on our platform, you retain all rights to your data. However, you grant YuvaNaukri the non-exclusive, worldwide, royalty-free license to store, process, and host your content to provide the services.
+          When you create a resume or post content on our platform, you retain all rights to your data. However, you grant YuvaNaukri the non-exclusive, worldwide, royalty-free license to store, process, and host your content to provide the services, including sending relevant content to our AI provider (Google Gemini) when you use an AI feature.
         </p>
         <p>
           You represent and warrant that you own or have the necessary rights to use all information in your resumes and submissions, and that sharing it does not violate any third-party rights.
@@ -86,8 +105,82 @@ const SECTIONS = [
     )
   },
   {
+    id: "ai-content",
+    title: "4. AI-Generated Content",
+    icon: Bot,
+    tldr: "AI output can be wrong. Always review it before using it. It is not professional, legal or career advice.",
+    searchText: "ai generated content gemini accuracy disclaimer review advice suggestions chatbot yuva assistant ats score",
+    content: (
+      <div className="space-y-4">
+        <p>
+          Our AI features (including AI Content Improve, ATS scores and feedback, Interview Prep answers, LinkedIn suggestions, AI Job Match scores and Yuva Assistant replies) are generated automatically and may be inaccurate, incomplete or out of date.
+        </p>
+        <p>
+          You are responsible for reviewing and editing any AI-generated content before using it. AI output is provided for general guidance only and is not professional, legal or career advice. An ATS score or match score does not guarantee any hiring outcome.
+        </p>
+      </div>
+    )
+  },
+  {
+    id: "limits",
+    title: "5. Fair Use & Usage Limits",
+    icon: Gauge,
+    tldr: "AI features have usage limits. Daily limits reset at 00:00 UTC (5:30 AM IST). Limits may change.",
+    searchText: "fair use usage limits daily reset quota ats checker interview prep linkedin optimizer job match yuva assistant messages content improve 5:30 am ist utc",
+    content: (
+      <div className="space-y-4">
+        <p>To keep YuvaNaukri free and available for everyone, AI features have the following limits:</p>
+        <ul className="list-disc pl-6 space-y-2">
+          <li>AI Content Improve: 3 uses per account (lifetime, does not reset)</li>
+          <li>ATS Checker: 2 per day</li>
+          <li>Interview Prep: 2 sessions per day</li>
+          <li>LinkedIn About Optimizer: 2 per day</li>
+          <li>AI Job Match: 5 per day</li>
+          <li>Yuva Assistant: 30 messages per day</li>
+        </ul>
+        <p>
+          Daily limits reset every day at 00:00 UTC (5:30 AM IST). We may change these limits at any time. You agree not to try to bypass them, for example by creating multiple accounts or automating requests.
+        </p>
+      </div>
+    )
+  },
+  {
+    id: "jobs",
+    title: "6. Third-Party Job Listings",
+    icon: Briefcase,
+    tldr: "Job listings come from Adzuna. We don't verify employers and aren't responsible for external sites.",
+    searchText: "third party job listings adzuna employers verify external websites apply links responsibility",
+    content: (
+      <div className="space-y-4">
+        <p>
+          Job listings shown on YuvaNaukri (on the Jobs page, the Dashboard and in Yuva Assistant) are provided by a third-party service, Adzuna. We do not create these listings, and we do not verify the employers or the accuracy of the listings.
+        </p>
+        <p>
+          Applying for a job takes you to an external website. We are not responsible for the content, practices or privacy policies of external sites, or for any hiring decisions. Never pay money to apply for a job, and use your own judgement before sharing personal information with an employer.
+        </p>
+      </div>
+    )
+  },
+  {
+    id: "share-links",
+    title: "7. Public Share Links",
+    icon: Link2,
+    tldr: "If you turn on a share link, anyone with the link can view that resume. You're responsible for what you share.",
+    searchText: "public share links resume sharing visible anyone responsible turn off",
+    content: (
+      <div className="space-y-4">
+        <p>
+          When you enable a public share link for a resume, anyone with the link can view that resume without logging in. You are responsible for the content you choose to share and for who you share the link with.
+        </p>
+        <p>
+          You can turn sharing off at any time. We are not responsible for copies of your resume that others may have saved while the link was active.
+        </p>
+      </div>
+    )
+  },
+  {
     id: "conduct",
-    title: "4. Prohibited Conduct",
+    title: "8. Prohibited Conduct",
     icon: ShieldAlert,
     tldr: "Don't use YuvaNaukri for illegal stuff, don't upload harmful content, and don't try to hack or breach our security.",
     searchText: "prohibited conduct illegal harmful offensive fraudulent hacking security breach scraper bot spam copyright",
@@ -108,9 +201,9 @@ const SECTIONS = [
   },
   {
     id: "termination",
-    title: "5. Termination",
+    title: "9. Termination",
     icon: AlertOctagon,
-    tldr: "We can suspend or close your account if you break the rules, or for other reasons at our sole discretion.",
+    tldr: "We can suspend or close your account if you break the rules. You can ask us to delete your account at any time.",
     searchText: "termination suspend delete account cancel rules violation discretion ban access closure",
     content: (
       <div className="space-y-4">
@@ -118,7 +211,38 @@ const SECTIONS = [
           We reserve the right to terminate or suspend your account and restrict your access to the service at any time if you violate these Terms of Service, or for any other reason at our sole discretion, with or without prior notice.
         </p>
         <p>
-          Upon termination, all rights granted to you under these terms will immediately cease, and you must discontinue all use of the platform.
+          You may stop using YuvaNaukri at any time. To delete your account, email <a href="mailto:support@yuvanaukri.org" className="font-semibold text-slate-800 hover:underline">support@yuvanaukri.org</a>. Upon termination, all rights granted to you under these terms will immediately cease, and you must discontinue all use of the platform.
+        </p>
+      </div>
+    )
+  },
+  {
+    id: "liability",
+    title: "10. Limitation of Liability",
+    icon: AlertTriangle,
+    tldr: "YuvaNaukri is a free service provided \"as is\", without guarantees. We aren't liable for losses from using it.",
+    searchText: "limitation of liability as is warranty disclaimer free service damages losses guarantee",
+    content: (
+      <div className="space-y-4">
+        <p>
+          YuvaNaukri is provided free of charge, on an "as is" and "as available" basis, without warranties of any kind. We do not guarantee that the service will be uninterrupted or error-free, that AI output or job listings will be accurate, or that using the service will lead to interviews or job offers.
+        </p>
+        <p>
+          To the fullest extent permitted by law, YuvaNaukri is not liable for any indirect, incidental or consequential damages, or any loss of data, opportunities or income, arising from your use of the service.
+        </p>
+      </div>
+    )
+  },
+  {
+    id: "changes",
+    title: "11. Changes to Terms",
+    icon: RefreshCw,
+    tldr: "We may update these terms. The effective date at the top shows the latest version.",
+    searchText: "changes updates terms effective date revisions",
+    content: (
+      <div className="space-y-4">
+        <p>
+          We may update these Terms of Service from time to time. When we do, we will update the effective date at the top of this page. Continuing to use YuvaNaukri after an update means you accept the revised terms.
         </p>
       </div>
     )
@@ -183,7 +307,7 @@ export default function Terms() {
               Legal Center
             </span>
             <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
-            <span className="text-xs text-blue-50">Effective: April 16, 2026</span>
+            <span className="text-xs text-blue-50">Effective: October 7, 2026</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 animate-fade-in">
             Terms of Service
@@ -260,13 +384,13 @@ export default function Terms() {
                   <p className="text-xs text-orange-700 leading-relaxed mb-3 font-sans">
                     If you have questions about these terms, please contact our support team.
                   </p>
-                  <a
-                    href="/contact"
+                  <Link
+                    to="/contact"
                     className="inline-flex items-center text-xs font-bold text-orange-800 hover:text-orange-950 hover:underline gap-1"
                   >
                     Contact Support
                     <ArrowRight className="w-3 h-3" />
-                  </a>
+                  </Link>
                 </div>
               </div>
 

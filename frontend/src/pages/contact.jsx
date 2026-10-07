@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Mail, Phone, MapPin, MessageSquare, Send, Loader2 } from "lucide-react";
+import { Mail, MapPin, MessageSquare, Send } from "lucide-react";
 import { useToast } from "../context/ToastContext";
+
+const SUPPORT_EMAIL = "support@yuvanaukri.org";
 
 export default function Contact() {
   const { showToast } = useToast();
@@ -11,7 +13,6 @@ export default function Contact() {
     email: "",
     message: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -46,13 +47,11 @@ export default function Contact() {
       return;
     }
 
-    // Mock API Submit Trigger
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      showToast("Your message was sent successfully! We will contact you soon.");
-      setFormData({ name: "", email: "", message: "" });
-    }, 1500);
+    // Open the user's email app with the message pre-filled
+    const subject = `YuvaNaukri support request from ${formData.name.trim()}`;
+    const body = `Name: ${formData.name.trim()}\nEmail: ${formData.email.trim()}\n\nMessage:\n${formData.message.trim()}`;
+    showToast("Opening your email app…", "info");
+    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   return (
@@ -69,7 +68,7 @@ export default function Contact() {
             </span>
           </h1>
           <p className="text-slate-500 text-lg leading-relaxed">
-            Have questions, feedback, or need help? Send us a message and our support team will get back to you within 24 hours.
+            Have questions, feedback, or need help? Send us a message and our support team will get back to you as soon as possible.
           </p>
         </div>
 
@@ -94,17 +93,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-bold text-base mb-1">Email Us</h3>
-                    <p className="text-white/80 text-sm font-medium">support@yuvanaukri.org</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 bg-white/10 p-5 rounded-2xl border border-white/10 backdrop-blur-sm hover:bg-white/20 transition-all duration-200">
-                  <div className="bg-white p-3 rounded-xl text-[#0076BC] shrink-0">
-                    <Phone className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-base mb-1">Call Us</h3>
-                    <p className="text-white/80 text-sm font-medium">+91 99999 00000</p>
+                    <a href={`mailto:${SUPPORT_EMAIL}`} className="text-white/80 hover:text-white hover:underline text-sm font-medium break-all">{SUPPORT_EMAIL}</a>
                   </div>
                 </div>
 
@@ -127,8 +116,8 @@ export default function Contact() {
 
           {/* Right Column: Premium Contact Form */}
           <div className="lg:col-span-7 p-8 lg:p-12 flex flex-col justify-center bg-white">
-            <h2 className="text-2xl font-black text-slate-850 mb-2">Send Us a Message</h2>
-            <p className="text-slate-400 mb-8 text-sm font-medium">Fill in the fields below and our representative will reach out to you.</p>
+            <h2 className="text-2xl font-black text-slate-800 mb-2">Send Us a Message</h2>
+            <p className="text-slate-400 mb-8 text-sm font-medium">Fill in the fields below and we'll open your email app with your message ready to send.</p>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               <div>
@@ -146,7 +135,7 @@ export default function Contact() {
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
                 <input
-                  type="text"
+                  type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
@@ -169,19 +158,14 @@ export default function Contact() {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-[#00A86B] hover:bg-emerald-600 disabled:bg-emerald-400 text-white py-4 rounded-xl font-bold text-lg transition duration-200 shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+                className="w-full bg-[#00A86B] hover:bg-emerald-600 text-white py-4 rounded-xl font-bold text-lg transition duration-200 shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer"
               >
-                {isSubmitting ? (
-                  <>
-                    Sending message... <Loader2 className="w-5 h-5 animate-spin" />
-                  </>
-                ) : (
-                  <>
-                    Send Message <Send className="w-5 h-5" />
-                  </>
-                )}
+                Send Message <Send className="w-5 h-5" />
               </button>
+              <p className="text-xs text-slate-400 text-center -mt-2">
+                This opens your email app. You can also email us directly at{" "}
+                <a href={`mailto:${SUPPORT_EMAIL}`} className="font-semibold text-[#0076BC] hover:underline">{SUPPORT_EMAIL}</a>.
+              </p>
             </form>
           </div>
 

@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useToast } from "../context/ToastContext";
 import {
-  History, ArrowLeft, Save, RotateCcw, Trash2, Eye,
+  History, ArrowLeft, Save, RotateCcw, Trash2,
   Loader2, AlertCircle, Calendar, Tag, FileText, Edit2,
 } from "lucide-react";
 
@@ -262,8 +262,10 @@ export default function ResumeVersionHistory() {
           </div>
         ) : (
           <ul className="space-y-3">
-            {versions.map((v) => {
-              const isCurrentTop = v.index === 0;
+            {versions.map((v, position) => {
+              // The list is sorted newest-first, so the first entry is the latest
+              // snapshot. (v.index is the original array position, where 0 is the oldest.)
+              const isCurrentTop = position === 0;
               return (
                 <li
                   key={`${v.savedAt}-${v.index}`}
@@ -286,19 +288,6 @@ export default function ResumeVersionHistory() {
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={() => {
-                        // Open builder preloaded with the snapshot's content via state.
-                        // We don't have the snapshot payload here, so navigate to builder with current
-                        // resume; user can iterate from there. Preview is fetched server-side on demand.
-                        navigate("/resume-builder", { state: { resumeData: resume } });
-                      }}
-                      disabled={busy}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
-                      title="Open current resume in builder"
-                    >
-                      <Eye className="w-3.5 h-3.5" /> View
-                    </button>
                     <button
                       onClick={() => setRestoreIdx(v.index)}
                       disabled={busy}
