@@ -17,25 +17,26 @@ import {
 } from "lucide-react";
 import axios from "axios";
 
+const API = process.env.REACT_APP_API_URL || "";
 const ADZUNA_APP_ID = process.env.REACT_APP_ADZUNA_ID;
 const ADZUNA_APP_KEY = process.env.REACT_APP_ADZUNA_KEY;
-const isAdzunaConfigured = Boolean(ADZUNA_APP_ID && ADZUNA_APP_KEY);
+const isAdzunaDirectConfigured = Boolean(ADZUNA_APP_ID && ADZUNA_APP_KEY);
 
 // Max characters of the job description sent to the AI match endpoint.
 const MATCH_DESCRIPTION_LIMIT = 4000;
 const JOB_MATCH_DAILY_LIMIT = 5;
 
-async function fetchJobsAdzuna(query = "", location = "") {
+async function fetchJobsDirectAdzuna(query = "", location = "") {
   const url = `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&results_per_page=12&what=${encodeURIComponent(query)}&where=${encodeURIComponent(location)}`;
 
   const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch jobs");
+  if (!res.ok) throw new Error("Failed to fetch jobs directly from Adzuna");
   const data = await res.json();
 
   return data.results.map((job) => {
     const fullDescription = job.description ? job.description.replace(/<[^>]+>/g, "").trim() : "";
     return {
-      id: job.id,
+      id: String(job.id),
       title: job.title,
       company: job.company?.display_name || "Not disclosed",
       location: job.location?.display_name || "Not specified",
@@ -43,13 +44,35 @@ async function fetchJobsAdzuna(query = "", location = "") {
       salary: job.salary_min
         ? `₹${Math.round(job.salary_min).toLocaleString()} – ₹${Math.round(job.salary_max || job.salary_min).toLocaleString()}`
         : null,
-      // Short version for the card; the full text is used for AI matching.
       description: fullDescription ? fullDescription.slice(0, 130) + "…" : "",
       fullDescription,
       applyUrl: job.redirect_url,
       category: job.category?.label || "",
     };
   });
+}
+
+async function fetchJobsFromApi(query = "", location = "") {
+  // 1. Try our secure backend endpoint (which checks backend .env credentials or returns realistic demo jobs)
+  try {
+    const res = await axios.get(`${API}/api/jobs/search`, {
+      params: { what: query, where: location, limit: 12 },
+      timeout: 12000,
+    });
+    if (res.data?.jobs) {
+      return { jobs: res.data.jobs, isDemo: Boolean(res.data.isDemo) };
+    }
+  } catch (backendErr) {
+    console.warn("Backend job search endpoint unavailable, attempting direct fallback:", backendErr.message);
+  }
+
+  // 2. Direct Adzuna fallback if frontend has credentials configured
+  if (isAdzunaDirectConfigured) {
+    const directJobs = await fetchJobsDirectAdzuna(query, location);
+    return { jobs: directJobs, isDemo: false };
+  }
+
+  throw new Error("Job search service unavailable. Please ensure the backend is running.");
 }
 
 function SkeletonCard() {
@@ -92,6 +115,7 @@ export default function Jobs() {
   const [loc, setLoc] = useState("");
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const [matchScores, setMatchScores] = useState({});
   const [matchesLeft, setMatchesLeft] = useState(null);
   const { showToast } = useToast();
@@ -111,18 +135,15 @@ export default function Jobs() {
   }, [searchParams]);
 
   const load = async (searchQ = q, searchLoc = loc) => {
-    if (!isAdzunaConfigured) {
-      showToast("Job search is not configured.", "error");
-      return;
-    }
     try {
       setLoading(true);
       setHasSearched(true);
-      const res = await fetchJobsAdzuna(searchQ, searchLoc);
-      setJobs(res);
-      if (res.length === 0) showToast("No jobs found. Try different keywords.", "info");
+      const res = await fetchJobsFromApi(searchQ, searchLoc);
+      setJobs(res.jobs);
+      setIsDemoMode(res.isDemo);
+      if (res.jobs.length === 0) showToast("No jobs found. Try different keywords.", "info");
     } catch (e) {
-      showToast("Failed to load jobs. Check your connection.", "error");
+      showToast(e.message || "Failed to load jobs. Check your connection.", "error");
     } finally {
       setLoading(false);
     }
@@ -176,6 +197,7 @@ export default function Jobs() {
     setLoc("");
     setJobs([]);
     setHasSearched(false);
+    setIsDemoMode(false);
   };
 
   const quickSearches = ["Software Developer", "Sales Executive", "Data Entry", "Marketing", "HR Manager", "Accountant"];
@@ -255,6 +277,20 @@ export default function Jobs() {
 
       {/* Jobs Grid */}
       <div className="flex-grow max-w-7xl mx-auto w-full px-6 py-12">
+        {/* Demo Mode Notice */}
+        {isDemoMode && jobs.length > 0 && !loading && (
+          <div className="mb-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 rounded-2xl p-4 text-sm text-amber-900 flex items-start sm:items-center justify-between gap-3 shadow-sm animate-in fade-in duration-300">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                <Sparkles className="w-4 h-4 text-amber-600" />
+              </div>
+              <p className="leading-relaxed">
+                <span className="font-bold text-amber-950">Demo Mode Active:</span> Showing simulated openings for testing and AI match scoring. To search live Adzuna listings, add <code className="bg-amber-100/80 text-amber-900 px-1.5 py-0.5 rounded font-mono text-xs">ADZUNA_APP_ID</code> and <code className="bg-amber-100/80 text-amber-900 px-1.5 py-0.5 rounded font-mono text-xs">ADZUNA_APP_KEY</code> to your backend <code className="bg-amber-100/80 text-amber-900 px-1.5 py-0.5 rounded font-mono text-xs">.env</code> file.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Results header */}
         {(jobs.length > 0 || hasSearched) && !loading && (
           <div className="flex items-center justify-between mb-6">

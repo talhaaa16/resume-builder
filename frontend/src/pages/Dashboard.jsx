@@ -140,25 +140,49 @@ function ResumeCard({ resume, onEdit, onShare, onCopyLink, onHistory, editing })
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 async function fetchJobsAdzuna(query = "", location = "") {
+  try {
+    const res = await axios.get(`${API}/api/jobs/search`, {
+      params: { what: query, where: location, limit: 3, max_days_old: 3 },
+      timeout: 10000,
+    });
+    if (res.data?.jobs) {
+      return res.data.jobs.slice(0, 3).map((job) => ({
+        id: job.id,
+        title: job.title,
+        company: job.company || "Not disclosed",
+        location: job.location || "Not specified",
+        contract: job.contract || null,
+        applyUrl: job.applyUrl,
+      }));
+    }
+  } catch (err) {
+    console.warn("Backend job search request failed, checking direct Adzuna fallback:", err.message);
+  }
+
+  // Direct Adzuna fallback if configured in frontend environment
   const APP_ID = process.env.REACT_APP_ADZUNA_ID;
   const APP_KEY = process.env.REACT_APP_ADZUNA_KEY;
-  if (!APP_ID || !APP_KEY) return [];
+  if (APP_ID && APP_KEY) {
+    try {
+      const url = `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=3&what=${encodeURIComponent(query)}&where=${encodeURIComponent(location)}&max_days_old=3&sort_by=relevance`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        return (data.results || []).map((job) => ({
+          id: job.id,
+          title: job.title,
+          company: job.company?.display_name || "Not disclosed",
+          location: job.location?.display_name || "Not specified",
+          contract: job.contract_time || null,
+          applyUrl: job.redirect_url,
+        }));
+      }
+    } catch (e) {
+      console.error("Direct Adzuna fetch failed:", e);
+    }
+  }
 
-  // sort_by=relevance and max_days_old=3 ensures highly matched, fresh jobs daily
-  const url = `https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=3&what=${encodeURIComponent(query)}&where=${encodeURIComponent(location)}&max_days_old=3&sort_by=relevance`;
-
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch jobs");
-  const data = await res.json();
-
-  return data.results.map((job) => ({
-    id: job.id,
-    title: job.title,
-    company: job.company?.display_name || "Not disclosed",
-    location: job.location?.display_name || "Not specified",
-    contract: job.contract_time || null,
-    applyUrl: job.redirect_url,
-  }));
+  return [];
 }
 
 export default function Dashboard() {

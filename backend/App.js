@@ -24,6 +24,7 @@ const resumeRouters = require("./routes/resume");
 const aiRouters = require("./routes/ai");
 const adminRouters = require("./routes/admin");
 const chatRouters = require("./routes/chat");
+const jobsRouters = require("./routes/jobs");
 const PageVisit = require("./models/pageVisit");
 
 app.use(async (req, res, next) => {
@@ -51,6 +52,7 @@ app.use("/api/resume", resumeRouters);
 app.use("/api/ai", aiRouters);
 app.use("/api/admin", adminRouters);
 app.use("/api/chat", chatRouters);
+app.use("/api/jobs", jobsRouters);
 
 app.get("/", (req, res) => {
   res.send("Hello World from Backend ");

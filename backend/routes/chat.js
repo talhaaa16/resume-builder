@@ -187,9 +187,6 @@ function toGeminiContents(messages) {
 async function runJobSearch(args = {}) {
     const query = clip(args.query, 80);
     if (!query) return { result: { error: 'A job title or keyword is required.' } };
-    if (!isJobSearchConfigured()) {
-        return { result: { error: 'Job search is not available right now. Suggest the user try the Jobs page (/jobs).' } };
-    }
 
     const search = {
         query,
@@ -291,7 +288,7 @@ router.get('/status', auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.userId).select('chatCount chatLastResetDate');
         if (!user) return res.status(404).json({ sts: 1, msg: "User not found." });
-        res.json({ sts: 0, usesLeft: usesLeftFor(user), dailyLimit: CHAT_DAILY_LIMIT, jobSearchEnabled: isJobSearchConfigured() });
+        res.json({ sts: 0, usesLeft: usesLeftFor(user), dailyLimit: CHAT_DAILY_LIMIT, jobSearchEnabled: true });
     } catch (error) {
         console.error("Chat status error:", error);
         res.status(500).json({ sts: 1, msg: "Failed to load chat status." });
