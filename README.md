@@ -167,7 +167,7 @@ GEMINI_API_KEY=your_gemini_api_key
 ADMIN_SECRET=your_admin_panel_password
 LINKEDIN_CLIENT_ID=your_linkedin_client_id
 LINKEDIN_CLIENT_SECRET=your_linkedin_client_secret
-ADZUNA_APP_ID=your_adzuna_app_id      # used by the chatbot's job search
+ADZUNA_APP_ID=your_adzuna_app_id      # used for Jobs page, Dashboard feed, and Chatbot (optional; demo jobs shown if omitted)
 ADZUNA_APP_KEY=your_adzuna_app_key
 ```
 
