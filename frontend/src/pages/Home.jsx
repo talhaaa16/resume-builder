@@ -9,10 +9,10 @@ export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#0076BC] to-[#00A86B] text-white">
+    <div className="min-h-screen bg-gradient-to-r from-[#0076BC] to-[#00A86B] text-white overflow-x-hidden">
       <Navbar />
 
-      <section className="flex flex-col md:flex-row items-center justify-between px-12 py-20">
+      <section className="max-w-7xl mx-auto w-full flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-20">
         <div className="max-w-xl">
           <h2 className="text-5xl font-extrabold leading-tight">
             Empower Your <span className="text-orange-500">Career Journey</span>
@@ -115,9 +115,7 @@ export default function Home() {
         </div>
       </section>
 
-
-
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-12 py-20 text-center">
+      <section className="max-w-7xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-6 md:px-12 py-20 text-center">
         <div>
           <FileText className="mx-auto h-10 w-10 text-orange-400" />
           <h3 className="mt-2 text-2xl font-bold">4</h3>
@@ -140,91 +138,97 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-gray-50 py-20 px-6 md:px-20 text-center text-slate-900">
-        <h2 className="text-3xl font-bold mb-4">
-          Everything You Need to Succeed
-        </h2>
-        <p className="text-gray-600 text-lg mb-12">
-          Comprehensive tools and resources designed specifically for India's youth to build successful careers
-        </p>
+      <section className="bg-gray-50 py-20 px-6 md:px-20 text-center text-slate-900 w-full">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold mb-4">
+            Everything You Need to Succeed
+          </h2>
+          <p className="text-gray-600 text-lg mb-12">
+            Comprehensive tools and resources designed specifically for India's youth to build successful careers
+          </p>
 
-        <div className="flex flex-wrap justify-center gap-8">
-          {FEATURES.map((feature) => (
-            <FeatureCard
-              key={feature.title}
-              {...feature}
-              onClick={feature.prompt ? () => openChatbot(feature.prompt) : () => navigate(feature.to)}
+          <div className="flex flex-wrap justify-center gap-8">
+            {FEATURES.map((feature) => (
+              <FeatureCard
+                key={feature.title}
+                {...feature}
+                onClick={feature.prompt ? () => openChatbot(feature.prompt) : () => navigate(feature.to)}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-20 px-6 md:px-20 text-center text-gray-900 w-full">
+        <div className="max-w-7xl mx-auto">
+          <p className="inline-block bg-blue-50 text-blue-600 px-4 py-1 rounded-full text-sm font-medium mb-4">
+            Contributing to Viksit Bharat @2047
+          </p>
+          <h2 className="text-3xl font-bold mb-12">
+            Aligned with UN Sustainable Development Goals
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+            <div className="border rounded-xl p-8 hover:shadow-md transition">
+              <h3 className="text-xl font-bold text-blue-600 mb-2">SDG 4</h3>
+              <h4 className="text-lg font-semibold mb-2">Quality Education</h4>
+              <p className="text-gray-600">
+                Providing skill development and career guidance for lifelong learning
+              </p>
+            </div>
+            <div className="border rounded-xl p-8 hover:shadow-md transition">
+              <h3 className="text-xl font-bold text-blue-600 mb-2">SDG 8</h3>
+              <h4 className="text-lg font-semibold mb-2">Decent Work</h4>
+              <p className="text-gray-600">
+                Creating pathways to productive employment and economic growth
+              </p>
+            </div>
+          </div>
+
+          <h2 className="text-3xl font-bold mb-4">How It Works</h2>
+          <p className="text-gray-600 mb-12">
+            Three simple steps from your first draft to your next opportunity
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <StepCard
+              step="1"
+              title="Build your resume"
+              text="Pick one of 4 templates, fill in your details with a live preview, choose a theme color and download a PDF."
             />
-          ))}
+            <StepCard
+              step="2"
+              title="Check & improve with AI"
+              text="Upload your resume to the ATS Checker for a score and feedback, and polish your wording with AI Content Improve."
+            />
+            <StepCard
+              step="3"
+              title="Find jobs & prepare"
+              text="Browse live jobs with an AI Job Match score, ask Yuva Assistant for openings, and practise with Interview Prep."
+            />
+          </div>
         </div>
       </section>
 
-      <section className="bg-white py-20 px-6 md:px-20 text-center text-gray-900">
-        <p className="inline-block bg-blue-50 text-blue-600 px-4 py-1 rounded-full text-sm font-medium mb-4">
-          Contributing to Viksit Bharat @2047
-        </p>
-        <h2 className="text-3xl font-bold mb-12">
-          Aligned with UN Sustainable Development Goals
-        </h2>
+      <section className="bg-gradient-to-r from-[#0076BC] to-[#00A86B] py-20 px-6 md:px-20 text-center w-full">
+        <div className="max-w-7xl mx-auto">
+          <Sparkles className="mx-auto h-8 w-8 text-orange-400 mb-4" />
+          <h2 className="text-4xl font-bold mb-6">
+            Ready to Transform Your Career?
+          </h2>
+          <p className="text-lg text-gray-100 max-w-2xl mx-auto mb-10">
+            Build your resume, check it with AI and explore live job listings — all in one place.
+            Start your journey today – it’s completely free!
+          </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-          <div className="border rounded-xl p-8 hover:shadow-md transition">
-            <h3 className="text-xl font-bold text-blue-600 mb-2">SDG 4</h3>
-            <h4 className="text-lg font-semibold mb-2">Quality Education</h4>
-            <p className="text-gray-600">
-              Providing skill development and career guidance for lifelong learning
-            </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <button onClick={() => navigate("/resume-builder")} className="bg-orange-500 hover:bg-orange-600 px-8 py-3 rounded-md font-semibold text-white">
+              Create Your Resume Now →
+            </button>
+            <button onClick={() => navigate("/jobs")} className="border border-white px-8 py-3 rounded-md font-semibold text-white hover:bg-white hover:text-[#0076BC] transition">
+              Explore Job Opportunities
+            </button>
           </div>
-          <div className="border rounded-xl p-8 hover:shadow-md transition">
-            <h3 className="text-xl font-bold text-blue-600 mb-2">SDG 8</h3>
-            <h4 className="text-lg font-semibold mb-2">Decent Work</h4>
-            <p className="text-gray-600">
-              Creating pathways to productive employment and economic growth
-            </p>
-          </div>
-        </div>
-
-        <h2 className="text-3xl font-bold mb-4">How It Works</h2>
-        <p className="text-gray-600 mb-12">
-          Three simple steps from your first draft to your next opportunity
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <StepCard
-            step="1"
-            title="Build your resume"
-            text="Pick one of 4 templates, fill in your details with a live preview, choose a theme color and download a PDF."
-          />
-          <StepCard
-            step="2"
-            title="Check & improve with AI"
-            text="Upload your resume to the ATS Checker for a score and feedback, and polish your wording with AI Content Improve."
-          />
-          <StepCard
-            step="3"
-            title="Find jobs & prepare"
-            text="Browse live jobs with an AI Job Match score, ask Yuva Assistant for openings, and practise with Interview Prep."
-          />
-        </div>
-      </section>
-
-      <section className="bg-gradient-to-r from-[#0076BC] to-[#00A86B] py-20 px-6 md:px-20 text-center">
-        <Sparkles className="mx-auto h-8 w-8 text-orange-400 mb-4" />
-        <h2 className="text-4xl font-bold mb-6">
-          Ready to Transform Your Career?
-        </h2>
-        <p className="text-lg text-gray-100 max-w-2xl mx-auto mb-10">
-          Build your resume, check it with AI and explore live job listings — all in one place.
-          Start your journey today – it’s completely free!
-        </p>
-
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <button onClick={() => navigate("/resume-builder")} className="bg-orange-500 hover:bg-orange-600 px-8 py-3 rounded-md font-semibold text-white">
-            Create Your Resume Now →
-          </button>
-          <button onClick={() => navigate("/jobs")} className="border border-white px-8 py-3 rounded-md font-semibold text-white hover:bg-white hover:text-[#0076BC] transition">
-            Explore Job Opportunities
-          </button>
         </div>
       </section>
 

@@ -94,8 +94,8 @@ function AppRoutes() {
 function App() {
   return (
     <ToastProvider>
-      <div className="app-shell">
-        <main className="container">
+      <div className="min-h-screen flex flex-col w-full">
+        <main className="flex-grow w-full">
           <AppRoutes />
         </main>
         <ChatBot />
