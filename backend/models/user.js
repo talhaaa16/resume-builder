@@ -43,6 +43,14 @@ const Userschema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    linkedinOptimizerCount: {
+        type: Number,
+        default: 0
+    },
+    linkedinOptimizerLastResetDate: {
+        type: String,
+        default: ''
+    },
     jobMatchCount: {
         type: Number,
         default: 0
@@ -59,6 +67,6 @@ const Userschema = new mongoose.Schema({
         type: String,
         default: ''
     }
-})
+}, { timestamps: true })
 
 module.exports = mongoose.model('User', Userschema)
